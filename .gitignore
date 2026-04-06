@@ -1,0 +1,81 @@
+# Java/Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+.classpath
+.project
+.settings/
+bin/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Node/npm
+node_modules/
+dist/
+build/
+npm-debug.log
+package-lock.json
+yarn.lock
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+*.sql
+
+# Logs
+logs/
+*.log
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Build outputs
+/dist
+/backend/target
+/frontend/build
+
+# Dependencies
+/backend/.classpath
+/backend/.project
+/backend/.settings
+/backend/bin
+
+# IDE specific
+*.iml
+*.iws
+*.ipr
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+pom.xml.bak
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.maven.metadata.xml
+
+# File uploads
+uploads/
+temp/
