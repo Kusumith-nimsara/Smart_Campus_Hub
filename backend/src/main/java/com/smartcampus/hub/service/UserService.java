@@ -33,7 +33,7 @@ public class UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        applyUpdate(user, request, false);
+        applyUpdate(user, request, false, false);
         userRepository.save(user);
         return toUserResponse(user);
     }
@@ -58,7 +58,7 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        applyUpdate(user, request, true);
+        applyUpdate(user, request, true, true);
         userRepository.save(user);
         return toUserResponse(user);
     }
@@ -70,8 +70,12 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    private void applyUpdate(User user, UpdateUserRequest request, boolean allowRoleUpdate) {
+    private void applyUpdate(User user, UpdateUserRequest request, boolean allowRoleUpdate, boolean allowUsernameUpdate) {
         if (request.getUsername() != null && !request.getUsername().isBlank()) {
+            if (!allowUsernameUpdate && !request.getUsername().equals(user.getUsername())) {
+                throw new IllegalArgumentException("Username cannot be changed from this endpoint");
+            }
+
             if (!request.getUsername().equals(user.getUsername())
                     && userRepository.existsByUsername(request.getUsername())) {
                 throw new IllegalArgumentException("Username is already taken");
