@@ -1,0 +1,88 @@
+.admin-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.admin-card {
+  width: min(500px, 95vw);
+  border-radius: 20px;
+  border: 1px solid #c6ddde;
+  background: linear-gradient(150deg, #ffffff, #f0fbfa);
+  box-shadow: 0 24px 58px rgba(5, 67, 72, 0.18);
+  padding: 26px;
+}
+
+.back-link {
+  border: 0;
+  background: transparent;
+  color: #126270;
+  font-weight: 700;
+  padding: 0;
+  cursor: pointer;
+}
+
+.admin-card h1 {
+  margin: 14px 0 6px;
+  color: #0f3a43;
+}
+
+.admin-subtitle {
+  margin: 0 0 18px;
+  color: #3c6370;
+}
+
+.admin-form {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-form label {
+  display: grid;
+  gap: 6px;
+  color: #134650;
+  font-weight: 600;
+}
+
+.admin-form input {
+  border: 1px solid #a5cfd4;
+  border-radius: 10px;
+  padding: 11px;
+  background: #f2fcfc;
+  font-size: 15px;
+}
+
+.admin-form button {
+  margin-top: 4px;
+  border: 0;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(125deg, #0f6372, #17a0a4);
+  cursor: pointer;
+}
+
+.admin-form button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.admin-status {
+  margin: 14px 0 10px;
+  color: #24565e;
+  font-weight: 600;
+}
+
+.admin-response {
+  margin: 0;
+  border-radius: 12px;
+  border: 1px solid #c5e0e3;
+  background: #effbfb;
+  color: #0f3035;
+  font-size: 12px;
+  padding: 12px;
+  max-height: 220px;
+  overflow: auto;
+}

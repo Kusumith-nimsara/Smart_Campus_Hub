@@ -2,7 +2,7 @@ import { useState } from 'react'
 import GoogleLoginButton from '../GoogleLoginButton'
 import './LoginPage.css'
 
-export default function LoginPage() {
+export default function LoginPage({ onNavigate }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('Use this page to test backend auth quickly.')
@@ -68,6 +68,12 @@ export default function LoginPage() {
   return (
     <main className="auth-page">
       <section className="auth-card">
+        {typeof onNavigate === 'function' && (
+          <button type="button" className="auth-back-link" onClick={() => onNavigate('landing')}>
+            Back to Landing
+          </button>
+        )}
+
         <p className="chip">Smart Campus Hub</p>
         <h1>Auth Verification</h1>
         <p className="subtitle">Use this form to verify backend login and Google auth.</p>
