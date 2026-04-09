@@ -1,6 +1,7 @@
 package com.smartcampus.hub.controller;
 
 import com.smartcampus.hub.dto.AuthResponse;
+import com.smartcampus.hub.dto.GoogleLoginRequest;
 import com.smartcampus.hub.dto.LoginRequest;
 import com.smartcampus.hub.dto.RegisterRequest;
 import com.smartcampus.hub.service.AuthService;
@@ -31,6 +32,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<AuthResponse> googleLogin(@Valid @RequestBody GoogleLoginRequest request) {
+        AuthResponse response = authService.loginWithGoogle(request.getIdToken());
         return ResponseEntity.ok(response);
     }
 }
