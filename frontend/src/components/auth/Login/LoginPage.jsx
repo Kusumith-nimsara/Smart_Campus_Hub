@@ -33,9 +33,12 @@ export default function LoginPage() {
       if (data?.token) {
         localStorage.setItem('authToken', data.token)
       }
+      localStorage.setItem('authRoles', JSON.stringify(Array.isArray(data?.roles) ? data.roles : ['USER']))
+      localStorage.setItem('authLoginType', 'user')
 
       setResult(data)
       setMessage('Google auth succeeded. Backend token received.')
+      window.alert('Login successful')
       navigate('/profile')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Google auth failed.'
@@ -65,9 +68,12 @@ export default function LoginPage() {
       if (data?.token) {
         localStorage.setItem('authToken', data.token)
       }
+      localStorage.setItem('authRoles', JSON.stringify(Array.isArray(data?.roles) ? data.roles : ['USER']))
+      localStorage.setItem('authLoginType', 'user')
 
       setResult(data)
       setMessage('Username/password login succeeded.')
+      window.alert('Login successful')
       navigate('/profile')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed.'

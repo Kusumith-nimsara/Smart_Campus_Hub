@@ -33,6 +33,26 @@
   color: #4f6390;
 }
 
+.profile-login-type {
+  margin: -4px 0 14px;
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.profile-login-type.user {
+  color: #194891;
+  background: #e7f0ff;
+}
+
+.profile-login-type.admin {
+  color: #0f5e5d;
+  background: #e6f7f6;
+}
+
 .profile-form {
   display: grid;
   gap: 12px;

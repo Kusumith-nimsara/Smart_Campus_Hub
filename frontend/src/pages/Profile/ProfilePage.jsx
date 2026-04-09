@@ -11,6 +11,15 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [message, setMessage] = useState('Loading profile...')
+  const [roles, setRoles] = useState(() => {
+    try {
+      const raw = localStorage.getItem('authRoles')
+      const parsed = raw ? JSON.parse(raw) : []
+      return Array.isArray(parsed) ? parsed : []
+    } catch {
+      return []
+    }
+  })
 
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
@@ -46,6 +55,9 @@ export default function ProfilePage() {
         setLastName(data.lastName ?? '')
         setRegistrationNumber(data.registrationNumber ?? '')
         setMobileNumber(data.mobileNumber ?? '')
+        const loadedRoles = Array.isArray(data.roles) ? data.roles : roles
+        setRoles(loadedRoles)
+        localStorage.setItem('authRoles', JSON.stringify(loadedRoles))
         setMessage('Profile loaded.')
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to load profile.'
@@ -97,6 +109,9 @@ export default function ProfilePage() {
       setLastName(data.lastName ?? lastName)
       setRegistrationNumber(data.registrationNumber ?? registrationNumber)
       setMobileNumber(data.mobileNumber ?? mobileNumber)
+      const updatedRoles = Array.isArray(data.roles) ? data.roles : roles
+      setRoles(updatedRoles)
+      localStorage.setItem('authRoles', JSON.stringify(updatedRoles))
       setPassword('')
       setMessage('Profile updated successfully.')
     } catch (error) {
@@ -130,6 +145,8 @@ export default function ProfilePage() {
       }
 
       localStorage.removeItem('authToken')
+      localStorage.removeItem('authRoles')
+      localStorage.removeItem('authLoginType')
       setMessage('Account deleted successfully.')
       navigate('/')
     } catch (error) {
@@ -142,8 +159,13 @@ export default function ProfilePage() {
 
   function handleLogout() {
     localStorage.removeItem('authToken')
+    localStorage.removeItem('authRoles')
+    localStorage.removeItem('authLoginType')
     navigate('/login')
   }
+
+  const isAdmin = roles.includes('ADMIN') || roles.includes('ROLE_ADMIN')
+  const loginType = isAdmin ? 'ADMIN' : 'USER'
 
   return (
     <main className="profile-page">
@@ -154,6 +176,9 @@ export default function ProfilePage() {
 
         <h1>Edit Profile</h1>
         <p className="profile-subtitle">Update your details and manage your account.</p>
+        <p className={`profile-login-type ${isAdmin ? 'admin' : 'user'}`}>
+          Login successful as {loginType}
+        </p>
 
         {loading ? (
           <p className="profile-status">Loading...</p>
