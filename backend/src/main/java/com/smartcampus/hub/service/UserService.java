@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,23 +25,27 @@ public class UserService {
     }
 
     public UserResponse getCurrentUser(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        String safeUsername = Objects.requireNonNull(username, "Username cannot be null");
+        User user = Objects.requireNonNull(userRepository.findByUsername(safeUsername)
+            .orElseThrow(() -> new IllegalArgumentException("User not found")));
         return toUserResponse(user);
     }
 
     public UserResponse updateCurrentUser(String username, UpdateUserRequest request) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        String safeUsername = Objects.requireNonNull(username, "Username cannot be null");
+        UpdateUserRequest safeRequest = Objects.requireNonNull(request, "Request cannot be null");
+        User user = Objects.requireNonNull(userRepository.findByUsername(safeUsername)
+            .orElseThrow(() -> new IllegalArgumentException("User not found")));
 
-        applyUpdate(user, request, false, false);
+        applyUpdate(user, safeRequest, false, false);
         userRepository.save(user);
         return toUserResponse(user);
     }
 
     public void deleteCurrentUser(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        String safeUsername = Objects.requireNonNull(username, "Username cannot be null");
+        User user = Objects.requireNonNull(userRepository.findByUsername(safeUsername)
+            .orElseThrow(() -> new IllegalArgumentException("User not found")));
         userRepository.delete(user);
     }
 
@@ -49,54 +54,62 @@ public class UserService {
     }
 
     public UserResponse getUserById(String id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        String safeId = Objects.requireNonNull(id, "User id cannot be null");
+        User user = Objects.requireNonNull(userRepository.findById(safeId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found")));
         return toUserResponse(user);
     }
 
     public UserResponse updateUserById(String id, UpdateUserRequest request) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        String safeId = Objects.requireNonNull(id, "User id cannot be null");
+        UpdateUserRequest safeRequest = Objects.requireNonNull(request, "Request cannot be null");
+        User user = Objects.requireNonNull(userRepository.findById(safeId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found")));
 
-        applyUpdate(user, request, true, true);
+        applyUpdate(user, safeRequest, true, true);
         userRepository.save(user);
         return toUserResponse(user);
     }
 
     public void deleteUserById(String id) {
-        if (!userRepository.existsById(id)) {
+        String safeId = Objects.requireNonNull(id, "User id cannot be null");
+        if (!userRepository.existsById(safeId)) {
             throw new IllegalArgumentException("User not found");
         }
-        userRepository.deleteById(id);
+        userRepository.deleteById(safeId);
     }
 
     private void applyUpdate(User user, UpdateUserRequest request, boolean allowRoleUpdate, boolean allowUsernameUpdate) {
-        if (request.getUsername() != null && !request.getUsername().isBlank()) {
-            if (!allowUsernameUpdate && !request.getUsername().equals(user.getUsername())) {
+        String requestedUsername = request.getUsername();
+        if (requestedUsername != null && !requestedUsername.isBlank()) {
+            if (!allowUsernameUpdate && !requestedUsername.equals(user.getUsername())) {
                 throw new IllegalArgumentException("Username cannot be changed from this endpoint");
             }
 
-            if (!request.getUsername().equals(user.getUsername())
-                    && userRepository.existsByUsername(request.getUsername())) {
+            if (!requestedUsername.equals(user.getUsername())
+                    && userRepository.existsByUsername(requestedUsername)) {
                 throw new IllegalArgumentException("Username is already taken");
             }
-            user.setUsername(request.getUsername());
+            user.setUsername(requestedUsername);
         }
 
-        if (request.getEmail() != null && !request.getEmail().isBlank()) {
-            if (!request.getEmail().equals(user.getEmail())
-                    && userRepository.existsByEmail(request.getEmail())) {
+        String requestedEmail = request.getEmail();
+        if (requestedEmail != null && !requestedEmail.isBlank()) {
+            if (!requestedEmail.equals(user.getEmail())
+                    && userRepository.existsByEmail(requestedEmail)) {
                 throw new IllegalArgumentException("Email is already in use");
             }
-            user.setEmail(request.getEmail());
+            user.setEmail(requestedEmail);
         }
 
-        if (request.getPassword() != null && !request.getPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        String requestedPassword = request.getPassword();
+        if (requestedPassword != null && !requestedPassword.isBlank()) {
+            user.setPassword(passwordEncoder.encode(requestedPassword));
         }
 
-        if (allowRoleUpdate && request.getRoles() != null && !request.getRoles().isEmpty()) {
-            user.setRoles(resolveRoles(request.getRoles()));
+        Set<String> requestedRoles = request.getRoles();
+        if (allowRoleUpdate && requestedRoles != null && !requestedRoles.isEmpty()) {
+            user.setRoles(resolveRoles(requestedRoles));
         }
     }
 
