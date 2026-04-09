@@ -1,111 +1,18 @@
-import { useEffect, useRef, useState } from 'react'
-import type { FormEvent } from 'react'
-import './App.css'
+import { useState } from 'react'
+import GoogleSignInButton from '../../components/GoogleSignInButton'
+import './LoginPage.css'
 
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        id: {
-          initialize: (config: {
-            client_id: string
-            callback: (response: { credential?: string }) => void
-          }) => void
-          renderButton: (
-            parent: HTMLElement,
-            options: {
-              theme?: 'outline' | 'filled_blue' | 'filled_black'
-              size?: 'large' | 'medium' | 'small'
-              text?: 'signin_with' | 'signup_with' | 'continue_with' | 'signin'
-              shape?: 'rectangular' | 'pill' | 'circle' | 'square'
-              width?: number
-            },
-          ) => void
-        }
-      }
-    }
-  }
-}
-
-type AuthResponse = {
-  token: string
-  username: string
-  email: string
-  roles: string[]
-}
-
-function App() {
+export default function LoginPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('Use this page to test backend auth quickly.')
-  const [result, setResult] = useState<AuthResponse | null>(null)
+  const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
-  const googleButtonRef = useRef<HTMLDivElement | null>(null)
 
   const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? ''
 
-  useEffect(() => {
-    if (!googleClientId || !googleButtonRef.current) {
-      return
-    }
-
-    let cancelled = false
-    const existingScript = document.getElementById('google-identity-script') as
-      | HTMLScriptElement
-      | null
-
-    const initializeGoogleButton = () => {
-      if (cancelled || !window.google || !googleButtonRef.current) {
-        return
-      }
-
-      googleButtonRef.current.innerHTML = ''
-      window.google.accounts.id.initialize({
-        client_id: googleClientId,
-        callback: async (response) => {
-          if (!response.credential) {
-            setMessage('Google login failed: no credential returned.')
-            return
-          }
-          await loginWithGoogle(response.credential)
-        },
-      })
-
-      window.google.accounts.id.renderButton(googleButtonRef.current, {
-        theme: 'outline',
-        size: 'large',
-        text: 'continue_with',
-        shape: 'pill',
-        width: 320,
-      })
-    }
-
-    if (existingScript) {
-      if (window.google) {
-        initializeGoogleButton()
-      } else {
-        existingScript.addEventListener('load', initializeGoogleButton, { once: true })
-      }
-      return () => {
-        cancelled = true
-      }
-    }
-
-    const script = document.createElement('script')
-    script.id = 'google-identity-script'
-    script.src = 'https://accounts.google.com/gsi/client'
-    script.async = true
-    script.defer = true
-    script.onload = initializeGoogleButton
-    document.head.appendChild(script)
-
-    return () => {
-      cancelled = true
-    }
-  }, [googleClientId])
-
-  async function loginWithGoogle(idToken: string) {
+  async function loginWithGoogle(idToken) {
     setLoading(true)
     setMessage('Checking Google login with backend...')
     try {
@@ -131,7 +38,7 @@ function App() {
     }
   }
 
-  async function handlePasswordLogin(event: FormEvent<HTMLFormElement>) {
+  async function handlePasswordLogin(event) {
     event.preventDefault()
     setLoading(true)
     setMessage('Checking username/password login...')
@@ -194,18 +101,18 @@ function App() {
         <div className="divider">or</div>
 
         {googleClientId ? (
-          <div ref={googleButtonRef} className="google-button" aria-label="Sign in with Google" />
+          <GoogleSignInButton
+            clientId={googleClientId}
+            onCredential={loginWithGoogle}
+            onError={setMessage}
+          />
         ) : (
-          <p className="warning">
-            Add VITE_GOOGLE_CLIENT_ID to frontend/.env so Google button can render.
-          </p>
+          <p className="warning">Add VITE_GOOGLE_CLIENT_ID to .env so Google button can render.</p>
         )}
 
         <p className="status">{message}</p>
 
-        {result && (
-          <pre className="response-panel">{JSON.stringify(result, null, 2)}</pre>
-        )}
+        {result && <pre className="response-panel">{JSON.stringify(result, null, 2)}</pre>}
 
         <p className="hint">
           Backend URL: <strong>{backendBaseUrl}</strong>
@@ -214,5 +121,3 @@ function App() {
     </main>
   )
 }
-
-export default App
