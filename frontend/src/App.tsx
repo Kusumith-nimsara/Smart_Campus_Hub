@@ -82,7 +82,11 @@ function App() {
     }
 
     if (existingScript) {
-      initializeGoogleButton()
+      if (window.google) {
+        initializeGoogleButton()
+      } else {
+        existingScript.addEventListener('load', initializeGoogleButton, { once: true })
+      }
       return () => {
         cancelled = true
       }
