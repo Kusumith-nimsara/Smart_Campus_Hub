@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import GoogleSignInButton from '../../components/GoogleSignInButton'
+import GoogleLoginButton from '../GoogleLoginButton'
 import './LoginPage.css'
 
 export default function LoginPage() {
@@ -101,7 +101,7 @@ export default function LoginPage() {
         <div className="divider">or</div>
 
         {googleClientId ? (
-          <GoogleSignInButton
+          <GoogleLoginButton
             clientId={googleClientId}
             onCredential={loginWithGoogle}
             onError={setMessage}

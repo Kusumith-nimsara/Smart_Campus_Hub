@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-export default function GoogleSignInButton({ clientId, onCredential, onError }) {
+export default function GoogleLoginButton({ clientId, onCredential, onError }) {
   const googleButtonRef = useRef(null)
 
   useEffect(() => {
