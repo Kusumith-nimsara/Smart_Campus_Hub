@@ -9,7 +9,6 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [role, setRole] = useState('USER')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('Fill details and create a new account.')
   const [result, setResult] = useState(null)
@@ -35,7 +34,6 @@ export default function RegisterPage() {
           username,
           email,
           password,
-          roles: [role],
         }),
       })
 
@@ -63,7 +61,7 @@ export default function RegisterPage() {
         </button>
 
         <h1>Create Account</h1>
-        <p className="register-subtitle">Register a USER or ADMIN account in Smart Campus Hub.</p>
+  <p className="register-subtitle">Create a standard user account in Smart Campus Hub.</p>
 
         <form className="register-form" onSubmit={handleRegister}>
           <label>
@@ -110,14 +108,6 @@ export default function RegisterPage() {
               minLength={6}
               required
             />
-          </label>
-
-          <label>
-            Role
-            <select value={role} onChange={(event) => setRole(event.target.value)}>
-              <option value="USER">USER</option>
-              <option value="ADMIN">ADMIN</option>
-            </select>
           </label>
 
           <button type="submit" disabled={loading}>
