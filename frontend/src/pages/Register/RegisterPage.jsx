@@ -7,6 +7,10 @@ export default function RegisterPage() {
 
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [registrationNumber, setRegistrationNumber] = useState('')
+  const [mobileNumber, setMobileNumber] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -33,6 +37,10 @@ export default function RegisterPage() {
         body: JSON.stringify({
           username,
           email,
+          firstName,
+          lastName,
+          registrationNumber,
+          mobileNumber,
           password,
         }),
       })
@@ -82,6 +90,50 @@ export default function RegisterPage() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="Enter email"
+              required
+            />
+          </label>
+
+          <label>
+            First Name
+            <input
+              type="text"
+              value={firstName}
+              onChange={(event) => setFirstName(event.target.value)}
+              placeholder="Enter first name"
+              required
+            />
+          </label>
+
+          <label>
+            Last Name
+            <input
+              type="text"
+              value={lastName}
+              onChange={(event) => setLastName(event.target.value)}
+              placeholder="Enter last name"
+              required
+            />
+          </label>
+
+          <label>
+            Registration Number
+            <input
+              type="text"
+              value={registrationNumber}
+              onChange={(event) => setRegistrationNumber(event.target.value)}
+              placeholder="Enter registration number"
+              required
+            />
+          </label>
+
+          <label>
+            Mobile Number
+            <input
+              type="tel"
+              value={mobileNumber}
+              onChange={(event) => setMobileNumber(event.target.value)}
+              placeholder="Enter mobile number"
               required
             />
           </label>

@@ -19,6 +19,14 @@ public class User {
     @Indexed(unique = true)
     private String email;
 
+    private String firstName;
+
+    private String lastName;
+
+    private String registrationNumber;
+
+    private String mobileNumber;
+
     private String password;
 
     private Set<Role> roles = new HashSet<>();
@@ -27,10 +35,31 @@ public class User {
     }
 
     public User(String username, String email, String password, Set<Role> roles) {
+        this(username, email, password, roles, null, null, null, null);
+    }
+
+    public User(String username, String email, String password, Set<Role> roles, String registrationNumber, String mobileNumber) {
+        this(username, email, password, roles, registrationNumber, mobileNumber, null, null);
+    }
+
+    public User(
+            String username,
+            String email,
+            String password,
+            Set<Role> roles,
+            String registrationNumber,
+            String mobileNumber,
+            String firstName,
+            String lastName
+    ) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.roles = roles;
+        this.registrationNumber = registrationNumber;
+        this.mobileNumber = mobileNumber;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public String getId() {
@@ -71,5 +100,37 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getRegistrationNumber() {
+        return registrationNumber;
+    }
+
+    public void setRegistrationNumber(String registrationNumber) {
+        this.registrationNumber = registrationNumber;
+    }
+
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }

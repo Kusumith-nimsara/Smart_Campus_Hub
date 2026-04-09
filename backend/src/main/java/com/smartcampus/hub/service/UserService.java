@@ -37,7 +37,7 @@ public class UserService {
         User user = Objects.requireNonNull(userRepository.findByUsername(safeUsername)
             .orElseThrow(() -> new IllegalArgumentException("User not found")));
 
-        applyUpdate(user, safeRequest, false, false);
+        applyUpdate(user, safeRequest, false, true);
         userRepository.save(user);
         return toUserResponse(user);
     }
@@ -102,9 +102,37 @@ public class UserService {
             user.setEmail(requestedEmail);
         }
 
+        String requestedFirstName = request.getFirstName();
+        if (requestedFirstName != null && !requestedFirstName.isBlank()) {
+            user.setFirstName(requestedFirstName);
+        }
+
+        String requestedLastName = request.getLastName();
+        if (requestedLastName != null && !requestedLastName.isBlank()) {
+            user.setLastName(requestedLastName);
+        }
+
         String requestedPassword = request.getPassword();
         if (requestedPassword != null && !requestedPassword.isBlank()) {
             user.setPassword(passwordEncoder.encode(requestedPassword));
+        }
+
+        String requestedRegistrationNumber = request.getRegistrationNumber();
+        if (requestedRegistrationNumber != null && !requestedRegistrationNumber.isBlank()) {
+            if (!requestedRegistrationNumber.equals(user.getRegistrationNumber())
+                    && userRepository.existsByRegistrationNumber(requestedRegistrationNumber)) {
+                throw new IllegalArgumentException("Registration number is already in use");
+            }
+            user.setRegistrationNumber(requestedRegistrationNumber);
+        }
+
+        String requestedMobileNumber = request.getMobileNumber();
+        if (requestedMobileNumber != null && !requestedMobileNumber.isBlank()) {
+            if (!requestedMobileNumber.equals(user.getMobileNumber())
+                    && userRepository.existsByMobileNumber(requestedMobileNumber)) {
+                throw new IllegalArgumentException("Mobile number is already in use");
+            }
+            user.setMobileNumber(requestedMobileNumber);
         }
 
         Set<String> requestedRoles = request.getRoles();
@@ -130,6 +158,10 @@ public class UserService {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getRegistrationNumber(),
+                user.getMobileNumber(),
                 user.getRoles().stream().map(Role::name).collect(Collectors.toSet())
         );
     }

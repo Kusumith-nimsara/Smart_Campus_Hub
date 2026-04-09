@@ -62,13 +62,25 @@ public class AuthService {
             throw new IllegalArgumentException("Email is already in use");
         }
 
+        if (userRepository.existsByRegistrationNumber(request.getRegistrationNumber())) {
+            throw new IllegalArgumentException("Registration number is already in use");
+        }
+
+        if (userRepository.existsByMobileNumber(request.getMobileNumber())) {
+            throw new IllegalArgumentException("Mobile number is already in use");
+        }
+
         Set<Role> roles = resolveRoles(request.getRoles());
 
         User user = new User(
                 request.getUsername(),
                 request.getEmail(),
                 passwordEncoder.encode(request.getPassword()),
-                roles
+                roles,
+                request.getRegistrationNumber(),
+                request.getMobileNumber(),
+                request.getFirstName(),
+                request.getLastName()
         );
 
         userRepository.save(user);
