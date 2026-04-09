@@ -23,6 +23,9 @@ export default function LandingPage() {
           <button type="button" className="ghost" onClick={() => navigate('/register')}>
             Register
           </button>
+          <button type="button" className="ghost" onClick={() => navigate('/profile')}>
+            Edit Profile
+          </button>
         </div>
       </section>
     </main>

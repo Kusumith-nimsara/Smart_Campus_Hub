@@ -1,0 +1,90 @@
+.profile-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.profile-card {
+  width: min(600px, 95vw);
+  border-radius: 20px;
+  border: 1px solid #d5def2;
+  background: #ffffff;
+  box-shadow: 0 24px 58px rgba(15, 43, 109, 0.18);
+  padding: 26px;
+}
+
+.profile-back-link {
+  border: 0;
+  background: transparent;
+  color: #1f539f;
+  font-weight: 700;
+  padding: 0;
+  cursor: pointer;
+}
+
+.profile-card h1 {
+  margin: 14px 0 6px;
+  color: #102758;
+}
+
+.profile-subtitle {
+  margin: 0 0 18px;
+  color: #4f6390;
+}
+
+.profile-form {
+  display: grid;
+  gap: 12px;
+}
+
+.profile-form label {
+  display: grid;
+  gap: 6px;
+  color: #1f3261;
+  font-weight: 600;
+}
+
+.profile-form input {
+  border: 1px solid #b9cbf4;
+  border-radius: 10px;
+  padding: 11px;
+  background: #f6f9ff;
+  font-size: 15px;
+}
+
+.profile-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.profile-actions button {
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(120deg, #1460ca, #1f88db);
+  cursor: pointer;
+}
+
+.profile-actions button.secondary {
+  background: #4b6298;
+}
+
+.profile-actions button.danger {
+  background: #cf3b3b;
+}
+
+.profile-actions button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.profile-status {
+  margin: 14px 0 0;
+  color: #273f70;
+  font-weight: 600;
+}

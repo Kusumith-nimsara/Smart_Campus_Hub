@@ -8,7 +8,7 @@ export default function LoginPage() {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [message, setMessage] = useState('Use this page to test backend auth quickly.')
+  const [message, setMessage] = useState('Sign in with your user account.')
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
 
@@ -30,8 +30,13 @@ export default function LoginPage() {
         throw new Error(data?.message ?? 'Google auth failed.')
       }
 
+      if (data?.token) {
+        localStorage.setItem('authToken', data.token)
+      }
+
       setResult(data)
       setMessage('Google auth succeeded. Backend token received.')
+      navigate('/profile')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Google auth failed.'
       setResult(null)
@@ -57,8 +62,13 @@ export default function LoginPage() {
         throw new Error(data?.message ?? 'Login failed.')
       }
 
+      if (data?.token) {
+        localStorage.setItem('authToken', data.token)
+      }
+
       setResult(data)
       setMessage('Username/password login succeeded.')
+      navigate('/profile')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed.'
       setResult(null)
@@ -76,8 +86,12 @@ export default function LoginPage() {
         </button>
 
         <p className="chip">Smart Campus Hub</p>
-        <h1>Auth Verification</h1>
-        <p className="subtitle">Use this form to verify backend login and Google auth.</p>
+        <h1>User Login</h1>
+        <p className="subtitle">This page is for student/user login. Admins should use Admin Login.</p>
+
+        <button type="button" className="auth-admin-link" onClick={() => navigate('/admin-login')}>
+          Go to Admin Login
+        </button>
 
         <form onSubmit={handlePasswordLogin} className="form-grid">
           <label>
@@ -101,7 +115,7 @@ export default function LoginPage() {
             />
           </label>
           <button type="submit" disabled={loading}>
-            {loading ? 'Please wait...' : 'Test Password Login'}
+            {loading ? 'Please wait...' : 'Login'}
           </button>
         </form>
 

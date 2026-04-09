@@ -46,6 +46,17 @@
   color: #4b5f91;
 }
 
+.auth-admin-link {
+  border: 1px solid #bfd2fb;
+  background: #eef4ff;
+  color: #194891;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  margin: 0 0 14px;
+}
+
 .form-grid {
   display: grid;
   gap: 14px;

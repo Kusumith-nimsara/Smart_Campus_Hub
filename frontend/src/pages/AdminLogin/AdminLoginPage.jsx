@@ -39,8 +39,13 @@ export default function AdminLoginPage() {
         return
       }
 
+      if (data?.token) {
+        localStorage.setItem('authToken', data.token)
+      }
+
       setResult(data)
       setMessage('Admin login successful.')
+      navigate('/profile')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Admin login failed.'
       setResult(null)

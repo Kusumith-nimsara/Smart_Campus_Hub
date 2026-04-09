@@ -50,8 +50,13 @@ export default function RegisterPage() {
         throw new Error(data?.message ?? 'Registration failed.')
       }
 
+      if (data?.token) {
+        localStorage.setItem('authToken', data.token)
+      }
+
       setResult(data)
       setMessage('Registration successful.')
+      navigate('/profile')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Registration failed.'
       setResult(null)
