@@ -1,7 +1,10 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './RegisterPage.css'
 
-export default function RegisterPage({ onNavigate }) {
+export default function RegisterPage() {
+  const navigate = useNavigate()
+
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -55,7 +58,7 @@ export default function RegisterPage({ onNavigate }) {
   return (
     <main className="register-page">
       <section className="register-card">
-        <button type="button" className="back-link" onClick={() => onNavigate('landing')}>
+        <button type="button" className="back-link" onClick={() => navigate('/')}>
           Back to Landing
         </button>
 

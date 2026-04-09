@@ -1,8 +1,11 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import GoogleLoginButton from '../GoogleLoginButton'
 import './LoginPage.css'
 
-export default function LoginPage({ onNavigate }) {
+export default function LoginPage() {
+  const navigate = useNavigate()
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('Use this page to test backend auth quickly.')
@@ -68,11 +71,9 @@ export default function LoginPage({ onNavigate }) {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        {typeof onNavigate === 'function' && (
-          <button type="button" className="auth-back-link" onClick={() => onNavigate('landing')}>
-            Back to Landing
-          </button>
-        )}
+        <button type="button" className="auth-back-link" onClick={() => navigate('/')}>
+          Back to Landing
+        </button>
 
         <p className="chip">Smart Campus Hub</p>
         <h1>Auth Verification</h1>

@@ -1,6 +1,9 @@
+import { useNavigate } from 'react-router-dom'
 import './LandingPage.css'
 
-export default function LandingPage({ onNavigate }) {
+export default function LandingPage() {
+  const navigate = useNavigate()
+
   return (
     <main className="landing-page">
       <section className="landing-hero">
@@ -11,13 +14,13 @@ export default function LandingPage({ onNavigate }) {
         </p>
 
         <div className="landing-actions">
-          <button type="button" onClick={() => onNavigate('login')}>
+          <button type="button" onClick={() => navigate('/login')}>
             User Login
           </button>
-          <button type="button" className="secondary" onClick={() => onNavigate('admin')}>
+          <button type="button" className="secondary" onClick={() => navigate('/admin-login')}>
             Admin Login
           </button>
-          <button type="button" className="ghost" onClick={() => onNavigate('register')}>
+          <button type="button" className="ghost" onClick={() => navigate('/register')}>
             Register
           </button>
         </div>

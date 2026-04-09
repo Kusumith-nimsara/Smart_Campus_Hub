@@ -1,7 +1,10 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './AdminLoginPage.css'
 
-export default function AdminLoginPage({ onNavigate }) {
+export default function AdminLoginPage() {
+  const navigate = useNavigate()
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -50,7 +53,7 @@ export default function AdminLoginPage({ onNavigate }) {
   return (
     <main className="admin-page">
       <section className="admin-card">
-        <button type="button" className="back-link" onClick={() => onNavigate('landing')}>
+        <button type="button" className="back-link" onClick={() => navigate('/')}>
           Back to Landing
         </button>
 

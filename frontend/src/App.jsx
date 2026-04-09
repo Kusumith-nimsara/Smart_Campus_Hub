@@ -1,25 +1,19 @@
-import { useState } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import LoginPage from './components/auth/Login/LoginPage'
 import LandingPage from './pages/Landing/LandingPage'
 import RegisterPage from './pages/Register/RegisterPage'
 import AdminLoginPage from './pages/AdminLogin/AdminLoginPage'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('landing')
-
-  if (currentPage === 'login') {
-    return <LoginPage onNavigate={setCurrentPage} />
-  }
-
-  if (currentPage === 'register') {
-    return <RegisterPage onNavigate={setCurrentPage} />
-  }
-
-  if (currentPage === 'admin') {
-    return <AdminLoginPage onNavigate={setCurrentPage} />
-  }
-
-  return <LandingPage onNavigate={setCurrentPage} />
+  return (
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/admin-login" element={<AdminLoginPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  )
 }
 
 export default App
