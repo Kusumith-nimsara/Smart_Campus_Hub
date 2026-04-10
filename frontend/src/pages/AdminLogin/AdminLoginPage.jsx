@@ -2,6 +2,23 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './AdminLoginPage.css'
 
+function normalizeRoles(input) {
+  if (Array.isArray(input)) {
+    return input
+      .map((role) => String(role).trim().toUpperCase())
+      .filter(Boolean)
+  }
+
+  if (typeof input === 'string') {
+    return input
+      .split(',')
+      .map((role) => role.trim().toUpperCase())
+      .filter(Boolean)
+  }
+
+  return []
+}
+
 export default function AdminLoginPage() {
   const navigate = useNavigate()
 
@@ -30,7 +47,7 @@ export default function AdminLoginPage() {
         throw new Error(data?.message ?? 'Admin login failed.')
       }
 
-      const roles = Array.isArray(data?.roles) ? data.roles : []
+      const roles = normalizeRoles(data?.roles)
       const isAdmin = roles.includes('ADMIN') || roles.includes('ROLE_ADMIN')
 
       if (!isAdmin) {
@@ -48,7 +65,7 @@ export default function AdminLoginPage() {
       setResult(data)
       setMessage('Admin login successful.')
       window.alert('Admin login successful')
-      navigate('/profile')
+      navigate('/admin-dashboard', { replace: true })
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Admin login failed.'
       setResult(null)

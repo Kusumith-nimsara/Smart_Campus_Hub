@@ -1,0 +1,135 @@
+.admin-dashboard-page {
+  min-height: 100vh;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(26, 146, 151, 0.2), transparent 42%),
+    radial-gradient(circle at bottom left, rgba(13, 64, 72, 0.2), transparent 38%),
+    linear-gradient(150deg, #eef8fa, #f8fdfd);
+}
+
+.admin-dashboard-card {
+  width: min(1000px, 100%);
+  margin: 0 auto;
+  border: 1px solid #bed8de;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 24px 56px rgba(8, 62, 74, 0.14);
+  backdrop-filter: blur(4px);
+  padding: 24px;
+}
+
+.admin-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.admin-dashboard-kicker {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #2b7b89;
+  font-weight: 700;
+}
+
+.admin-dashboard-header h1 {
+  margin: 8px 0 6px;
+  color: #093741;
+}
+
+.admin-dashboard-subtitle {
+  margin: 0;
+  color: #38636b;
+}
+
+.admin-dashboard-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-dashboard-actions button,
+.admin-widget-actions button {
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #ffffff;
+  background: linear-gradient(125deg, #0f6070, #159ca0);
+}
+
+.admin-dashboard-actions .secondary {
+  background: linear-gradient(130deg, #3d5960, #67848d);
+}
+
+.admin-widget-actions .ghost {
+  background: #edf7f9;
+  color: #0e5664;
+  border: 1px solid #b9dce1;
+}
+
+.admin-dashboard-grid {
+  margin-top: 20px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.admin-widget {
+  border-radius: 16px;
+  border: 1px solid #c4dee3;
+  background: linear-gradient(145deg, #ffffff, #f2fafb);
+  padding: 16px;
+}
+
+.admin-widget h2 {
+  margin: 0 0 8px;
+  color: #0e414b;
+  font-size: 18px;
+}
+
+.admin-widget p {
+  margin: 0 0 10px;
+  color: #386069;
+}
+
+.admin-widget pre {
+  margin: 0;
+  background: #eaf7f8;
+  border-radius: 10px;
+  border: 1px solid #c7e1e4;
+  padding: 12px;
+  color: #0d3036;
+  font-size: 12px;
+  overflow: auto;
+}
+
+.admin-widget-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 700px) {
+  .admin-dashboard-page {
+    padding: 14px;
+  }
+
+  .admin-dashboard-card {
+    padding: 16px;
+  }
+
+  .admin-dashboard-header {
+    flex-direction: column;
+  }
+
+  .admin-dashboard-actions {
+    width: 100%;
+  }
+
+  .admin-dashboard-actions button {
+    flex: 1;
+  }
+}

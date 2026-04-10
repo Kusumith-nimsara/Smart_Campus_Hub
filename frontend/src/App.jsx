@@ -5,6 +5,42 @@ import LandingPage from './pages/Landing/LandingPage'
 import RegisterPage from './pages/Register/RegisterPage'
 import AdminLoginPage from './pages/AdminLogin/AdminLoginPage'
 import ProfilePage from './pages/Profile/ProfilePage'
+import AdminDashboardPage from './pages/AdminDashboard/AdminDashboardPage'
+
+function normalizeRoles(input) {
+  if (Array.isArray(input)) {
+    return input
+      .map((role) => String(role).trim().toUpperCase())
+      .filter(Boolean)
+  }
+
+  if (typeof input === 'string') {
+    return input
+      .split(',')
+      .map((role) => role.trim().toUpperCase())
+      .filter(Boolean)
+  }
+
+  return []
+}
+
+function isAdminAuthenticated() {
+  const token = localStorage.getItem('authToken')
+  const rawRoles = localStorage.getItem('authRoles')
+
+  if (!token || !rawRoles) {
+    return false
+  }
+
+  try {
+    const parsedRoles = JSON.parse(rawRoles)
+    const roles = normalizeRoles(parsedRoles)
+    return roles.includes('ADMIN') || roles.includes('ROLE_ADMIN')
+  } catch {
+    const roles = normalizeRoles(rawRoles)
+    return roles.includes('ADMIN') || roles.includes('ROLE_ADMIN')
+  }
+}
 
 function App() {
   return (
@@ -23,6 +59,21 @@ function App() {
             <ProfilePage />
           </PrivateRoute>
         }
+      />
+      <Route
+        path="/admin-dashboard"
+        element={
+          <PrivateRoute
+            isAuthenticated={isAdminAuthenticated()}
+            fallback={<Navigate to="/admin-login" replace />}
+          >
+            <AdminDashboardPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admindashboard"
+        element={<Navigate to="/admin-dashboard" replace />}
       />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
