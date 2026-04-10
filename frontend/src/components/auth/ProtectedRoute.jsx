@@ -1,16 +1,38 @@
 import { Navigate } from 'react-router-dom'
 
 function readRole() {
-  const rawRole = localStorage.getItem('role')
-  if (!rawRole) {
+  const directRole = localStorage.getItem('role')
+  if (directRole) {
+    return directRole.trim().toUpperCase()
+  }
+
+  const rawRoles = localStorage.getItem('authRoles')
+  if (!rawRoles) {
     return ''
   }
 
-  return rawRole.trim().toUpperCase()
+  try {
+    const parsed = JSON.parse(rawRoles)
+    const normalized = Array.isArray(parsed)
+      ? parsed.map((role) => String(role).trim().toUpperCase())
+      : []
+
+    if (normalized.includes('ADMIN') || normalized.includes('ROLE_ADMIN')) {
+      return 'ADMIN'
+    }
+
+    if (normalized.includes('USER') || normalized.includes('ROLE_USER')) {
+      return 'USER'
+    }
+
+    return ''
+  } catch {
+    return ''
+  }
 }
 
 export default function ProtectedRoute({ children, requiredRole = null }) {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token') || localStorage.getItem('authToken')
 
   if (!token) {
     return <Navigate to="/login" replace />
