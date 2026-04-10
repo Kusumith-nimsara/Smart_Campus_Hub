@@ -1,46 +1,13 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import LoginPage from './components/auth/Login/LoginPage'
 import PrivateRoute from './components/auth/PrivateRoute'
+import ProtectedRoute from './components/auth/ProtectedRoute'
 import LandingPage from './pages/Landing/LandingPage'
 import RegisterPage from './pages/Register/RegisterPage'
 import AdminLoginPage from './pages/AdminLogin/AdminLoginPage'
 import ProfilePage from './pages/Profile/ProfilePage'
 import AdminDashboardPage from './pages/AdminDashboard/AdminDashboardPage'
-
-function normalizeRoles(input) {
-  if (Array.isArray(input)) {
-    return input
-      .map((role) => String(role).trim().toUpperCase())
-      .filter(Boolean)
-  }
-
-  if (typeof input === 'string') {
-    return input
-      .split(',')
-      .map((role) => role.trim().toUpperCase())
-      .filter(Boolean)
-  }
-
-  return []
-}
-
-function isAdminAuthenticated() {
-  const token = localStorage.getItem('authToken')
-  const rawRoles = localStorage.getItem('authRoles')
-
-  if (!token || !rawRoles) {
-    return false
-  }
-
-  try {
-    const parsedRoles = JSON.parse(rawRoles)
-    const roles = normalizeRoles(parsedRoles)
-    return roles.includes('ADMIN') || roles.includes('ROLE_ADMIN')
-  } catch {
-    const roles = normalizeRoles(rawRoles)
-    return roles.includes('ADMIN') || roles.includes('ROLE_ADMIN')
-  }
-}
+import UnauthorizedPage from './pages/Unauthorized/UnauthorizedPage'
 
 function App() {
   return (
@@ -49,11 +16,12 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/admin-login" element={<AdminLoginPage />} />
+      <Route path="/unauthorized" element={<UnauthorizedPage />} />
       <Route
         path="/profile"
         element={
           <PrivateRoute
-            isAuthenticated={Boolean(localStorage.getItem('authToken'))}
+            isAuthenticated={Boolean(localStorage.getItem('token') || localStorage.getItem('authToken'))}
             fallback={<Navigate to="/login" replace />}
           >
             <ProfilePage />
@@ -63,18 +31,12 @@ function App() {
       <Route
         path="/admin-dashboard"
         element={
-          <PrivateRoute
-            isAuthenticated={isAdminAuthenticated()}
-            fallback={<Navigate to="/admin-login" replace />}
-          >
+          <ProtectedRoute requiredRole="ADMIN">
             <AdminDashboardPage />
-          </PrivateRoute>
+          </ProtectedRoute>
         }
       />
-      <Route
-        path="/admindashboard"
-        element={<Navigate to="/admin-dashboard" replace />}
-      />
+      <Route path="/admindashboard" element={<Navigate to="/admin-dashboard" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

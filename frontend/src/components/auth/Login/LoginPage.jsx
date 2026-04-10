@@ -3,6 +3,18 @@ import { useNavigate } from 'react-router-dom'
 import GoogleLoginButton from '../GoogleLoginButton'
 import './LoginPage.css'
 
+function getPrimaryRole(roles) {
+  const normalized = Array.isArray(roles)
+    ? roles.map((role) => String(role).trim().toUpperCase()).filter(Boolean)
+    : []
+
+  if (normalized.includes('ADMIN') || normalized.includes('ROLE_ADMIN')) {
+    return 'ADMIN'
+  }
+
+  return 'USER'
+}
+
 export default function LoginPage() {
   const navigate = useNavigate()
 
@@ -30,9 +42,15 @@ export default function LoginPage() {
         throw new Error(data?.message ?? 'Google auth failed.')
       }
 
+      const role = getPrimaryRole(data?.roles)
+      const savedUsername = data?.username ?? ''
+
       if (data?.token) {
+        localStorage.setItem('token', data.token)
         localStorage.setItem('authToken', data.token)
       }
+      localStorage.setItem('role', role)
+      localStorage.setItem('username', savedUsername)
       localStorage.setItem('authRoles', JSON.stringify(Array.isArray(data?.roles) ? data.roles : ['USER']))
       localStorage.setItem('authLoginType', 'user')
 
@@ -65,9 +83,15 @@ export default function LoginPage() {
         throw new Error(data?.message ?? 'Login failed.')
       }
 
+      const role = getPrimaryRole(data?.roles)
+      const savedUsername = data?.username ?? username
+
       if (data?.token) {
+        localStorage.setItem('token', data.token)
         localStorage.setItem('authToken', data.token)
       }
+      localStorage.setItem('role', role)
+      localStorage.setItem('username', savedUsername)
       localStorage.setItem('authRoles', JSON.stringify(Array.isArray(data?.roles) ? data.roles : ['USER']))
       localStorage.setItem('authLoginType', 'user')
 

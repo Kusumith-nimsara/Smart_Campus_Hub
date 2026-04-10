@@ -17,6 +17,9 @@ export default function AdminDashboardPage() {
   const roles = useMemo(() => readRoles(), [])
 
   function handleLogout() {
+    localStorage.removeItem('token')
+    localStorage.removeItem('role')
+    localStorage.removeItem('username')
     localStorage.removeItem('authToken')
     localStorage.removeItem('authRoles')
     localStorage.removeItem('authLoginType')

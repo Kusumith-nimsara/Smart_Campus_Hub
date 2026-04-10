@@ -56,9 +56,14 @@ export default function AdminLoginPage() {
         return
       }
 
+      const savedUsername = data?.username ?? username
+
       if (data?.token) {
+        localStorage.setItem('token', data.token)
         localStorage.setItem('authToken', data.token)
       }
+      localStorage.setItem('role', 'ADMIN')
+      localStorage.setItem('username', savedUsername)
       localStorage.setItem('authRoles', JSON.stringify(roles))
       localStorage.setItem('authLoginType', 'admin')
 

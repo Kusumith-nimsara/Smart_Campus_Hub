@@ -144,6 +144,9 @@ export default function ProfilePage() {
         throw new Error(data?.message ?? 'Failed to delete account.')
       }
 
+      localStorage.removeItem('token')
+      localStorage.removeItem('role')
+      localStorage.removeItem('username')
       localStorage.removeItem('authToken')
       localStorage.removeItem('authRoles')
       localStorage.removeItem('authLoginType')
@@ -158,6 +161,9 @@ export default function ProfilePage() {
   }
 
   function handleLogout() {
+    localStorage.removeItem('token')
+    localStorage.removeItem('role')
+    localStorage.removeItem('username')
     localStorage.removeItem('authToken')
     localStorage.removeItem('authRoles')
     localStorage.removeItem('authLoginType')

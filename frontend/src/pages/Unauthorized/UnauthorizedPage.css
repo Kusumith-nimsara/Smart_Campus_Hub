@@ -1,0 +1,56 @@
+.unauthorized-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: radial-gradient(circle at top right, rgba(14, 91, 103, 0.14), transparent 46%),
+    linear-gradient(155deg, #eef6f7, #f9fdfd);
+}
+
+.unauthorized-card {
+  width: min(460px, 100%);
+  border: 1px solid #c8dde0;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 20px 46px rgba(11, 57, 66, 0.12);
+}
+
+.unauthorized-code {
+  margin: 0;
+  font-size: 42px;
+  font-weight: 800;
+  color: #0f5f6e;
+}
+
+.unauthorized-card h1 {
+  margin: 8px 0;
+  color: #113940;
+}
+
+.unauthorized-card p {
+  margin: 0;
+  color: #44646c;
+}
+
+.unauthorized-actions {
+  margin-top: 18px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.unauthorized-actions button {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(120deg, #0e5e6d, #199ca3);
+  cursor: pointer;
+}
+
+.unauthorized-actions .secondary {
+  background: linear-gradient(120deg, #506972, #768f96);
+}
