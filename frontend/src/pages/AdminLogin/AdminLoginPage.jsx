@@ -61,6 +61,7 @@ export default function AdminLoginPage() {
         setResult(null)
         setMessage('Access denied: only ADMIN users can log in here. Please use User Login.')
         window.alert('Access denied: only ADMIN users can log in on Admin Login.')
+        navigate('/unauthorized', { replace: true })
         return
       }
 
