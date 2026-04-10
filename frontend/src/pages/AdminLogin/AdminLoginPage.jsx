@@ -51,8 +51,16 @@ export default function AdminLoginPage() {
       const isAdmin = roles.includes('ADMIN') || roles.includes('ROLE_ADMIN')
 
       if (!isAdmin) {
-        setResult(data)
-        setMessage('Login worked, but this account is not ADMIN.')
+        localStorage.removeItem('token')
+        localStorage.removeItem('role')
+        localStorage.removeItem('username')
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('authRoles')
+        localStorage.removeItem('authLoginType')
+
+        setResult(null)
+        setMessage('Access denied: only ADMIN users can log in here. Please use User Login.')
+        window.alert('Access denied: only ADMIN users can log in on Admin Login.')
         return
       }
 
