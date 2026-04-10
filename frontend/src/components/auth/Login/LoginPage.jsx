@@ -52,7 +52,15 @@ export default function LoginPage() {
       localStorage.setItem('role', role)
       localStorage.setItem('username', savedUsername)
       localStorage.setItem('authRoles', JSON.stringify(Array.isArray(data?.roles) ? data.roles : ['USER']))
-      localStorage.setItem('authLoginType', 'user')
+      localStorage.setItem('authLoginType', role === 'ADMIN' ? 'admin' : 'user')
+
+      if (role === 'ADMIN') {
+        setResult(data)
+        setMessage('Admin account detected on User Login. Please use Admin Login next time. Redirecting...')
+        window.alert('Admin account detected. Redirecting to Admin Dashboard.')
+        navigate('/admin-dashboard', { replace: true })
+        return
+      }
 
       setResult(data)
       setMessage('Google auth succeeded. Backend token received.')
@@ -93,7 +101,15 @@ export default function LoginPage() {
       localStorage.setItem('role', role)
       localStorage.setItem('username', savedUsername)
       localStorage.setItem('authRoles', JSON.stringify(Array.isArray(data?.roles) ? data.roles : ['USER']))
-      localStorage.setItem('authLoginType', 'user')
+      localStorage.setItem('authLoginType', role === 'ADMIN' ? 'admin' : 'user')
+
+      if (role === 'ADMIN') {
+        setResult(data)
+        setMessage('Admin account detected on User Login. Please use Admin Login next time. Redirecting...')
+        window.alert('Admin account detected. Redirecting to Admin Dashboard.')
+        navigate('/admin-dashboard', { replace: true })
+        return
+      }
 
       setResult(data)
       setMessage('Username/password login succeeded.')
