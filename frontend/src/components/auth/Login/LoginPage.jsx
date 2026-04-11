@@ -68,7 +68,26 @@ export default function LoginPage() {
       localStorage.setItem('username', savedUsername)
       localStorage.setItem('authLoginType', role === 'ADMIN' ? 'admin' : 'user')
 
-      if (!approved) {
+      let effectiveApproved = approved
+      if (role !== 'ADMIN' && !effectiveApproved && data?.token) {
+        try {
+          const verifyResponse = await fetch(`${backendBaseUrl}/user/me`, {
+            headers: {
+              Authorization: `Bearer ${data.token}`,
+            },
+          })
+
+          const verifyData = await verifyResponse.json()
+          if (verifyResponse.ok && typeof verifyData?.approved === 'boolean') {
+            effectiveApproved = verifyData.approved
+            localStorage.setItem('authApproved', String(effectiveApproved))
+          }
+        } catch {
+          // Keep original approval state if refresh check fails.
+        }
+      }
+
+      if (!effectiveApproved) {
         setResult(data)
         setMessage('Your account is pending admin approval. Redirecting...')
         navigate('/unauthorized', { replace: true })

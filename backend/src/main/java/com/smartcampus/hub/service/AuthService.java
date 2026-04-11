@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -59,7 +60,7 @@ public class AuthService {
             throw new IllegalArgumentException("Username is already taken");
         }
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmailIgnoreCase(request.getEmail())) {
             throw new IllegalArgumentException("Email is already in use");
         }
 
@@ -118,11 +119,15 @@ public class AuthService {
 
         String normalizedEmail = email.trim().toLowerCase();
 
-        User user = userRepository.findByEmail(normalizedEmail)
-                .orElseGet(() -> createGoogleUser(email));
+        List<User> matchedUsers = userRepository.findAllByEmailIgnoreCase(normalizedEmail);
+        User user = matchedUsers.stream()
+            .filter(User::isApproved)
+            .findFirst()
+            .orElseGet(() -> matchedUsers.stream().findFirst().orElseGet(() -> createGoogleUser(email)));
 
         Role expectedRole = normalizedEmail.equals(ADMIN_GOOGLE_EMAIL) ? Role.ADMIN : Role.USER;
-        boolean expectedApproval = expectedRole == Role.ADMIN || user.isApproved();
+        boolean anyApproved = matchedUsers.stream().anyMatch(User::isApproved);
+        boolean expectedApproval = expectedRole == Role.ADMIN || user.isApproved() || anyApproved;
         if (user.getRole() != expectedRole || user.isApproved() != expectedApproval) {
             user.setRole(expectedRole);
             user.setApproved(expectedApproval);

@@ -103,8 +103,10 @@ public class UserService {
 
         String requestedEmail = request.getEmail();
         if (requestedEmail != null && !requestedEmail.isBlank()) {
-            if (!requestedEmail.equals(user.getEmail())
-                    && userRepository.existsByEmail(requestedEmail)) {
+            boolean sameEmailIgnoringCase = user.getEmail() != null
+                    && user.getEmail().equalsIgnoreCase(requestedEmail);
+            if (!sameEmailIgnoringCase
+                    && userRepository.existsByEmailIgnoreCase(requestedEmail)) {
                 throw new IllegalArgumentException("Email is already in use");
             }
             user.setEmail(requestedEmail);
