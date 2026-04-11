@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -135,22 +133,18 @@ public class UserService {
             user.setMobileNumber(requestedMobileNumber);
         }
 
-        Set<String> requestedRoles = request.getRoles();
-        if (allowRoleUpdate && requestedRoles != null && !requestedRoles.isEmpty()) {
-            user.setRoles(resolveRoles(requestedRoles));
+        String requestedRole = request.getRole();
+        if (allowRoleUpdate && requestedRole != null && !requestedRole.isBlank()) {
+            user.setRole(resolveRole(requestedRole));
         }
     }
 
-    private Set<Role> resolveRoles(Set<String> requestRoles) {
-        return requestRoles.stream()
-                .map(role -> {
-                    try {
-                        return Role.valueOf(role.trim().toUpperCase());
-                    } catch (IllegalArgumentException ex) {
-                        throw new IllegalArgumentException("Invalid role: " + role + ". Allowed: USER, ADMIN");
-                    }
-                })
-                .collect(Collectors.toSet());
+    private Role resolveRole(String requestedRole) {
+        try {
+            return Role.valueOf(requestedRole.trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException("Invalid role: " + requestedRole + ". Allowed: USER, ADMIN");
+        }
     }
 
     private UserResponse toUserResponse(User user) {
@@ -162,7 +156,7 @@ public class UserService {
                 user.getLastName(),
                 user.getRegistrationNumber(),
                 user.getMobileNumber(),
-                user.getRoles().stream().map(Role::name).collect(Collectors.toSet())
+                user.getRole().name()
         );
     }
 }

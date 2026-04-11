@@ -23,10 +23,11 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
+
+    private static final String ADMIN_GOOGLE_EMAIL = "vihanga.shehan99@gmail.com";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -70,13 +71,13 @@ public class AuthService {
             throw new IllegalArgumentException("Mobile number is already in use");
         }
 
-        Set<Role> roles = resolveRoles(request.getRoles());
+        Role role = resolveRole(request.getRole());
 
         User user = new User(
                 request.getUsername(),
                 request.getEmail(),
                 passwordEncoder.encode(request.getPassword()),
-                roles,
+                role,
                 request.getRegistrationNumber(),
                 request.getMobileNumber(),
                 request.getFirstName(),
@@ -88,8 +89,7 @@ public class AuthService {
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
         String token = jwtService.generateToken(userDetails);
 
-        return new AuthResponse(token, user.getUsername(), user.getEmail(),
-                user.getRoles().stream().map(Role::name).collect(Collectors.toSet()));
+        return new AuthResponse(token, user.getUsername(), user.getEmail(), user.getRole().name());
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -103,8 +103,7 @@ public class AuthService {
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
         String token = jwtService.generateToken(userDetails);
 
-        return new AuthResponse(token, user.getUsername(), user.getEmail(),
-                user.getRoles().stream().map(Role::name).collect(Collectors.toSet()));
+        return new AuthResponse(token, user.getUsername(), user.getEmail(), user.getRole().name());
     }
 
     public AuthResponse loginWithGoogle(String idToken) {
@@ -115,14 +114,21 @@ public class AuthService {
             throw new IllegalArgumentException("Google account email is missing");
         }
 
-        User user = userRepository.findByEmail(email)
+        String normalizedEmail = email.trim().toLowerCase();
+
+        User user = userRepository.findByEmail(normalizedEmail)
                 .orElseGet(() -> createGoogleUser(email));
+
+        Role expectedRole = normalizedEmail.equals(ADMIN_GOOGLE_EMAIL) ? Role.ADMIN : Role.USER;
+        if (user.getRole() != expectedRole) {
+            user.setRole(expectedRole);
+            user = userRepository.save(user);
+        }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
         String token = jwtService.generateToken(userDetails);
 
-        return new AuthResponse(token, user.getUsername(), user.getEmail(),
-                user.getRoles().stream().map(Role::name).collect(Collectors.toSet()));
+        return new AuthResponse(token, user.getUsername(), user.getEmail(), user.getRole().name());
     }
 
     private GoogleIdToken.Payload verifyGoogleToken(String idToken) {
@@ -138,12 +144,14 @@ public class AuthService {
     }
 
     private User createGoogleUser(String email) {
-        String username = generateUniqueUsername(email);
+        String normalizedEmail = email.trim().toLowerCase();
+        String username = generateUniqueUsername(normalizedEmail);
+        Role role = normalizedEmail.equals(ADMIN_GOOGLE_EMAIL) ? Role.ADMIN : Role.USER;
         User user = new User(
                 username,
-                email,
+                normalizedEmail,
                 passwordEncoder.encode(UUID.randomUUID().toString()),
-                Set.of(Role.USER)
+                role
         );
         return userRepository.save(user);
     }
@@ -163,19 +171,15 @@ public class AuthService {
         return candidate;
     }
 
-    private Set<Role> resolveRoles(Set<String> requestRoles) {
-        if (requestRoles == null || requestRoles.isEmpty()) {
-            return Set.of(Role.USER);
+    private Role resolveRole(String requestRole) {
+        if (requestRole == null || requestRole.isBlank()) {
+            return Role.USER;
         }
 
-        return requestRoles.stream()
-                .map(role -> {
-                    try {
-                        return Role.valueOf(role.trim().toUpperCase());
-                    } catch (IllegalArgumentException ex) {
-                        throw new IllegalArgumentException("Invalid role: " + role + ". Allowed: USER, ADMIN");
-                    }
-                })
-                .collect(Collectors.toSet());
+        try {
+            return Role.valueOf(requestRole.trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException("Invalid role: " + requestRole + ". Allowed: USER, ADMIN");
+        }
     }
 }

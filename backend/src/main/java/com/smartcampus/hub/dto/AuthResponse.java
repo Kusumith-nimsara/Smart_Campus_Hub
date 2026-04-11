@@ -1,18 +1,16 @@
 package com.smartcampus.hub.dto;
 
-import java.util.Set;
-
 public class AuthResponse {
     private String token;
     private String username;
     private String email;
-    private Set<String> roles;
+    private String role;
 
-    public AuthResponse(String token, String username, String email, Set<String> roles) {
+    public AuthResponse(String token, String username, String email, String role) {
         this.token = token;
         this.username = username;
         this.email = email;
-        this.roles = roles;
+        this.role = role;
     }
 
     public String getToken() {
@@ -27,7 +25,7 @@ public class AuthResponse {
         return email;
     }
 
-    public Set<String> getRoles() {
-        return roles;
+    public String getRole() {
+        return role;
     }
 }

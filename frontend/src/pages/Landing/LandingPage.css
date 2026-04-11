@@ -6,72 +6,78 @@
 }
 
 .landing-hero {
-  width: min(760px, 95vw);
-  border: 1px solid #d0ddff;
-  border-radius: 24px;
-  padding: 34px;
-  background: linear-gradient(145deg, #ffffff, #f4f8ff 50%, #edf3ff);
-  box-shadow: 0 24px 56px rgba(18, 45, 115, 0.17);
+  width: min(860px, 96vw);
+  border: 1px solid var(--border-soft);
+  border-radius: 30px;
+  padding: clamp(24px, 5vw, 44px);
+  background:
+    radial-gradient(circle at 78% 18%, rgba(25, 154, 170, 0.2), transparent 34%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(241, 250, 254, 0.88));
+  box-shadow: var(--shadow-lg);
+  animation: rise-in 0.45s ease;
 }
 
 .landing-badge {
   margin: 0;
   display: inline-flex;
-  padding: 6px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  color: #1d458f;
-  background: #dfebff;
-  letter-spacing: 0.06em;
+  color: #0e5d73;
+  background: var(--surface-pill);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .landing-hero h1 {
   margin: 14px 0 8px;
-  font-size: clamp(32px, 5vw, 48px);
-  line-height: 1.05;
-  color: #112654;
+  font-size: clamp(34px, 5vw, 56px);
+  line-height: 1.02;
+  color: #0d2534;
+  max-width: 16ch;
 }
 
 .landing-subtitle {
   margin: 0;
-  color: #49618f;
-  font-size: 16px;
-  line-height: 1.6;
+  color: var(--text-secondary);
+  font-size: clamp(15px, 1.8vw, 18px);
+  line-height: 1.65;
+  max-width: 56ch;
 }
 
 .landing-actions {
-  margin-top: 28px;
+  margin-top: 30px;
   display: flex;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
 .landing-actions button {
   border: 0;
-  border-radius: 12px;
-  padding: 12px 18px;
+  border-radius: 14px;
+  padding: 12px 20px;
   font-weight: 700;
   font-size: 15px;
   cursor: pointer;
   color: #ffffff;
-  background: linear-gradient(115deg, #1451ba, #1a80d8);
+  background: linear-gradient(125deg, var(--brand-start), var(--brand-end));
 }
 
 .landing-actions button.secondary {
-  background: linear-gradient(115deg, #104c57, #168a89);
+  background: linear-gradient(125deg, var(--brand-alt-start), var(--brand-alt-end));
 }
 
 .landing-actions button.ghost {
-  color: #14418f;
-  background: #eaf2ff;
-  border: 1px solid #bfd2fb;
+  color: #18586e;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--border-strong);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
 }
 
 @media (max-width: 600px) {
   .landing-hero {
-    padding: 22px;
+    border-radius: 24px;
   }
 
   .landing-actions {

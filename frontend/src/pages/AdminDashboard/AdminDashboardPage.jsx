@@ -2,28 +2,22 @@ import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './AdminDashboardPage.css'
 
-function readRoles() {
-  try {
-    const raw = localStorage.getItem('authRoles')
-    const parsed = raw ? JSON.parse(raw) : []
-    return Array.isArray(parsed) ? parsed : []
-  } catch {
-    return []
-  }
+function readRole() {
+  return localStorage.getItem('authRole') || localStorage.getItem('role') || 'ADMIN'
 }
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate()
-  const roles = useMemo(() => readRoles(), [])
+  const role = useMemo(() => readRole(), [])
 
   function handleLogout() {
     localStorage.removeItem('token')
     localStorage.removeItem('role')
+    localStorage.removeItem('authRole')
     localStorage.removeItem('username')
     localStorage.removeItem('authToken')
-    localStorage.removeItem('authRoles')
     localStorage.removeItem('authLoginType')
-    navigate('/admin-login')
+    navigate('/login')
   }
 
   return (
@@ -48,8 +42,8 @@ export default function AdminDashboardPage() {
         <div className="admin-dashboard-grid">
           <article className="admin-widget">
             <h2>Role Access</h2>
-            <p>Current roles attached to this session:</p>
-            <pre>{JSON.stringify(roles, null, 2)}</pre>
+            <p>Current role attached to this session:</p>
+            <pre>{JSON.stringify({ role }, null, 2)}</pre>
           </article>
 
           <article className="admin-widget">

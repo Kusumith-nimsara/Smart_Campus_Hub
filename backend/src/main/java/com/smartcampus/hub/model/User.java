@@ -4,9 +4,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Document(collection = "users")
 public class User {
 
@@ -29,24 +26,24 @@ public class User {
 
     private String password;
 
-    private Set<Role> roles = new HashSet<>();
+    private Role role = Role.USER;
 
     public User() {
     }
 
-    public User(String username, String email, String password, Set<Role> roles) {
-        this(username, email, password, roles, null, null, null, null);
+    public User(String username, String email, String password, Role role) {
+        this(username, email, password, role, null, null, null, null);
     }
 
-    public User(String username, String email, String password, Set<Role> roles, String registrationNumber, String mobileNumber) {
-        this(username, email, password, roles, registrationNumber, mobileNumber, null, null);
+    public User(String username, String email, String password, Role role, String registrationNumber, String mobileNumber) {
+        this(username, email, password, role, registrationNumber, mobileNumber, null, null);
     }
 
     public User(
             String username,
             String email,
             String password,
-            Set<Role> roles,
+            Role role,
             String registrationNumber,
             String mobileNumber,
             String firstName,
@@ -55,7 +52,7 @@ public class User {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.roles = roles;
+        this.role = role == null ? Role.USER : role;
         this.registrationNumber = registrationNumber;
         this.mobileNumber = mobileNumber;
         this.firstName = firstName;
@@ -94,12 +91,12 @@ public class User {
         this.password = password;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public Role getRole() {
+        return role == null ? Role.USER : role;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setRole(Role role) {
+        this.role = role == null ? Role.USER : role;
     }
 
     public String getRegistrationNumber() {

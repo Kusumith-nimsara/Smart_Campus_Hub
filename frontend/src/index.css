@@ -1,6 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap');
+
 :root {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #1a2e57;
+  --font-body: 'Outfit', 'Trebuchet MS', sans-serif;
+  --font-display: 'Sora', 'Trebuchet MS', sans-serif;
+
+  --text-primary: #0d2230;
+  --text-secondary: #3f5666;
+  --text-muted: #5f7686;
+
+  --surface-glass: rgba(255, 255, 255, 0.86);
+  --surface-strong: #ffffff;
+  --surface-soft: #f3f9fc;
+  --surface-pill: #e5f3fa;
+
+  --border-soft: #c9dfea;
+  --border-strong: #a8c9da;
+
+  --brand-start: #006a85;
+  --brand-end: #00a6a6;
+  --brand-alt-start: #13587b;
+  --brand-alt-end: #2b7eb8;
+  --danger-start: #bc3a31;
+  --danger-end: #e0674d;
+
+  --shadow-lg: 0 24px 60px rgba(8, 47, 69, 0.16);
+  --shadow-md: 0 14px 32px rgba(9, 45, 66, 0.14);
+
+  font-family: var(--font-body);
+  color: var(--text-primary);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -14,9 +41,68 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: radial-gradient(circle at top right, #d7e6ff, #e8f3ff 35%, #eef7ff 70%);
+  background:
+    radial-gradient(circle at 10% 10%, rgba(36, 176, 191, 0.22), transparent 36%),
+    radial-gradient(circle at 92% 8%, rgba(34, 132, 184, 0.2), transparent 30%),
+    radial-gradient(circle at 80% 86%, rgba(0, 171, 135, 0.14), transparent 28%),
+    linear-gradient(165deg, #ebf8fd, #f5fbff 44%, #f9feff);
 }
 
 #root {
   min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+  filter: saturate(1.08);
+}
+
+input,
+select,
+textarea {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--brand-alt-end);
+  box-shadow: 0 0 0 3px rgba(38, 134, 179, 0.2);
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

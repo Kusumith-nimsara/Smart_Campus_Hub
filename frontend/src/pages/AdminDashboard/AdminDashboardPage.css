@@ -2,20 +2,21 @@
   min-height: 100vh;
   padding: 24px;
   background:
-    radial-gradient(circle at top right, rgba(26, 146, 151, 0.2), transparent 42%),
-    radial-gradient(circle at bottom left, rgba(13, 64, 72, 0.2), transparent 38%),
-    linear-gradient(150deg, #eef8fa, #f8fdfd);
+    radial-gradient(circle at 8% 14%, rgba(22, 145, 170, 0.18), transparent 34%),
+    radial-gradient(circle at 85% 80%, rgba(18, 101, 145, 0.18), transparent 38%),
+    linear-gradient(158deg, #ebf7fc, #f8fdff);
 }
 
 .admin-dashboard-card {
   width: min(1000px, 100%);
   margin: 0 auto;
-  border: 1px solid #bed8de;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 24px 56px rgba(8, 62, 74, 0.14);
-  backdrop-filter: blur(4px);
-  padding: 24px;
+  border: 1px solid var(--border-soft);
+  border-radius: 24px;
+  background: var(--surface-glass);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(6px);
+  padding: clamp(20px, 3.5vw, 30px);
+  animation: rise-in 0.45s ease;
 }
 
 .admin-dashboard-header {
@@ -27,21 +28,21 @@
 
 .admin-dashboard-kicker {
   margin: 0;
-  font-size: 12px;
-  letter-spacing: 1.5px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #2b7b89;
+  color: #1c667d;
   font-weight: 700;
 }
 
 .admin-dashboard-header h1 {
   margin: 8px 0 6px;
-  color: #093741;
+  color: var(--text-primary);
 }
 
 .admin-dashboard-subtitle {
   margin: 0;
-  color: #38636b;
+  color: var(--text-secondary);
 }
 
 .admin-dashboard-actions {
@@ -52,22 +53,22 @@
 .admin-dashboard-actions button,
 .admin-widget-actions button {
   border: 0;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 11px 14px;
   font-weight: 700;
   cursor: pointer;
   color: #ffffff;
-  background: linear-gradient(125deg, #0f6070, #159ca0);
+  background: linear-gradient(125deg, var(--brand-start), var(--brand-end));
 }
 
 .admin-dashboard-actions .secondary {
-  background: linear-gradient(130deg, #3d5960, #67848d);
+  background: linear-gradient(125deg, var(--brand-alt-start), var(--brand-alt-end));
 }
 
 .admin-widget-actions .ghost {
-  background: #edf7f9;
-  color: #0e5664;
-  border: 1px solid #b9dce1;
+  background: rgba(255, 255, 255, 0.84);
+  color: #175469;
+  border: 1px solid var(--border-strong);
 }
 
 .admin-dashboard-grid {
@@ -78,30 +79,30 @@
 }
 
 .admin-widget {
-  border-radius: 16px;
-  border: 1px solid #c4dee3;
-  background: linear-gradient(145deg, #ffffff, #f2fafb);
-  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid var(--border-soft);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(240, 249, 252, 0.92));
+  padding: 18px;
 }
 
 .admin-widget h2 {
   margin: 0 0 8px;
-  color: #0e414b;
+  color: #143646;
   font-size: 18px;
 }
 
 .admin-widget p {
   margin: 0 0 10px;
-  color: #386069;
+  color: var(--text-secondary);
 }
 
 .admin-widget pre {
   margin: 0;
-  background: #eaf7f8;
-  border-radius: 10px;
-  border: 1px solid #c7e1e4;
+  background: #eaf6fb;
+  border-radius: 12px;
+  border: 1px solid var(--border-soft);
   padding: 12px;
-  color: #0d3036;
+  color: #123541;
   font-size: 12px;
   overflow: auto;
 }

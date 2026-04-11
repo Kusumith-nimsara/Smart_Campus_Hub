@@ -4,8 +4,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.util.Set;
-
 public class RegisterRequest {
 
     @NotBlank
@@ -36,7 +34,7 @@ public class RegisterRequest {
     @Size(min = 7, max = 20)
     private String mobileNumber;
 
-    private Set<String> roles;
+    private String role;
 
     public String getUsername() {
         return username;
@@ -94,11 +92,11 @@ public class RegisterRequest {
         this.mobileNumber = mobileNumber;
     }
 
-    public Set<String> getRoles() {
-        return roles;
+    public String getRole() {
+        return role;
     }
 
-    public void setRoles(Set<String> roles) {
-        this.roles = roles;
+    public void setRole(String role) {
+        this.role = role;
     }
 }

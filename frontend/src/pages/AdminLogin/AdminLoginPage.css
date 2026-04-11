@@ -2,22 +2,26 @@
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 20px;
+  padding: 24px;
 }
 
 .admin-card {
   width: min(500px, 95vw);
-  border-radius: 20px;
-  border: 1px solid #c6ddde;
-  background: linear-gradient(150deg, #ffffff, #f0fbfa);
-  box-shadow: 0 24px 58px rgba(5, 67, 72, 0.18);
-  padding: 26px;
+  border-radius: 24px;
+  border: 1px solid var(--border-soft);
+  background:
+    radial-gradient(circle at 80% 16%, rgba(15, 147, 156, 0.18), transparent 32%),
+    var(--surface-glass);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(6px);
+  padding: 30px;
+  animation: rise-in 0.45s ease;
 }
 
 .back-link {
   border: 0;
   background: transparent;
-  color: #126270;
+  color: #216b87;
   font-weight: 700;
   padding: 0;
   cursor: pointer;
@@ -25,12 +29,12 @@
 
 .admin-card h1 {
   margin: 14px 0 6px;
-  color: #0f3a43;
+  color: var(--text-primary);
 }
 
 .admin-subtitle {
   margin: 0 0 18px;
-  color: #3c6370;
+  color: var(--text-secondary);
 }
 
 .admin-form {
@@ -41,26 +45,26 @@
 .admin-form label {
   display: grid;
   gap: 6px;
-  color: #134650;
+  color: #204050;
   font-weight: 600;
 }
 
 .admin-form input {
-  border: 1px solid #a5cfd4;
-  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
   padding: 11px;
-  background: #f2fcfc;
+  background: var(--surface-soft);
   font-size: 15px;
 }
 
 .admin-form button {
   margin-top: 4px;
   border: 0;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 12px;
   font-weight: 700;
   color: #ffffff;
-  background: linear-gradient(125deg, #0f6372, #17a0a4);
+  background: linear-gradient(125deg, var(--brand-start), var(--brand-end));
   cursor: pointer;
 }
 
@@ -71,16 +75,16 @@
 
 .admin-status {
   margin: 14px 0 10px;
-  color: #24565e;
+  color: #1d4a5c;
   font-weight: 600;
 }
 
 .admin-response {
   margin: 0;
-  border-radius: 12px;
-  border: 1px solid #c5e0e3;
-  background: #effbfb;
-  color: #0f3035;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  background: #eff8fc;
+  color: #123541;
   font-size: 12px;
   padding: 12px;
   max-height: 220px;

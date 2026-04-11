@@ -2,22 +2,24 @@
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 20px;
+  padding: 24px;
 }
 
 .register-card {
   width: min(520px, 95vw);
-  border-radius: 20px;
-  border: 1px solid #d1ddff;
-  background: #ffffff;
-  box-shadow: 0 24px 58px rgba(13, 41, 105, 0.18);
-  padding: 26px;
+  border-radius: 24px;
+  border: 1px solid var(--border-soft);
+  background: var(--surface-glass);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(6px);
+  padding: 30px;
+  animation: rise-in 0.45s ease;
 }
 
 .back-link {
   border: 0;
   background: transparent;
-  color: #2158af;
+  color: #216b87;
   font-weight: 700;
   padding: 0;
   cursor: pointer;
@@ -25,12 +27,12 @@
 
 .register-card h1 {
   margin: 14px 0 6px;
-  color: #102758;
+  color: var(--text-primary);
 }
 
 .register-subtitle {
   margin: 0 0 18px;
-  color: #4f6390;
+  color: var(--text-secondary);
 }
 
 .register-form {
@@ -41,27 +43,27 @@
 .register-form label {
   display: grid;
   gap: 6px;
-  color: #1f3261;
+  color: #204050;
   font-weight: 600;
 }
 
 .register-form input,
 .register-form select {
-  border: 1px solid #b9cbf4;
-  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
   padding: 11px;
-  background: #f6f9ff;
+  background: var(--surface-soft);
   font-size: 15px;
 }
 
 .register-form button {
   margin-top: 4px;
   border: 0;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 12px;
   font-weight: 700;
   color: #ffffff;
-  background: linear-gradient(120deg, #1460ca, #1f88db);
+  background: linear-gradient(125deg, var(--brand-start), var(--brand-end));
   cursor: pointer;
 }
 
@@ -72,16 +74,16 @@
 
 .register-status {
   margin: 14px 0 10px;
-  color: #273f70;
+  color: #1d4a5c;
   font-weight: 600;
 }
 
 .register-response {
   margin: 0;
-  border-radius: 12px;
-  border: 1px solid #d2defa;
-  background: #f3f7ff;
-  color: #10264a;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  background: #eff8fc;
+  color: #123541;
   font-size: 12px;
   padding: 12px;
   max-height: 220px;

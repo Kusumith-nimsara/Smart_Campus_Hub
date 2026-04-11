@@ -10,21 +10,15 @@ export default function LandingPage() {
         <p className="landing-badge">Smart Campus Hub</p>
         <h1>Welcome to Smart Campus Portal</h1>
         <p className="landing-subtitle">
-          Choose how you want to continue: student login, admin login, or create a new account.
+          Continue with one Google login flow. Admin and user access are selected automatically from your email.
         </p>
 
         <div className="landing-actions">
           <button type="button" onClick={() => navigate('/login')}>
-            User Login
+            Continue with Google
           </button>
-          <button type="button" className="secondary" onClick={() => navigate('/admin-login')}>
-            Admin Login
-          </button>
-          <button type="button" className="ghost" onClick={() => navigate('/register')}>
-            Register
-          </button>
-          <button type="button" className="ghost" onClick={() => navigate('/profile')}>
-            Edit Profile
+          <button type="button" className="ghost" onClick={() => navigate('/dashboard')}>
+            Open Dashboard
           </button>
         </div>
       </section>

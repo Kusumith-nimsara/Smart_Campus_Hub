@@ -3,24 +3,31 @@ import { useNavigate } from 'react-router-dom'
 import GoogleLoginButton from '../GoogleLoginButton'
 import './LoginPage.css'
 
-function getPrimaryRole(roles) {
-  const normalized = Array.isArray(roles)
-    ? roles.map((role) => String(role).trim().toUpperCase()).filter(Boolean)
-    : []
+const ADMIN_EMAIL = 'vihanga.shehan99@gmail.com'
 
-  if (normalized.includes('ADMIN') || normalized.includes('ROLE_ADMIN')) {
-    return 'ADMIN'
+function extractEmailFromJwt(idToken) {
+  try {
+    const payloadBase64 = idToken.split('.')[1]
+    if (!payloadBase64) {
+      return ''
+    }
+
+    const payloadJson = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'))
+    const payload = JSON.parse(payloadJson)
+    return typeof payload?.email === 'string' ? payload.email.trim().toLowerCase() : ''
+  } catch {
+    return ''
   }
+}
 
-  return 'USER'
+function getRoleByEmail(email) {
+  return email === ADMIN_EMAIL ? 'ADMIN' : 'USER'
 }
 
 export default function LoginPage() {
   const navigate = useNavigate()
 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [message, setMessage] = useState('Sign in with your user account.')
+  const [message, setMessage] = useState('Continue with Google to sign in.')
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
 
@@ -42,30 +49,33 @@ export default function LoginPage() {
         throw new Error(data?.message ?? 'Google auth failed.')
       }
 
-      const role = getPrimaryRole(data?.roles)
-      const savedUsername = data?.username ?? ''
+      const googleEmail = extractEmailFromJwt(idToken)
+      const backendEmail = typeof data?.email === 'string' ? data.email.trim().toLowerCase() : ''
+      const effectiveEmail = googleEmail || backendEmail
+      const role = getRoleByEmail(effectiveEmail)
+      const savedUsername = data?.username ?? effectiveEmail ?? ''
 
       if (data?.token) {
         localStorage.setItem('token', data.token)
         localStorage.setItem('authToken', data.token)
       }
       localStorage.setItem('role', role)
+      localStorage.setItem('authRole', role)
       localStorage.setItem('username', savedUsername)
-      localStorage.setItem('authRoles', JSON.stringify(Array.isArray(data?.roles) ? data.roles : ['USER']))
       localStorage.setItem('authLoginType', role === 'ADMIN' ? 'admin' : 'user')
 
       if (role === 'ADMIN') {
         setResult(data)
-        setMessage('Admin account detected on User Login. Please use Admin Login next time. Redirecting...')
-        window.alert('Admin account detected. Redirecting to Admin Dashboard.')
+        setMessage('Admin email detected. Redirecting to Admin Dashboard...')
+        window.alert('Admin login successful')
         navigate('/admin-dashboard', { replace: true })
         return
       }
 
       setResult(data)
-      setMessage('Google auth succeeded. Backend token received.')
+      setMessage('Google login successful.')
       window.alert('Login successful')
-      navigate('/profile')
+      navigate('/dashboard')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Google auth failed.'
       setResult(null)
@@ -75,115 +85,64 @@ export default function LoginPage() {
     }
   }
 
-  async function handlePasswordLogin(event) {
-    event.preventDefault()
-    setLoading(true)
-    setMessage('Checking username/password login...')
-    try {
-      const response = await fetch(`${backendBaseUrl}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      })
-
-      const data = await response.json()
-      if (!response.ok) {
-        throw new Error(data?.message ?? 'Login failed.')
-      }
-
-      const role = getPrimaryRole(data?.roles)
-      const savedUsername = data?.username ?? username
-
-      if (data?.token) {
-        localStorage.setItem('token', data.token)
-        localStorage.setItem('authToken', data.token)
-      }
-      localStorage.setItem('role', role)
-      localStorage.setItem('username', savedUsername)
-      localStorage.setItem('authRoles', JSON.stringify(Array.isArray(data?.roles) ? data.roles : ['USER']))
-      localStorage.setItem('authLoginType', role === 'ADMIN' ? 'admin' : 'user')
-
-      if (role === 'ADMIN') {
-        setResult(data)
-        setMessage('Admin account detected on User Login. Please use Admin Login next time. Redirecting...')
-        window.alert('Admin account detected. Redirecting to Admin Dashboard.')
-        navigate('/admin-dashboard', { replace: true })
-        return
-      }
-
-      setResult(data)
-      setMessage('Username/password login succeeded.')
-      window.alert('Login successful')
-      navigate('/profile')
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Login failed.'
-      setResult(null)
-      setMessage(errorMessage)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   return (
     <main className="auth-page">
-      <section className="auth-card">
-        <button type="button" className="auth-back-link" onClick={() => navigate('/')}>
-          Back to Landing
-        </button>
+      <section className="auth-layout">
+        <article className="auth-hero">
+          <p className="chip">Smart Campus</p>
+          <h1>
+            Campus Management,
+            <span> Simplified</span>
+          </h1>
+          <p className="subtitle">
+            A comprehensive platform for resources, bookings, maintenance, and announcements across campus.
+          </p>
 
-        <p className="chip">Smart Campus Hub</p>
-        <h1>User Login</h1>
-        <p className="subtitle">This page is for student/user login. Admins should use Admin Login.</p>
+          <div className="hero-grid">
+            <div className="hero-item">
+              <h3>Smart Booking</h3>
+              <p>Reserve venues and resources without delays.</p>
+            </div>
+            <div className="hero-item">
+              <h3>Maintenance</h3>
+              <p>Track and manage maintenance tickets quickly.</p>
+            </div>
+            <div className="hero-item">
+              <h3>Resources</h3>
+              <p>Handle campus inventory with clarity.</p>
+            </div>
+            <div className="hero-item">
+              <h3>Notifications</h3>
+              <p>Stay updated with real-time campus events.</p>
+            </div>
+          </div>
+        </article>
 
-        <button type="button" className="auth-admin-link" onClick={() => navigate('/admin-login')}>
-          Go to Admin Login
-        </button>
-
-        <form onSubmit={handlePasswordLogin} className="form-grid">
-          <label>
-            Username
-            <input
-              type="text"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              placeholder="Enter username"
-              required
-            />
-          </label>
-          <label>
-            Password
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="Enter password"
-              required
-            />
-          </label>
-          <button type="submit" disabled={loading}>
-            {loading ? 'Please wait...' : 'Login'}
+        <article className="auth-card">
+          <button type="button" className="auth-back-link" onClick={() => navigate('/')}>
+            Back
           </button>
-        </form>
 
-        <div className="divider">or</div>
+          <h2>Welcome Back</h2>
+          <p className="auth-note">Sign in with Google to access your Smart Campus dashboard.</p>
 
-        {googleClientId ? (
-          <GoogleLoginButton
-            clientId={googleClientId}
-            onCredential={loginWithGoogle}
-            onError={setMessage}
-          />
-        ) : (
-          <p className="warning">Add VITE_GOOGLE_CLIENT_ID to .env so Google button can render.</p>
-        )}
+          {googleClientId ? (
+            <GoogleLoginButton
+              clientId={googleClientId}
+              onCredential={loginWithGoogle}
+              onError={setMessage}
+            />
+          ) : (
+            <p className="warning">Add VITE_GOOGLE_CLIENT_ID to .env so Google button can render.</p>
+          )}
 
-        <p className="status">{message}</p>
+          <p className="status">{message}</p>
 
-        {result && <pre className="response-panel">{JSON.stringify(result, null, 2)}</pre>}
+          {result && <pre className="response-panel">{JSON.stringify(result, null, 2)}</pre>}
 
-        <p className="hint">
-          Backend URL: <strong>{backendBaseUrl}</strong>
-        </p>
+          <p className="hint">Admin rule: {ADMIN_EMAIL}</p>
+          <p className="hint">API: {backendBaseUrl}</p>
+        </article>
       </section>
     </main>
   )

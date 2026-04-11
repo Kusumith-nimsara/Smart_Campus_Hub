@@ -1,7 +1,5 @@
 package com.smartcampus.hub.dto;
 
-import java.util.Set;
-
 public class UserResponse {
     private String id;
     private String username;
@@ -10,7 +8,7 @@ public class UserResponse {
     private String lastName;
     private String registrationNumber;
     private String mobileNumber;
-    private Set<String> roles;
+    private String role;
 
     public UserResponse(
             String id,
@@ -20,7 +18,7 @@ public class UserResponse {
             String lastName,
             String registrationNumber,
             String mobileNumber,
-            Set<String> roles
+                String role
     ) {
         this.id = id;
         this.username = username;
@@ -29,7 +27,7 @@ public class UserResponse {
         this.lastName = lastName;
         this.registrationNumber = registrationNumber;
         this.mobileNumber = mobileNumber;
-        this.roles = roles;
+        this.role = role;
     }
 
     public String getId() {
@@ -60,7 +58,7 @@ public class UserResponse {
         return mobileNumber;
     }
 
-    public Set<String> getRoles() {
-        return roles;
+    public String getRole() {
+        return role;
     }
 }

@@ -1,11 +1,11 @@
-.profile-page {
+.user-dashboard-page {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 260px 1fr;
   background: #eef1f6;
 }
 
-.profile-sidebar {
+.user-sidebar {
   background: linear-gradient(180deg, #0f1731, #111934 56%, #131a31);
   color: #e8ecff;
   padding: 22px 16px;
@@ -25,7 +25,7 @@
   font-weight: 800;
 }
 
-.profile-sidebar h2 {
+.user-sidebar h2 {
   margin: -40px 0 10px 48px;
   font-size: 24px;
   color: #f5f7ff;
@@ -87,11 +87,11 @@
   font-weight: 700;
 }
 
-.profile-content {
+.user-content {
   padding: 20px;
 }
 
-.profile-topbar {
+.user-topbar {
   border: 1px solid #dbe1ea;
   background: #ffffff;
   border-radius: 16px;
@@ -101,18 +101,18 @@
   align-items: center;
 }
 
-.profile-topbar h1 {
+.user-topbar h1 {
   margin: 0;
   font-size: clamp(30px, 3.6vw, 44px);
 }
 
-.profile-topbar p {
+.user-topbar p {
   margin: 2px 0 0;
   color: #607080;
   font-size: 14px;
 }
 
-.profile-top-action {
+.user-top-action {
   border: 0;
   border-radius: 10px;
   background: #eff3ff;
@@ -148,10 +148,10 @@
   color: #1e2b34;
 }
 
-.profile-widgets {
+.dashboard-widgets {
   margin-top: 14px;
   display: grid;
-  grid-template-columns: 1.25fr 0.75fr;
+  grid-template-columns: 1fr 1fr 0.8fr;
   gap: 12px;
 }
 
@@ -168,56 +168,36 @@
   font-size: 28px;
 }
 
-.profile-form {
+.summary-grid {
   display: grid;
-  gap: 12px;
+  gap: 8px;
 }
 
-.profile-form label {
+.summary-grid p {
+  margin: 0;
   display: grid;
-  gap: 6px;
-  color: #34505f;
-  font-weight: 600;
-  font-size: 17px;
+  gap: 3px;
+  color: #2f4453;
 }
 
-.profile-form input {
-  border: 1px solid #c9d8e5;
-  border-radius: 10px;
-  padding: 11px;
-  background: #f7fbff;
-  font-size: 16px;
+.summary-grid span {
+  color: #607384;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.profile-actions {
-  margin-top: 10px;
-  display: flex;
-  gap: 10px;
+.widget-note {
+  margin: 6px 0 8px;
+  color: #5f7282;
 }
 
-.profile-actions button {
+.link-btn {
   border: 0;
-  border-radius: 10px;
-  padding: 11px 15px;
+  background: transparent;
+  color: #4a63e6;
   font-weight: 700;
-  color: #ffffff;
-  background: linear-gradient(125deg, #385dff, #5d7aff);
-  cursor: pointer;
-}
-
-.profile-actions button.danger {
-  background: linear-gradient(125deg, #cb4b4b, #db6868);
-}
-
-.profile-actions button:disabled {
-  opacity: 0.7;
-  cursor: wait;
-}
-
-.profile-status {
-  margin: 12px 0 0;
-  color: #4d6574;
-  font-weight: 600;
+  padding: 0;
 }
 
 .quick-links {
@@ -248,26 +228,32 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
-@media (max-width: 1200px) {
+.dashboard-status {
+  margin: 12px 0 0;
+  color: #4d6574;
+  font-weight: 600;
+}
+
+@media (max-width: 1280px) {
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .profile-widgets {
+  .dashboard-widgets {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 920px) {
-  .profile-page {
+  .user-dashboard-page {
     grid-template-columns: 1fr;
   }
 
-  .profile-sidebar {
+  .user-sidebar {
     padding: 16px;
   }
 
-  .profile-sidebar h2 {
+  .user-sidebar h2 {
     margin: -36px 0 10px 46px;
   }
 
@@ -275,19 +261,19 @@
     margin-top: 8px;
   }
 
-  .profile-topbar {
+  .user-topbar {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
 
-  .profile-top-action {
+  .user-top-action {
     width: 100%;
   }
 }
 
 @media (max-width: 620px) {
-  .profile-content {
+  .user-content {
     padding: 12px;
   }
 
@@ -297,9 +283,5 @@
 
   .stat-card p {
     font-size: 26px;
-  }
-
-  .profile-actions button {
-    flex: 1;
   }
 }

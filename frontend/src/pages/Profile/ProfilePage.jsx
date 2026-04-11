@@ -11,15 +11,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [message, setMessage] = useState('Loading profile...')
-  const [roles, setRoles] = useState(() => {
-    try {
-      const raw = localStorage.getItem('authRoles')
-      const parsed = raw ? JSON.parse(raw) : []
-      return Array.isArray(parsed) ? parsed : []
-    } catch {
-      return []
-    }
-  })
+  const [role, setRole] = useState(() => (localStorage.getItem('authRole') || localStorage.getItem('role') || 'USER'))
 
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
@@ -55,9 +47,10 @@ export default function ProfilePage() {
         setLastName(data.lastName ?? '')
         setRegistrationNumber(data.registrationNumber ?? '')
         setMobileNumber(data.mobileNumber ?? '')
-        const loadedRoles = Array.isArray(data.roles) ? data.roles : roles
-        setRoles(loadedRoles)
-        localStorage.setItem('authRoles', JSON.stringify(loadedRoles))
+        const loadedRole = String(data.role ?? role ?? 'USER').toUpperCase()
+        setRole(loadedRole)
+        localStorage.setItem('role', loadedRole)
+        localStorage.setItem('authRole', loadedRole)
         setMessage('Profile loaded.')
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to load profile.'
@@ -109,9 +102,10 @@ export default function ProfilePage() {
       setLastName(data.lastName ?? lastName)
       setRegistrationNumber(data.registrationNumber ?? registrationNumber)
       setMobileNumber(data.mobileNumber ?? mobileNumber)
-      const updatedRoles = Array.isArray(data.roles) ? data.roles : roles
-      setRoles(updatedRoles)
-      localStorage.setItem('authRoles', JSON.stringify(updatedRoles))
+      const updatedRole = String(data.role ?? role ?? 'USER').toUpperCase()
+      setRole(updatedRole)
+      localStorage.setItem('role', updatedRole)
+      localStorage.setItem('authRole', updatedRole)
       setPassword('')
       setMessage('Profile updated successfully.')
     } catch (error) {
@@ -146,9 +140,9 @@ export default function ProfilePage() {
 
       localStorage.removeItem('token')
       localStorage.removeItem('role')
+      localStorage.removeItem('authRole')
       localStorage.removeItem('username')
       localStorage.removeItem('authToken')
-      localStorage.removeItem('authRoles')
       localStorage.removeItem('authLoginType')
       setMessage('Account deleted successfully.')
       navigate('/')
@@ -163,124 +157,179 @@ export default function ProfilePage() {
   function handleLogout() {
     localStorage.removeItem('token')
     localStorage.removeItem('role')
+    localStorage.removeItem('authRole')
     localStorage.removeItem('username')
     localStorage.removeItem('authToken')
-    localStorage.removeItem('authRoles')
     localStorage.removeItem('authLoginType')
     navigate('/login')
   }
 
-  const isAdmin = roles.includes('ADMIN') || roles.includes('ROLE_ADMIN')
+  const isAdmin = role === 'ADMIN' || role === 'ROLE_ADMIN'
   const loginType = isAdmin ? 'ADMIN' : 'USER'
+  const fullName = `${firstName} ${lastName}`.trim() || username || 'Campus User'
+  const today = new Date().toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
 
   return (
     <main className="profile-page">
-      <section className="profile-card">
-        <button type="button" className="profile-back-link" onClick={() => navigate('/')}>
-          Back to Landing
+      <aside className="profile-sidebar">
+        <div className="brand-mark">SC</div>
+        <h2>Smart Campus</h2>
+
+        <p className="sidebar-user-label">Logged in as</p>
+        <p className="sidebar-user-name">{fullName}</p>
+        <p className="sidebar-user-role">{loginType}</p>
+
+        <nav className="sidebar-menu" aria-label="Dashboard Menu">
+          <button type="button" onClick={() => navigate('/dashboard')}>Dashboard</button>
+          <button type="button" className="active" onClick={() => navigate('/profile')}>Profile</button>
+          <button type="button">Notifications</button>
+          <button type="button">Resources</button>
+          <button type="button">Bookings</button>
+          <button type="button">Tickets</button>
+        </nav>
+
+        <button type="button" className="sidebar-logout" onClick={handleLogout}>
+          Logout
         </button>
+      </aside>
 
-        <h1>Edit Profile</h1>
-        <p className="profile-subtitle">Update your details and manage your account.</p>
-        <p className={`profile-login-type ${isAdmin ? 'admin' : 'user'}`}>
-          Login successful as {loginType}
-        </p>
+      <section className="profile-content">
+        <header className="profile-topbar">
+          <div>
+            <h1>Welcome back, {firstName || username || 'User'}!</h1>
+            <p>{today}</p>
+          </div>
+          <button type="button" className="profile-top-action" onClick={() => navigate('/')}>
+            Back to Landing
+          </button>
+        </header>
 
-        {loading ? (
-          <p className="profile-status">Loading...</p>
-        ) : (
-          <form className="profile-form" onSubmit={handleSave}>
-            <label>
-              Username
-              <input
-                type="text"
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-                required
-              />
-            </label>
+        <div className="stats-grid">
+          <article className="stat-card">
+            <h3>Account Status</h3>
+            <p>ACTIVE</p>
+          </article>
+          <article className="stat-card">
+            <h3>User Type</h3>
+            <p>{isAdmin ? 'ADMIN' : 'STUDENT'}</p>
+          </article>
+          <article className="stat-card">
+            <h3>Role</h3>
+            <p>{loginType}</p>
+          </article>
+          <article className="stat-card">
+            <h3>Last Updated</h3>
+            <p>{today}</p>
+          </article>
+        </div>
 
-            <label>
-              Email
-              <input
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                required
-              />
-            </label>
+        <div className="profile-widgets">
+          <article className="widget profile-widget">
+            <h2>Your Profile</h2>
+            {loading ? (
+              <p className="profile-status">Loading profile...</p>
+            ) : (
+              <form className="profile-form" onSubmit={handleSave}>
+                <label>
+                  Username
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(event) => setUsername(event.target.value)}
+                    required
+                  />
+                </label>
 
-            <label>
-              First Name
-              <input
-                type="text"
-                value={firstName}
-                onChange={(event) => setFirstName(event.target.value)}
-                required
-              />
-            </label>
+                <label>
+                  Email
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    required
+                  />
+                </label>
 
-            <label>
-              Last Name
-              <input
-                type="text"
-                value={lastName}
-                onChange={(event) => setLastName(event.target.value)}
-                required
-              />
-            </label>
+                <label>
+                  First Name
+                  <input
+                    type="text"
+                    value={firstName}
+                    onChange={(event) => setFirstName(event.target.value)}
+                    required
+                  />
+                </label>
 
-            <label>
-              Registration Number
-              <input
-                type="text"
-                value={registrationNumber}
-                onChange={(event) => setRegistrationNumber(event.target.value)}
-                required
-              />
-            </label>
+                <label>
+                  Last Name
+                  <input
+                    type="text"
+                    value={lastName}
+                    onChange={(event) => setLastName(event.target.value)}
+                    required
+                  />
+                </label>
 
-            <label>
-              Mobile Number
-              <input
-                type="tel"
-                value={mobileNumber}
-                onChange={(event) => setMobileNumber(event.target.value)}
-                required
-              />
-            </label>
+                <label>
+                  Registration Number
+                  <input
+                    type="text"
+                    value={registrationNumber}
+                    onChange={(event) => setRegistrationNumber(event.target.value)}
+                    required
+                  />
+                </label>
 
-            <label>
-              New Password (Optional)
-              <input
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                minLength={6}
-                placeholder="Leave blank to keep current password"
-              />
-            </label>
+                <label>
+                  Mobile Number
+                  <input
+                    type="tel"
+                    value={mobileNumber}
+                    onChange={(event) => setMobileNumber(event.target.value)}
+                    required
+                  />
+                </label>
 
-            <div className="profile-actions">
-              <button type="submit" disabled={saving || deleting}>
-                {saving ? 'Saving...' : 'Save Changes'}
-              </button>
-              <button type="button" className="secondary" onClick={handleLogout} disabled={saving || deleting}>
-                Logout
-              </button>
-              <button
-                type="button"
-                className="danger"
-                onClick={handleDeleteAccount}
-                disabled={saving || deleting}
-              >
-                {deleting ? 'Deleting...' : 'Delete Account'}
-              </button>
-            </div>
-          </form>
-        )}
+                <label>
+                  New Password (Optional)
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    minLength={6}
+                    placeholder="Leave blank to keep current password"
+                  />
+                </label>
 
-        <p className="profile-status">{message}</p>
+                <div className="profile-actions">
+                  <button type="submit" disabled={saving || deleting}>
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                  <button
+                    type="button"
+                    className="danger"
+                    onClick={handleDeleteAccount}
+                    disabled={saving || deleting}
+                  >
+                    {deleting ? 'Deleting...' : 'Delete Account'}
+                  </button>
+                </div>
+              </form>
+            )}
+            <p className="profile-status">{message}</p>
+          </article>
+
+          <article className="widget quick-links">
+            <h2>Quick Links</h2>
+            <button type="button">Resources</button>
+            <button type="button">Bookings</button>
+            <button type="button">Tickets</button>
+          </article>
+        </div>
       </section>
     </main>
   )

@@ -2,21 +2,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './AdminLoginPage.css'
 
-function normalizeRoles(input) {
-  if (Array.isArray(input)) {
-    return input
-      .map((role) => String(role).trim().toUpperCase())
-      .filter(Boolean)
+function normalizeRole(input) {
+  if (typeof input !== 'string') {
+    return ''
   }
 
-  if (typeof input === 'string') {
-    return input
-      .split(',')
-      .map((role) => role.trim().toUpperCase())
-      .filter(Boolean)
-  }
-
-  return []
+  return input.trim().toUpperCase()
 }
 
 export default function AdminLoginPage() {
@@ -47,15 +38,15 @@ export default function AdminLoginPage() {
         throw new Error(data?.message ?? 'Admin login failed.')
       }
 
-      const roles = normalizeRoles(data?.roles)
-      const isAdmin = roles.includes('ADMIN') || roles.includes('ROLE_ADMIN')
+      const role = normalizeRole(data?.role)
+      const isAdmin = role === 'ADMIN' || role === 'ROLE_ADMIN'
 
       if (!isAdmin) {
         localStorage.removeItem('token')
         localStorage.removeItem('role')
+        localStorage.removeItem('authRole')
         localStorage.removeItem('username')
         localStorage.removeItem('authToken')
-        localStorage.removeItem('authRoles')
         localStorage.removeItem('authLoginType')
 
         setResult(null)
@@ -72,8 +63,8 @@ export default function AdminLoginPage() {
         localStorage.setItem('authToken', data.token)
       }
       localStorage.setItem('role', 'ADMIN')
+      localStorage.setItem('authRole', 'ADMIN')
       localStorage.setItem('username', savedUsername)
-      localStorage.setItem('authRoles', JSON.stringify(roles))
       localStorage.setItem('authLoginType', 'admin')
 
       setResult(data)

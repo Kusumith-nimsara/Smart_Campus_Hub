@@ -3,20 +3,26 @@ import './UnauthorizedPage.css'
 
 export default function UnauthorizedPage() {
   const navigate = useNavigate()
+  const userName = localStorage.getItem('username') || 'User'
 
   return (
     <main className="unauthorized-page">
       <section className="unauthorized-card">
-        <p className="unauthorized-code">403</p>
-        <h1>Unauthorized</h1>
-        <p>You do not have permission to access this page.</p>
+        <h1>Account Pending Approval</h1>
+        <p className="welcome-line">Welcome, {userName}!</p>
+
+        <div className="pending-note">
+          Your account has been created but is currently awaiting approval from a system administrator.
+          You will have limited access until your account is approved.
+        </div>
+
+        <p className="pending-help">
+          Once an administrator reviews and approves your account, you will gain full access to the Smart Campus application.
+        </p>
 
         <div className="unauthorized-actions">
-          <button type="button" onClick={() => navigate('/')}>
-            Back to Home
-          </button>
           <button type="button" className="secondary" onClick={() => navigate('/login')}>
-            Go to Login
+            Logout
           </button>
         </div>
       </section>
