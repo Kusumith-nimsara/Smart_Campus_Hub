@@ -68,8 +68,9 @@ export default function LoginPage() {
       localStorage.setItem('username', savedUsername)
       localStorage.setItem('authLoginType', role === 'ADMIN' ? 'admin' : 'user')
 
+      let effectiveRole = role
       let effectiveApproved = approved
-      if (role !== 'ADMIN' && !effectiveApproved && data?.token) {
+      if (data?.token) {
         try {
           const verifyResponse = await fetch(`${backendBaseUrl}/user/me`, {
             headers: {
@@ -78,12 +79,23 @@ export default function LoginPage() {
           })
 
           const verifyData = await verifyResponse.json()
-          if (verifyResponse.ok && typeof verifyData?.approved === 'boolean') {
-            effectiveApproved = verifyData.approved
+          if (verifyResponse.ok) {
+            const verifyRole = String(verifyData?.role ?? effectiveRole).toUpperCase()
+            const verifyApproved = typeof verifyData?.approved === 'boolean' ? verifyData.approved : effectiveApproved
+
+            effectiveRole = verifyRole === 'ADMIN' ? 'ADMIN' : 'USER'
+            effectiveApproved = effectiveRole === 'ADMIN' ? true : verifyApproved
+
+            localStorage.setItem('role', effectiveRole)
+            localStorage.setItem('authRole', effectiveRole)
             localStorage.setItem('authApproved', String(effectiveApproved))
+            if (verifyData?.username) {
+              localStorage.setItem('username', String(verifyData.username))
+            }
+            localStorage.setItem('authLoginType', effectiveRole === 'ADMIN' ? 'admin' : 'user')
           }
         } catch {
-          // Keep original approval state if refresh check fails.
+          // If /user/me fails, fallback to auth response values.
         }
       }
 
@@ -94,7 +106,7 @@ export default function LoginPage() {
         return
       }
 
-      if (role === 'ADMIN') {
+      if (effectiveRole === 'ADMIN') {
         setResult(data)
         setMessage('Admin email detected. Redirecting to Admin Dashboard...')
         window.alert('Admin login successful')

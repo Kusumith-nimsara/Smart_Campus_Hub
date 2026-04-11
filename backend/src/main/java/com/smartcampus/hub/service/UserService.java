@@ -76,6 +76,17 @@ public class UserService {
 
         user.setApproved(true);
         userRepository.save(user);
+
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            List<User> sameEmailUsers = userRepository.findAllByEmailIgnoreCase(user.getEmail());
+            for (User sameEmailUser : sameEmailUsers) {
+                if (!sameEmailUser.isApproved()) {
+                    sameEmailUser.setApproved(true);
+                    userRepository.save(sameEmailUser);
+                }
+            }
+        }
+
         return toUserResponse(user);
     }
 
