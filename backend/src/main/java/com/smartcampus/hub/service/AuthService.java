@@ -72,12 +72,14 @@ public class AuthService {
         }
 
         Role role = resolveRole(request.getRole());
+        boolean approved = role == Role.ADMIN;
 
         User user = new User(
                 request.getUsername(),
                 request.getEmail(),
                 passwordEncoder.encode(request.getPassword()),
                 role,
+            approved,
                 request.getRegistrationNumber(),
                 request.getMobileNumber(),
                 request.getFirstName(),
@@ -89,7 +91,7 @@ public class AuthService {
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
         String token = jwtService.generateToken(userDetails);
 
-        return new AuthResponse(token, user.getUsername(), user.getEmail(), user.getRole().name());
+        return new AuthResponse(token, user.getUsername(), user.getEmail(), user.getRole().name(), user.isApproved());
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -103,7 +105,7 @@ public class AuthService {
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
         String token = jwtService.generateToken(userDetails);
 
-        return new AuthResponse(token, user.getUsername(), user.getEmail(), user.getRole().name());
+        return new AuthResponse(token, user.getUsername(), user.getEmail(), user.getRole().name(), user.isApproved());
     }
 
     public AuthResponse loginWithGoogle(String idToken) {
@@ -120,15 +122,17 @@ public class AuthService {
                 .orElseGet(() -> createGoogleUser(email));
 
         Role expectedRole = normalizedEmail.equals(ADMIN_GOOGLE_EMAIL) ? Role.ADMIN : Role.USER;
-        if (user.getRole() != expectedRole) {
+        boolean expectedApproval = expectedRole == Role.ADMIN || user.isApproved();
+        if (user.getRole() != expectedRole || user.isApproved() != expectedApproval) {
             user.setRole(expectedRole);
+            user.setApproved(expectedApproval);
             user = userRepository.save(user);
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
         String token = jwtService.generateToken(userDetails);
 
-        return new AuthResponse(token, user.getUsername(), user.getEmail(), user.getRole().name());
+        return new AuthResponse(token, user.getUsername(), user.getEmail(), user.getRole().name(), user.isApproved());
     }
 
     private GoogleIdToken.Payload verifyGoogleToken(String idToken) {
@@ -151,7 +155,8 @@ public class AuthService {
                 username,
                 normalizedEmail,
                 passwordEncoder.encode(UUID.randomUUID().toString()),
-                role
+            role,
+            role == Role.ADMIN
         );
         return userRepository.save(user);
     }

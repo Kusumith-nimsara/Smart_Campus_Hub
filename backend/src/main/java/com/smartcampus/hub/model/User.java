@@ -28,15 +28,21 @@ public class User {
 
     private Role role = Role.USER;
 
+    private boolean approved;
+
     public User() {
     }
 
     public User(String username, String email, String password, Role role) {
-        this(username, email, password, role, null, null, null, null);
+        this(username, email, password, role, false, null, null, null, null);
     }
 
     public User(String username, String email, String password, Role role, String registrationNumber, String mobileNumber) {
-        this(username, email, password, role, registrationNumber, mobileNumber, null, null);
+        this(username, email, password, role, false, registrationNumber, mobileNumber, null, null);
+    }
+
+    public User(String username, String email, String password, Role role, boolean approved) {
+        this(username, email, password, role, approved, null, null, null, null);
     }
 
     public User(
@@ -44,6 +50,7 @@ public class User {
             String email,
             String password,
             Role role,
+            boolean approved,
             String registrationNumber,
             String mobileNumber,
             String firstName,
@@ -53,6 +60,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = role == null ? Role.USER : role;
+        this.approved = approved;
         this.registrationNumber = registrationNumber;
         this.mobileNumber = mobileNumber;
         this.firstName = firstName;
@@ -97,6 +105,14 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role == null ? Role.USER : role;
+    }
+
+    public boolean isApproved() {
+        return approved;
+    }
+
+    public void setApproved(boolean approved) {
+        this.approved = approved;
     }
 
     public String getRegistrationNumber() {

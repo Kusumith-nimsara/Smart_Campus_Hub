@@ -45,6 +45,7 @@ export default function AdminLoginPage() {
         localStorage.removeItem('token')
         localStorage.removeItem('role')
         localStorage.removeItem('authRole')
+        localStorage.removeItem('authApproved')
         localStorage.removeItem('username')
         localStorage.removeItem('authToken')
         localStorage.removeItem('authLoginType')
@@ -64,6 +65,7 @@ export default function AdminLoginPage() {
       }
       localStorage.setItem('role', 'ADMIN')
       localStorage.setItem('authRole', 'ADMIN')
+      localStorage.setItem('authApproved', String(typeof data?.approved === 'boolean' ? data.approved : true))
       localStorage.setItem('username', savedUsername)
       localStorage.setItem('authLoginType', 'admin')
 

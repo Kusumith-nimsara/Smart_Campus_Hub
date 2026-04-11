@@ -69,6 +69,16 @@ public class UserService {
         return toUserResponse(user);
     }
 
+    public UserResponse approveUserById(String id) {
+        String safeId = Objects.requireNonNull(id, "User id cannot be null");
+        User user = Objects.requireNonNull(userRepository.findById(safeId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found")));
+
+        user.setApproved(true);
+        userRepository.save(user);
+        return toUserResponse(user);
+    }
+
     public void deleteUserById(String id) {
         String safeId = Objects.requireNonNull(id, "User id cannot be null");
         if (!userRepository.existsById(safeId)) {
@@ -156,7 +166,8 @@ public class UserService {
                 user.getLastName(),
                 user.getRegistrationNumber(),
                 user.getMobileNumber(),
-                user.getRole().name()
+            user.getRole().name(),
+            user.isApproved()
         );
     }
 }

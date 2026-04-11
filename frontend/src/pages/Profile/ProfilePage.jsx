@@ -48,9 +48,11 @@ export default function ProfilePage() {
         setRegistrationNumber(data.registrationNumber ?? '')
         setMobileNumber(data.mobileNumber ?? '')
         const loadedRole = String(data.role ?? role ?? 'USER').toUpperCase()
+        const loadedApproved = typeof data.approved === 'boolean' ? data.approved : true
         setRole(loadedRole)
         localStorage.setItem('role', loadedRole)
         localStorage.setItem('authRole', loadedRole)
+        localStorage.setItem('authApproved', String(loadedApproved))
         setMessage('Profile loaded.')
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to load profile.'
@@ -103,9 +105,11 @@ export default function ProfilePage() {
       setRegistrationNumber(data.registrationNumber ?? registrationNumber)
       setMobileNumber(data.mobileNumber ?? mobileNumber)
       const updatedRole = String(data.role ?? role ?? 'USER').toUpperCase()
+      const updatedApproved = typeof data.approved === 'boolean' ? data.approved : true
       setRole(updatedRole)
       localStorage.setItem('role', updatedRole)
       localStorage.setItem('authRole', updatedRole)
+      localStorage.setItem('authApproved', String(updatedApproved))
       setPassword('')
       setMessage('Profile updated successfully.')
     } catch (error) {
@@ -141,6 +145,7 @@ export default function ProfilePage() {
       localStorage.removeItem('token')
       localStorage.removeItem('role')
       localStorage.removeItem('authRole')
+      localStorage.removeItem('authApproved')
       localStorage.removeItem('username')
       localStorage.removeItem('authToken')
       localStorage.removeItem('authLoginType')
@@ -158,6 +163,7 @@ export default function ProfilePage() {
     localStorage.removeItem('token')
     localStorage.removeItem('role')
     localStorage.removeItem('authRole')
+    localStorage.removeItem('authApproved')
     localStorage.removeItem('username')
     localStorage.removeItem('authToken')
     localStorage.removeItem('authLoginType')

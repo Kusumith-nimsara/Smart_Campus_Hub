@@ -23,7 +23,11 @@ function App() {
             isAuthenticated={Boolean(localStorage.getItem('token') || localStorage.getItem('authToken'))}
             fallback={<Navigate to="/login" replace />}
           >
-            <UserDashboardPage />
+            {(localStorage.getItem('authRole') || localStorage.getItem('role') || '').toUpperCase() === 'ADMIN' ? (
+              <Navigate to="/admin-dashboard" replace />
+            ) : (
+              <UserDashboardPage />
+            )}
           </PrivateRoute>
         }
       />

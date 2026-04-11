@@ -52,7 +52,10 @@ export default function LoginPage() {
       const googleEmail = extractEmailFromJwt(idToken)
       const backendEmail = typeof data?.email === 'string' ? data.email.trim().toLowerCase() : ''
       const effectiveEmail = googleEmail || backendEmail
-      const role = getRoleByEmail(effectiveEmail)
+      const derivedRole = getRoleByEmail(effectiveEmail)
+      const backendRole = String(data?.role ?? '').toUpperCase()
+      const role = derivedRole === 'ADMIN' || backendRole === 'ADMIN' ? 'ADMIN' : 'USER'
+      const approved = typeof data?.approved === 'boolean' ? data.approved : role === 'ADMIN'
       const savedUsername = data?.username ?? effectiveEmail ?? ''
 
       if (data?.token) {
@@ -61,8 +64,16 @@ export default function LoginPage() {
       }
       localStorage.setItem('role', role)
       localStorage.setItem('authRole', role)
+      localStorage.setItem('authApproved', String(approved))
       localStorage.setItem('username', savedUsername)
       localStorage.setItem('authLoginType', role === 'ADMIN' ? 'admin' : 'user')
+
+      if (!approved) {
+        setResult(data)
+        setMessage('Your account is pending admin approval. Redirecting...')
+        navigate('/unauthorized', { replace: true })
+        return
+      }
 
       if (role === 'ADMIN') {
         setResult(data)

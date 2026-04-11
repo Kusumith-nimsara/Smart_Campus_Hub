@@ -46,6 +46,13 @@ export default function UserDashboardPage() {
           registrationNumber: data?.registrationNumber ?? '',
           mobileNumber: data?.mobileNumber ?? '',
         })
+        if (typeof data?.role === 'string') {
+          localStorage.setItem('role', data.role.toUpperCase())
+          localStorage.setItem('authRole', data.role.toUpperCase())
+        }
+        if (typeof data?.approved === 'boolean') {
+          localStorage.setItem('authApproved', String(data.approved))
+        }
         setMessage('Dashboard ready.')
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to load dashboard data.'
@@ -62,6 +69,7 @@ export default function UserDashboardPage() {
     localStorage.removeItem('token')
     localStorage.removeItem('role')
     localStorage.removeItem('authRole')
+    localStorage.removeItem('authApproved')
     localStorage.removeItem('username')
     localStorage.removeItem('authToken')
     localStorage.removeItem('authLoginType')

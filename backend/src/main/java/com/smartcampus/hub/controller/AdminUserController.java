@@ -44,6 +44,11 @@ public class AdminUserController {
         return ResponseEntity.ok(userService.updateUserById(id, request));
     }
 
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<UserResponse> approveUserById(@PathVariable String id) {
+        return ResponseEntity.ok(userService.approveUserById(id));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<MessageResponse> deleteUserById(@PathVariable String id) {
         userService.deleteUserById(id);

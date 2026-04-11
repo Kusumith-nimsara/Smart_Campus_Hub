@@ -5,6 +5,17 @@ export default function UnauthorizedPage() {
   const navigate = useNavigate()
   const userName = localStorage.getItem('username') || 'User'
 
+  function handleLogout() {
+    localStorage.removeItem('token')
+    localStorage.removeItem('role')
+    localStorage.removeItem('authRole')
+    localStorage.removeItem('authApproved')
+    localStorage.removeItem('username')
+    localStorage.removeItem('authToken')
+    localStorage.removeItem('authLoginType')
+    navigate('/login', { replace: true })
+  }
+
   return (
     <main className="unauthorized-page">
       <section className="unauthorized-card">
@@ -21,7 +32,7 @@ export default function UnauthorizedPage() {
         </p>
 
         <div className="unauthorized-actions">
-          <button type="button" className="secondary" onClick={() => navigate('/login')}>
+          <button type="button" className="secondary" onClick={handleLogout}>
             Logout
           </button>
         </div>
