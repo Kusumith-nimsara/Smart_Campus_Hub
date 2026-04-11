@@ -1,14 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './AdminDashboardPage.css'
 
-function readRole() {
-  return localStorage.getItem('authRole') || localStorage.getItem('role') || 'ADMIN'
-}
-
 export default function AdminDashboardPage() {
   const navigate = useNavigate()
-  const role = useMemo(() => readRole(), [])
   const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
   const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
 
@@ -111,12 +106,6 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="admin-dashboard-grid">
-          <article className="admin-widget">
-            <h2>Role Access</h2>
-            <p>Current role attached to this session:</p>
-            <pre>{JSON.stringify({ role }, null, 2)}</pre>
-          </article>
-
           <article className="admin-widget pending-widget">
             <h2>Pending Approvals</h2>
             {loadingUsers ? (
