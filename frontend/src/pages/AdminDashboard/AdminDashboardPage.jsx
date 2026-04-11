@@ -6,6 +6,12 @@ export default function AdminDashboardPage() {
   const navigate = useNavigate()
   const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
   const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
+  const adminName = localStorage.getItem('username') || 'Admin User'
+  const today = new Date().toLocaleDateString(undefined, {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+  })
 
   const [users, setUsers] = useState([])
   const [loadingUsers, setLoadingUsers] = useState(true)
@@ -88,30 +94,99 @@ export default function AdminDashboardPage() {
 
   return (
     <main className="admin-dashboard-page">
-      <section className="admin-dashboard-card">
-        <div className="admin-dashboard-header">
-          <div>
-            <p className="admin-dashboard-kicker">Smart Campus Hub</p>
-            <h1>Admin Dashboard</h1>
-            <p className="admin-dashboard-subtitle">Welcome back. You are logged in as an ADMIN user.</p>
-          </div>
-          <div className="admin-dashboard-actions">
-            <button type="button" className="secondary" onClick={() => navigate('/profile')}>
-              Open Profile
-            </button>
-            <button type="button" onClick={handleLogout}>
-              Logout
-            </button>
-          </div>
+      <aside className="admin-sidebar">
+        <div className="admin-brand">
+          <div className="admin-logo">SC</div>
+          <h2>Smart Campus</h2>
         </div>
 
-        <div className="admin-dashboard-grid">
-          <article className="admin-widget pending-widget">
+        <div className="admin-identity">
+          <p className="label">Logged in as</p>
+          <p className="name">{adminName}</p>
+          <p className="role">ADMIN</p>
+        </div>
+
+        <nav className="admin-nav" aria-label="Admin Dashboard Navigation">
+          <button type="button" className="active">Dashboard</button>
+          <button type="button" onClick={() => navigate('/profile')}>Profile</button>
+          <button type="button">Notifications</button>
+          <button type="button">Resources</button>
+          <button type="button">Bookings</button>
+          <button type="button">Tickets</button>
+          <button type="button">User Management</button>
+        </nav>
+
+        <button type="button" className="admin-logout" onClick={handleLogout}>Logout</button>
+      </aside>
+
+      <section className="admin-content">
+        <header className="admin-topbar">
+          <div>
+            <h1>Welcome to Smart Campus</h1>
+            <p>{today}</p>
+          </div>
+          <button type="button" className="back-btn" onClick={() => navigate('/')}>
+            Back to Landing
+          </button>
+        </header>
+
+        <section className="admin-stats-grid">
+          <article className="stat-card account">
+            <h3>Your Account</h3>
+            <p className="primary">{adminName}</p>
+            <p className="secondary">{localStorage.getItem('username') || 'admin@smartcampus'}</p>
+          </article>
+          <article className="stat-card role-card">
+            <h3>Your Role</h3>
+            <p className="primary">ADMIN</p>
+            <p className="secondary">System Control</p>
+          </article>
+          <article className="stat-card status">
+            <h3>Status</h3>
+            <p className="primary">Account Active</p>
+            <p className="secondary">Secure Session</p>
+          </article>
+        </section>
+
+        <section className="admin-panel features">
+          <h2>Features Overview</h2>
+          <div className="feature-grid">
+            <article className="feature-item resources">
+              <h4>Resources</h4>
+              <p>Manage campus resources and labs</p>
+            </article>
+            <article className="feature-item bookings">
+              <h4>Bookings</h4>
+              <p>Schedule facilities and approvals</p>
+            </article>
+            <article className="feature-item tickets">
+              <h4>Tickets</h4>
+              <p>Track support and maintenance issues</p>
+            </article>
+            <article className="feature-item notifications">
+              <h4>Notifications</h4>
+              <p>Broadcast updates to campus users</p>
+            </article>
+          </div>
+        </section>
+
+        <section className="admin-bottom-grid">
+          <article className="admin-panel quick-actions">
+            <h2>Quick Actions</h2>
+            <div className="action-grid">
+              <button type="button" onClick={() => navigate('/profile')}>Manage Profile</button>
+              <button type="button">View Resources</button>
+              <button type="button">Create Booking</button>
+              <button type="button">Open Tickets</button>
+            </div>
+          </article>
+
+          <article className="admin-panel pending-widget">
             <h2>Pending Approvals</h2>
             {loadingUsers ? (
-              <p>Loading users...</p>
+              <p className="admin-muted">Loading users...</p>
             ) : pendingUsers.length === 0 ? (
-              <p>No pending user accounts.</p>
+              <p className="admin-muted">No pending user accounts.</p>
             ) : (
               <div className="pending-list">
                 {pendingUsers.map((user) => (
@@ -132,19 +207,7 @@ export default function AdminDashboardPage() {
               </div>
             )}
           </article>
-
-          <article className="admin-widget">
-            <h2>Admin Quick Actions</h2>
-            <div className="admin-widget-actions">
-              <button type="button" onClick={() => navigate('/profile')}>
-                Manage My Account
-              </button>
-              <button type="button" className="ghost" onClick={() => navigate('/')}>
-                Back to Landing
-              </button>
-            </div>
-          </article>
-        </div>
+        </section>
 
         <p className="admin-status">{statusMessage}</p>
       </section>
