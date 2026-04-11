@@ -17,9 +17,6 @@ export default function LandingPage() {
           <button type="button" onClick={() => navigate('/login')}>
             Continue with Google
           </button>
-          <button type="button" className="ghost" onClick={() => navigate('/dashboard')}>
-            Open Dashboard
-          </button>
         </div>
       </section>
     </main>
