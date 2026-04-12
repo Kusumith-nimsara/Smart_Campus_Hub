@@ -149,9 +149,6 @@ export default function AdminDashboardPage() {
           <button type="button" className="active">📊 Dashboard</button>
           <button type="button" onClick={() => navigate('/profile')}>👤 Profile</button>
           <button type="button">🔔 Notifications</button>
-          <button type="button">📁 Resources</button>
-          <button type="button">📅 Bookings</button>
-          <button type="button">🎫 Tickets</button>
           <button type="button" onClick={() => navigate('/admin/user-management')}>👥 User Management</button>
         </nav>
 

@@ -190,12 +190,12 @@ export default function ProfilePage() {
         <p className="sidebar-user-role">{loginType}</p>
 
         <nav className="sidebar-menu" aria-label="Dashboard Menu">
-          <button type="button" onClick={() => navigate(isAdmin ? '/admin-dashboard' : '/dashboard')}>Dashboard</button>
-          <button type="button" className="active" onClick={() => navigate('/profile')}>Profile</button>
-          <button type="button">Notifications</button>
-          <button type="button">Resources</button>
-          <button type="button">Bookings</button>
-          <button type="button">Tickets</button>
+          <button type="button" onClick={() => navigate(isAdmin ? '/admin-dashboard' : '/dashboard')}>📊 Dashboard</button>
+          <button type="button" className="active" onClick={() => navigate('/profile')}>👤 Profile</button>
+          <button type="button">🔔 Notifications</button>
+          {isAdmin && (
+            <button type="button" onClick={() => navigate('/admin/user-management')}>👥 User Management</button>
+          )}
         </nav>
 
         <button type="button" className="sidebar-logout" onClick={handleLogout}>
