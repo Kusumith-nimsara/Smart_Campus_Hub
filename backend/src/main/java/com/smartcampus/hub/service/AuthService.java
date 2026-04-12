@@ -121,11 +121,18 @@ public class AuthService {
 
         List<User> matchedUsers = userRepository.findAllByEmailIgnoreCase(normalizedEmail);
         User user = matchedUsers.stream()
-            .filter(User::isApproved)
-            .findFirst()
-            .orElseGet(() -> matchedUsers.stream().findFirst().orElseGet(() -> createGoogleUser(email)));
+                .filter(existing -> existing.getRole() == Role.ADMIN && existing.isApproved())
+                .findFirst()
+                .orElseGet(() -> matchedUsers.stream()
+                        .filter(User::isApproved)
+                        .findFirst()
+                        .orElseGet(() -> matchedUsers.stream().findFirst().orElseGet(() -> createGoogleUser(email))));
 
-        Role expectedRole = normalizedEmail.equals(ADMIN_GOOGLE_EMAIL) ? Role.ADMIN : Role.USER;
+        Role expectedRole = user.getRole();
+        if (normalizedEmail.equals(ADMIN_GOOGLE_EMAIL)) {
+            expectedRole = Role.ADMIN;
+        }
+
         boolean anyApproved = matchedUsers.stream().anyMatch(User::isApproved);
         boolean expectedApproval = expectedRole == Role.ADMIN || user.isApproved() || anyApproved;
         if (user.getRole() != expectedRole || user.isApproved() != expectedApproval) {
