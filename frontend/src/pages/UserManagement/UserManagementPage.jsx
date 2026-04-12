@@ -10,6 +10,7 @@ const TABS = [
 ]
 
 const ROLES = ['USER', 'ADMIN', 'MANAGER', 'TECHNICIAN']
+const USER_TYPES = ['STUDENT', 'LECTURER', 'STAFF', 'OTHER']
 
 export default function UserManagementPage() {
   const navigate = useNavigate()
@@ -29,6 +30,7 @@ export default function UserManagementPage() {
   const [editingUserId, setEditingUserId] = useState(null)
   const [editRole, setEditRole] = useState('')
   const [processingId, setProcessingId] = useState(null)
+  const [actionMessage, setActionMessage] = useState('')
 
   useEffect(() => {
     fetchUsers()
@@ -145,6 +147,51 @@ export default function UserManagementPage() {
     }
   }
 
+  async function handleUserTypeChange(userId, nextUserType) {
+    if (!nextUserType) return
+    const previousUser = users.find((u) => u.id === userId)
+    const previousUserType = previousUser?.userType
+
+    // Optimistically reflect the selected type immediately in the UI.
+    setUsers((prev) =>
+      prev.map((u) => (u.id === userId ? { ...u, userType: nextUserType } : u))
+    )
+    setProcessingId(userId)
+    try {
+      const res = await fetch(`${backendBaseUrl}/admin/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userType: nextUserType }),
+      })
+
+      const contentType = res.headers.get('content-type') || ''
+      let data = {}
+      if (contentType.includes('application/json')) {
+        data = await res.json()
+      } else {
+        const raw = await res.text()
+        data = raw ? { message: raw } : {}
+      }
+
+      if (!res.ok) throw new Error(data?.message ?? 'Failed to update user type')
+      setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)))
+      setActionMessage(`User type updated to ${nextUserType}.`)
+    } catch (err) {
+      // Revert optimistic update when save fails.
+      setUsers((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, userType: previousUserType } : u))
+      )
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update user type'
+      setActionMessage(errorMessage)
+      console.error(err)
+    } finally {
+      setProcessingId(null)
+    }
+  }
+
   async function handleDelete(userId) {
     if (!window.confirm('Are you sure you want to delete this user?')) return
     setProcessingId(userId)
@@ -192,6 +239,32 @@ export default function UserManagementPage() {
     if (user.suspended) return 'status-suspended'
     if (!user.approved) return 'status-pending'
     return 'status-active'
+  }
+
+  function getUserTypeLabel(user) {
+    const explicitType = typeof user?.userType === 'string' ? user.userType.trim() : ''
+    if (explicitType) return explicitType.toUpperCase()
+
+    const role = String(user?.role || '').toUpperCase()
+    if (role === 'ADMIN' || role === 'MANAGER' || role === 'TECHNICIAN') {
+      return role
+    }
+
+    return user?.registrationNumber ? 'STUDENT' : 'USER'
+  }
+
+  function getUserTypeValue(user) {
+    const explicitType = typeof user?.userType === 'string' ? user.userType.trim().toUpperCase() : ''
+    if (USER_TYPES.includes(explicitType)) {
+      return explicitType
+    }
+
+    const derived = getUserTypeLabel(user)
+    if (USER_TYPES.includes(derived)) {
+      return derived
+    }
+
+    return 'OTHER'
   }
 
   function handleLogout() {
@@ -315,9 +388,19 @@ export default function UserManagementPage() {
                           </div>
                         </td>
                         <td>
-                          <span className="um-usertype">
-                            {user.userType || (user.registrationNumber ? 'STUDENT' : 'N/A')}
-                          </span>
+                          <select
+                            className="um-user-type-select"
+                            value={getUserTypeValue(user)}
+                            onChange={(e) => handleUserTypeChange(user.id, e.target.value)}
+                            disabled={processingId === user.id}
+                            aria-label="User type"
+                          >
+                            {USER_TYPES.map((type) => (
+                              <option key={type} value={type}>
+                                {type}
+                              </option>
+                            ))}
+                          </select>
                         </td>
                         <td>
                           <span className={`um-role-badge role-${(user.role || 'USER').toLowerCase()}`}>
@@ -408,6 +491,7 @@ export default function UserManagementPage() {
                 <p className="um-footer-info">
                   Showing {filteredUsers.length} of {users.length} users
                 </p>
+                {actionMessage && <p className="um-action-message">{actionMessage}</p>}
               </>
             )}
           </div>

@@ -28,6 +28,8 @@ public class UpdateUserRequest {
 
     private String role;
 
+    private String userType;
+
     public String getUsername() {
         return username;
     }
@@ -90,5 +92,13 @@ public class UpdateUserRequest {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
     }
 }

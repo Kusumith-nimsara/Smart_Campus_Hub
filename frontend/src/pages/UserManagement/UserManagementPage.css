@@ -349,6 +349,24 @@
   color: #5a7189;
 }
 
+.um-user-type-select {
+  min-width: 130px;
+  padding: 6px 10px;
+  border: 1px solid #d5dfec;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #1a3650;
+  background: #f8fafd;
+  outline: none;
+  cursor: pointer;
+}
+
+.um-user-type-select:focus {
+  border-color: #5f7cff;
+}
+
 /* ───────────────────── Role Badge ───────────────────── */
 .um-role-badge {
   display: inline-block;
@@ -553,6 +571,14 @@
   margin: 14px 0 0;
   font-size: 13px;
   color: #8fa0b5;
+  padding-left: 4px;
+}
+
+.um-action-message {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3b5bdb;
   padding-left: 4px;
 }
 

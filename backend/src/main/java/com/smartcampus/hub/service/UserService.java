@@ -160,6 +160,11 @@ public class UserService {
         if (allowRoleUpdate && requestedRole != null && !requestedRole.isBlank()) {
             user.setRole(resolveRole(requestedRole));
         }
+
+        String requestedUserType = request.getUserType();
+        if (allowRoleUpdate && requestedUserType != null && !requestedUserType.isBlank()) {
+            user.setUserType(resolveUserType(requestedUserType));
+        }
     }
 
     private Role resolveRole(String requestedRole) {
@@ -168,6 +173,16 @@ public class UserService {
         } catch (IllegalArgumentException ex) {
             throw new IllegalArgumentException("Invalid role: " + requestedRole + ". Allowed: USER, ADMIN, MANAGER, TECHNICIAN");
         }
+    }
+
+    private String resolveUserType(String requestedUserType) {
+        String normalized = requestedUserType.trim().toUpperCase();
+        return switch (normalized) {
+            case "STUDENT", "LECTURER", "STAFF", "OTHER" -> normalized;
+            default -> throw new IllegalArgumentException(
+                    "Invalid userType: " + requestedUserType + ". Allowed: STUDENT, LECTURER, STAFF, OTHER"
+            );
+        };
     }
 
     public UserResponse suspendUserById(String id) {
