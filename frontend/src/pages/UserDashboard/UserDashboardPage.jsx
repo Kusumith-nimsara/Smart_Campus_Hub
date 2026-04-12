@@ -95,27 +95,27 @@ export default function UserDashboardPage() {
         <p className="sidebar-user-role">USER</p>
 
         <nav className="sidebar-menu" aria-label="Dashboard Menu">
-          <button type="button" className="active">Dashboard</button>
-          <button type="button" onClick={() => navigate('/profile')}>Profile</button>
-          <button type="button">Notifications</button>
-          <button type="button">Resources</button>
-          <button type="button">Bookings</button>
-          <button type="button">Tickets</button>
+          <button type="button" className="active">📊 Dashboard</button>
+          <button type="button" onClick={() => navigate('/profile')}>👤 Profile</button>
+          <button type="button">🔔 Notifications</button>
+          <button type="button">📁 Resources</button>
+          <button type="button">📅 Bookings</button>
+          <button type="button">🎫 Tickets</button>
         </nav>
 
         <button type="button" className="sidebar-logout" onClick={handleLogout}>
-          Logout
+          ↪ Logout
         </button>
       </aside>
 
       <section className="user-content">
         <header className="user-topbar">
           <div>
-            <h1>Welcome back, {first}!</h1>
+            <h1>Welcome back, {first}! 👋</h1>
             <p>{today}</p>
           </div>
           <button type="button" className="user-top-action" onClick={() => navigate('/')}>
-            Back to Landing
+            ← Back to Landing
           </button>
         </header>
 
@@ -140,7 +140,7 @@ export default function UserDashboardPage() {
 
         <div className="dashboard-widgets">
           <article className="widget profile-summary">
-            <h2>Your Profile</h2>
+            <h2>📋 Your Profile</h2>
             {loading ? (
               <p className="widget-note">Loading...</p>
             ) : (
@@ -152,21 +152,21 @@ export default function UserDashboardPage() {
               </div>
             )}
             <button type="button" className="link-btn" onClick={() => navigate('/profile')}>
-              Edit Profile
+              Edit Profile →
             </button>
           </article>
 
           <article className="widget notifications">
-            <h2>Notifications</h2>
+            <h2>🔔 Notifications</h2>
             <p className="widget-note">No new notifications</p>
-            <button type="button" className="link-btn">View All</button>
+            <button type="button" className="link-btn">View All →</button>
           </article>
 
           <article className="widget quick-links">
-            <h2>Quick Links</h2>
-            <button type="button">Resources</button>
-            <button type="button">Bookings</button>
-            <button type="button">Tickets</button>
+            <h2>⚡ Quick Links</h2>
+            <button type="button">📁 Resources</button>
+            <button type="button">📅 Bookings</button>
+            <button type="button">🎫 Tickets</button>
           </article>
         </div>
 

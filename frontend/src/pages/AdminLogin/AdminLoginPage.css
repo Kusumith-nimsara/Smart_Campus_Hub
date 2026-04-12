@@ -1,92 +1,112 @@
+/* ═══════════════════════════════════════════════════════
+   ADMIN LOGIN — Light Centered Card
+   ═══════════════════════════════════════════════════════ */
+
 .admin-page {
   min-height: 100vh;
   display: grid;
   place-items: center;
   padding: 24px;
+  background: var(--bg-base);
 }
 
 .admin-card {
   width: min(500px, 95vw);
-  border-radius: 24px;
-  border: 1px solid var(--border-soft);
-  background:
-    radial-gradient(circle at 80% 16%, rgba(15, 147, 156, 0.18), transparent 32%),
-    var(--surface-glass);
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--border-light);
+  background: #ffffff;
   box-shadow: var(--shadow-lg);
-  backdrop-filter: blur(6px);
-  padding: 30px;
+  padding: 36px;
   animation: rise-in 0.45s ease;
 }
 
 .back-link {
   border: 0;
   background: transparent;
-  color: #216b87;
-  font-weight: 700;
+  color: var(--primary);
+  font-weight: 600;
   padding: 0;
   cursor: pointer;
+  font-size: 13px;
+}
+
+.back-link:hover {
+  color: var(--primary-dark);
+  transform: none;
+  box-shadow: none;
 }
 
 .admin-card h1 {
-  margin: 14px 0 6px;
+  margin: 16px 0 6px;
   color: var(--text-primary);
+  font-size: clamp(28px, 4vw, 36px);
 }
 
 .admin-subtitle {
-  margin: 0 0 18px;
+  margin: 0 0 20px;
   color: var(--text-secondary);
+  font-size: 14px;
 }
 
 .admin-form {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .admin-form label {
   display: grid;
-  gap: 6px;
-  color: #204050;
+  gap: 5px;
+  color: var(--text-secondary);
   font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .admin-form input {
-  border: 1px solid var(--border-strong);
-  border-radius: 12px;
-  padding: 11px;
-  background: var(--surface-soft);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  background: var(--bg-input);
   font-size: 15px;
+  color: var(--text-primary);
 }
+
+.admin-form input::placeholder { color: var(--text-muted); }
 
 .admin-form button {
-  margin-top: 4px;
+  margin-top: 6px;
   border: 0;
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: var(--radius-sm);
+  padding: 13px;
   font-weight: 700;
   color: #ffffff;
-  background: linear-gradient(125deg, var(--brand-start), var(--brand-end));
+  background: var(--gradient-primary);
   cursor: pointer;
+  box-shadow: 0 4px 16px rgba(108, 92, 231, 0.2);
 }
 
-.admin-form button:disabled {
-  opacity: 0.7;
-  cursor: wait;
+.admin-form button:hover:not(:disabled) {
+  box-shadow: 0 8px 24px rgba(108, 92, 231, 0.3);
 }
+
+.admin-form button:disabled { opacity: 0.55; cursor: wait; }
 
 .admin-status {
-  margin: 14px 0 10px;
-  color: #1d4a5c;
+  margin: 16px 0 10px;
+  color: var(--primary);
   font-weight: 600;
+  font-size: 14px;
 }
 
 .admin-response {
   margin: 0;
-  border-radius: 14px;
-  border: 1px solid var(--border-soft);
-  background: #eff8fc;
-  color: #123541;
-  font-size: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  font-size: 11px;
   padding: 12px;
-  max-height: 220px;
+  max-height: 200px;
   overflow: auto;
 }

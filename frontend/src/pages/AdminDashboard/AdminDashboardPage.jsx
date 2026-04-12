@@ -146,26 +146,26 @@ export default function AdminDashboardPage() {
         </div>
 
         <nav className="admin-nav" aria-label="Admin Dashboard Navigation">
-          <button type="button" className="active">Dashboard</button>
-          <button type="button" onClick={() => navigate('/profile')}>Profile</button>
-          <button type="button">Notifications</button>
-          <button type="button">Resources</button>
-          <button type="button">Bookings</button>
-          <button type="button">Tickets</button>
-          <button type="button" onClick={() => navigate('/admin/user-management')}>User Management</button>
+          <button type="button" className="active">📊 Dashboard</button>
+          <button type="button" onClick={() => navigate('/profile')}>👤 Profile</button>
+          <button type="button">🔔 Notifications</button>
+          <button type="button">📁 Resources</button>
+          <button type="button">📅 Bookings</button>
+          <button type="button">🎫 Tickets</button>
+          <button type="button" onClick={() => navigate('/admin/user-management')}>👥 User Management</button>
         </nav>
 
-        <button type="button" className="admin-logout" onClick={handleLogout}>Logout</button>
+        <button type="button" className="admin-logout" onClick={handleLogout}>↪ Logout</button>
       </aside>
 
       <section className="admin-content">
         <header className="admin-topbar">
           <div>
-            <h1>Welcome to Smart Campus</h1>
+            <h1>Welcome to Smart Campus 👋</h1>
             <p>{today}</p>
           </div>
           <button type="button" className="back-btn" onClick={() => navigate('/')}>
-            Back to Landing
+            ← Back to Landing
           </button>
         </header>
 
@@ -182,28 +182,28 @@ export default function AdminDashboardPage() {
           </article>
           <article className="stat-card status">
             <h3>Status</h3>
-            <p className="primary">{accountActive ? 'Account Active' : 'Suspended'}</p>
+            <p className="primary">{accountActive ? 'Active' : 'Suspended'}</p>
             <p className="secondary">{accountActive ? 'Secure Session' : 'Access Limited'}</p>
           </article>
         </section>
 
         <section className="admin-panel features">
-          <h2>Features Overview</h2>
+          <h2>⚡ Features Overview</h2>
           <div className="feature-grid">
             <article className="feature-item resources">
-              <h4>Resources</h4>
+              <h4>📁 Resources</h4>
               <p>Manage campus resources and labs</p>
             </article>
             <article className="feature-item bookings">
-              <h4>Bookings</h4>
+              <h4>📅 Bookings</h4>
               <p>Schedule facilities and approvals</p>
             </article>
             <article className="feature-item tickets">
-              <h4>Tickets</h4>
+              <h4>🎫 Tickets</h4>
               <p>Track support and maintenance issues</p>
             </article>
             <article className="feature-item notifications">
-              <h4>Notifications</h4>
+              <h4>🔔 Notifications</h4>
               <p>Broadcast updates to campus users</p>
             </article>
           </div>
@@ -211,7 +211,7 @@ export default function AdminDashboardPage() {
 
         <section className="admin-bottom-grid">
           <article className="admin-panel quick-actions">
-            <h2>Quick Actions</h2>
+            <h2>🚀 Quick Actions</h2>
             <div className="action-grid">
               <button type="button" onClick={() => navigate('/profile')}>Manage Profile</button>
               <button type="button">View Resources</button>
@@ -221,7 +221,7 @@ export default function AdminDashboardPage() {
           </article>
 
           <article className="admin-panel pending-widget">
-            <h2>Pending Approvals</h2>
+            <h2>⏳ Pending Approvals</h2>
             {loadingUsers ? (
               <p className="admin-muted">Loading users...</p>
             ) : pendingUsers.length === 0 ? (
