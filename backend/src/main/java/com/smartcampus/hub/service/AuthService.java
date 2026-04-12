@@ -154,6 +154,13 @@ public class AuthService {
 
     private User createGoogleUser(String email) {
         String normalizedEmail = email.trim().toLowerCase();
+
+        // Double-check: maybe a user exists with a slightly different casing
+        java.util.Optional<User> existing = userRepository.findByEmailIgnoreCase(normalizedEmail);
+        if (existing.isPresent()) {
+            return existing.get();
+        }
+
         String username = generateUniqueUsername(normalizedEmail);
         Role role = normalizedEmail.equals(ADMIN_GOOGLE_EMAIL) ? Role.ADMIN : Role.USER;
         User user = new User(
@@ -163,7 +170,13 @@ public class AuthService {
             role,
             role == Role.ADMIN
         );
-        return userRepository.save(user);
+        try {
+            return userRepository.save(user);
+        } catch (org.springframework.dao.DuplicateKeyException ex) {
+            // Race condition: another request created the user simultaneously
+            return userRepository.findByEmailIgnoreCase(normalizedEmail)
+                    .orElseThrow(() -> new IllegalArgumentException("Failed to create or find Google user"));
+        }
     }
 
     private String generateUniqueUsername(String email) {

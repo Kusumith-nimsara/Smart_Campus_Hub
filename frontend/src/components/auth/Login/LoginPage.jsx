@@ -44,7 +44,15 @@ export default function LoginPage() {
         body: JSON.stringify({ idToken }),
       })
 
-      const data = await response.json()
+      const contentType = response.headers.get('content-type') || ''
+      let data = {}
+      if (contentType.includes('application/json')) {
+        data = await response.json()
+      } else {
+        const rawBody = await response.text()
+        data = rawBody ? { message: rawBody } : {}
+      }
+
       if (!response.ok) {
         throw new Error(data?.message ?? 'Google auth failed.')
       }

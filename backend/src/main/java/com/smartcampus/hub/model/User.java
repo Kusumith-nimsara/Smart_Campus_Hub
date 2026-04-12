@@ -28,7 +28,7 @@ public class User {
 
     private Role role = Role.USER;
 
-    private boolean approved;
+    private Boolean approved = Boolean.FALSE;
 
     public User() {
     }
@@ -108,7 +108,7 @@ public class User {
     }
 
     public boolean isApproved() {
-        return approved;
+        return Boolean.TRUE.equals(approved);
     }
 
     public void setApproved(boolean approved) {
