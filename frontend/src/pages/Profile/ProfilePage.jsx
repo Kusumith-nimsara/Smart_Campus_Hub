@@ -190,7 +190,7 @@ export default function ProfilePage() {
         <p className="sidebar-user-role">{loginType}</p>
 
         <nav className="sidebar-menu" aria-label="Dashboard Menu">
-          <button type="button" onClick={() => navigate('/dashboard')}>Dashboard</button>
+          <button type="button" onClick={() => navigate(isAdmin ? '/admin-dashboard' : '/dashboard')}>Dashboard</button>
           <button type="button" className="active" onClick={() => navigate('/profile')}>Profile</button>
           <button type="button">Notifications</button>
           <button type="button">Resources</button>
@@ -213,25 +213,6 @@ export default function ProfilePage() {
             Back to Landing
           </button>
         </header>
-
-        <div className="stats-grid">
-          <article className="stat-card">
-            <h3>Account Status</h3>
-            <p>ACTIVE</p>
-          </article>
-          <article className="stat-card">
-            <h3>User Type</h3>
-            <p>{isAdmin ? 'ADMIN' : 'STUDENT'}</p>
-          </article>
-          <article className="stat-card">
-            <h3>Role</h3>
-            <p>{loginType}</p>
-          </article>
-          <article className="stat-card">
-            <h3>Last Updated</h3>
-            <p>{today}</p>
-          </article>
-        </div>
 
         <div className="profile-widgets">
           <article className="widget profile-widget">

@@ -14,6 +14,11 @@ export default function AdminDashboardPage() {
   })
 
   const [users, setUsers] = useState([])
+  const [userType, setUserType] = useState('ADMIN')
+  const [accountName, setAccountName] = useState(adminName)
+  const [accountEmail, setAccountEmail] = useState(localStorage.getItem('username') || 'admin@smartcampus')
+  const [accountRole, setAccountRole] = useState('ADMIN')
+  const [accountActive, setAccountActive] = useState(true)
   const [loadingUsers, setLoadingUsers] = useState(true)
   const [processingUserId, setProcessingUserId] = useState('')
   const [statusMessage, setStatusMessage] = useState('Loading users...')
@@ -50,6 +55,40 @@ export default function AdminDashboardPage() {
     }
 
     loadUsers()
+  }, [backendBaseUrl, token])
+
+  useEffect(() => {
+    async function loadCurrentUser() {
+      if (!token) {
+        return
+      }
+
+      try {
+        const response = await fetch(`${backendBaseUrl}/user/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+
+        const data = await response.json()
+        if (!response.ok) {
+          return
+        }
+
+        const nextType = String(data?.userType || data?.role || 'ADMIN').toUpperCase()
+        const nextRole = String(data?.role || 'ADMIN').toUpperCase()
+        const displayName = [data?.firstName, data?.lastName].filter(Boolean).join(' ').trim()
+        setUserType(nextType)
+        setAccountRole(nextRole)
+        setAccountName(displayName || data?.username || adminName)
+        setAccountEmail(data?.email || localStorage.getItem('username') || 'admin@smartcampus')
+        setAccountActive(!data?.suspended)
+      } catch {
+        // Keep default user type when profile lookup fails.
+      }
+    }
+
+    loadCurrentUser()
   }, [backendBaseUrl, token])
 
   async function handleApproveUser(userId) {
@@ -133,18 +172,18 @@ export default function AdminDashboardPage() {
         <section className="admin-stats-grid">
           <article className="stat-card account">
             <h3>Your Account</h3>
-            <p className="primary">{adminName}</p>
-            <p className="secondary">{localStorage.getItem('username') || 'admin@smartcampus'}</p>
+            <p className="primary">{accountName}</p>
+            <p className="secondary">{accountEmail}</p>
           </article>
           <article className="stat-card role-card">
             <h3>Your Role</h3>
-            <p className="primary">ADMIN</p>
-            <p className="secondary">System Control</p>
+            <p className="primary">{accountRole}</p>
+            <p className="secondary">{userType}</p>
           </article>
           <article className="stat-card status">
             <h3>Status</h3>
-            <p className="primary">Account Active</p>
-            <p className="secondary">Secure Session</p>
+            <p className="primary">{accountActive ? 'Account Active' : 'Suspended'}</p>
+            <p className="secondary">{accountActive ? 'Secure Session' : 'Access Limited'}</p>
           </article>
         </section>
 
