@@ -10,6 +10,8 @@ public class UserResponse {
     private String mobileNumber;
     private String role;
     private boolean approved;
+    private String userType;
+    private boolean suspended;
 
     public UserResponse(
             String id,
@@ -20,7 +22,9 @@ public class UserResponse {
             String registrationNumber,
             String mobileNumber,
             String role,
-            boolean approved
+            boolean approved,
+            String userType,
+            boolean suspended
     ) {
         this.id = id;
         this.username = username;
@@ -31,6 +35,8 @@ public class UserResponse {
         this.mobileNumber = mobileNumber;
         this.role = role;
         this.approved = approved;
+        this.userType = userType;
+        this.suspended = suspended;
     }
 
     public String getId() {
@@ -67,5 +73,13 @@ public class UserResponse {
 
     public boolean isApproved() {
         return approved;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public boolean isSuspended() {
+        return suspended;
     }
 }

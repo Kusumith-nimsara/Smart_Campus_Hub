@@ -7,6 +7,7 @@ import ProfilePage from './pages/Profile/ProfilePage'
 import AdminDashboardPage from './pages/AdminDashboard/AdminDashboardPage'
 import UnauthorizedPage from './pages/Unauthorized/UnauthorizedPage'
 import UserDashboardPage from './pages/UserDashboard/UserDashboardPage'
+import UserManagementPage from './pages/UserManagement/UserManagementPage'
 
 function App() {
   return (
@@ -51,6 +52,14 @@ function App() {
         }
       />
       <Route path="/admindashboard" element={<Navigate to="/admin-dashboard" replace />} />
+      <Route
+        path="/admin/user-management"
+        element={
+          <ProtectedRoute requiredRole="ADMIN">
+            <UserManagementPage />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/user-dashboard" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

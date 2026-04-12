@@ -1,0 +1,418 @@
+import { useEffect, useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
+import './UserManagementPage.css'
+
+const TABS = [
+  { key: 'all', label: 'All Users' },
+  { key: 'pending', label: 'Pending Approval' },
+  { key: 'managers', label: 'Managers' },
+  { key: 'technicians', label: 'Technicians' },
+]
+
+const ROLES = ['USER', 'ADMIN', 'MANAGER', 'TECHNICIAN']
+
+export default function UserManagementPage() {
+  const navigate = useNavigate()
+  const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
+  const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
+  const adminName = localStorage.getItem('username') || 'Admin'
+  const today = new Date().toLocaleDateString(undefined, {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  })
+
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [editingUserId, setEditingUserId] = useState(null)
+  const [editRole, setEditRole] = useState('')
+  const [processingId, setProcessingId] = useState(null)
+
+  useEffect(() => {
+    fetchUsers()
+  }, [])
+
+  async function fetchUsers() {
+    if (!token) {
+      setLoading(false)
+      return
+    }
+    try {
+      const res = await fetch(`${backendBaseUrl}/admin/users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.message ?? 'Failed to load users')
+      setUsers(Array.isArray(data) ? data : [])
+    } catch (err) {
+      console.error('Failed to fetch users:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const filteredUsers = useMemo(() => {
+    let result = users
+
+    if (activeTab === 'pending') {
+      result = result.filter((u) => !u.approved)
+    } else if (activeTab === 'managers') {
+      result = result.filter((u) => u.role === 'MANAGER')
+    } else if (activeTab === 'technicians') {
+      result = result.filter((u) => u.role === 'TECHNICIAN')
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase()
+      result = result.filter(
+        (u) =>
+          (u.firstName || '').toLowerCase().includes(q) ||
+          (u.lastName || '').toLowerCase().includes(q) ||
+          (u.username || '').toLowerCase().includes(q) ||
+          (u.email || '').toLowerCase().includes(q)
+      )
+    }
+
+    return result
+  }, [users, activeTab, searchQuery])
+
+  function getTabCount(key) {
+    if (key === 'all') return users.length
+    if (key === 'pending') return users.filter((u) => !u.approved).length
+    if (key === 'managers') return users.filter((u) => u.role === 'MANAGER').length
+    if (key === 'technicians') return users.filter((u) => u.role === 'TECHNICIAN').length
+    return 0
+  }
+
+  async function handleApprove(userId) {
+    setProcessingId(userId)
+    try {
+      const res = await fetch(`${backendBaseUrl}/admin/users/${userId}/approve`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.message ?? 'Failed to approve')
+      setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)))
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setProcessingId(null)
+    }
+  }
+
+  async function handleToggleSuspend(userId, currentlySuspended) {
+    setProcessingId(userId)
+    const action = currentlySuspended ? 'unsuspend' : 'suspend'
+    try {
+      const res = await fetch(`${backendBaseUrl}/admin/users/${userId}/${action}`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.message ?? `Failed to ${action}`)
+      setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)))
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setProcessingId(null)
+    }
+  }
+
+  async function handleSaveRole(userId) {
+    if (!editRole) return
+    setProcessingId(userId)
+    try {
+      const res = await fetch(`${backendBaseUrl}/admin/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ role: editRole }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.message ?? 'Failed to update role')
+      setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)))
+      setEditingUserId(null)
+      setEditRole('')
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setProcessingId(null)
+    }
+  }
+
+  async function handleDelete(userId) {
+    if (!window.confirm('Are you sure you want to delete this user?')) return
+    setProcessingId(userId)
+    try {
+      const res = await fetch(`${backendBaseUrl}/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data?.message ?? 'Failed to delete')
+      }
+      setUsers((prev) => prev.filter((u) => u.id !== userId))
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setProcessingId(null)
+    }
+  }
+
+  function startEditRole(user) {
+    setEditingUserId(user.id)
+    setEditRole(user.role)
+  }
+
+  function cancelEdit() {
+    setEditingUserId(null)
+    setEditRole('')
+  }
+
+  function getDisplayName(user) {
+    if (user.firstName && user.lastName) return `${user.firstName} ${user.lastName}`
+    if (user.firstName) return user.firstName
+    if (user.username) return user.username
+    return 'Unknown'
+  }
+
+  function getStatusLabel(user) {
+    if (user.suspended) return 'Suspended'
+    if (!user.approved) return 'Pending'
+    return 'Active'
+  }
+
+  function getStatusClass(user) {
+    if (user.suspended) return 'status-suspended'
+    if (!user.approved) return 'status-pending'
+    return 'status-active'
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('token')
+    localStorage.removeItem('role')
+    localStorage.removeItem('authRole')
+    localStorage.removeItem('authApproved')
+    localStorage.removeItem('username')
+    localStorage.removeItem('authToken')
+    localStorage.removeItem('authLoginType')
+    navigate('/login')
+  }
+
+  return (
+    <main className="um-page">
+      <aside className="um-sidebar">
+        <div className="um-brand">
+          <div className="um-logo">SC</div>
+          <h2>Smart Campus</h2>
+        </div>
+
+        <div className="um-identity">
+          <p className="um-label">Logged in as</p>
+          <p className="um-name">{adminName}</p>
+          <p className="um-role">ADMIN</p>
+        </div>
+
+        <nav className="um-nav" aria-label="Admin Navigation">
+          <button type="button" onClick={() => navigate('/profile')}>
+            <span className="nav-icon">👤</span> Profile
+          </button>
+          <button type="button">
+            <span className="nav-icon">🔔</span> Notifications
+          </button>
+          <button type="button" onClick={() => navigate('/admin-dashboard')}>
+            <span className="nav-icon">📊</span> Admin Dashboard
+          </button>
+          <button type="button" className="active">
+            <span className="nav-icon">👥</span> User Management
+          </button>
+        </nav>
+
+        <button type="button" className="um-logout" onClick={handleLogout}>
+          Logout
+        </button>
+      </aside>
+
+      <section className="um-content">
+        <header className="um-topbar">
+          <div>
+            <h1 className="um-topbar-name">{adminName}</h1>
+            <p className="um-topbar-date">{today}</p>
+          </div>
+          <div className="um-topbar-avatar">
+            <span>{adminName.charAt(0).toUpperCase()}</span>
+            <div className="um-topbar-info">
+              <p className="um-topbar-uname">{adminName}</p>
+              <p className="um-topbar-urole">ADMIN</p>
+            </div>
+          </div>
+        </header>
+
+        <section className="um-main">
+          <div className="um-header">
+            <h2>User Management</h2>
+            <p className="um-subtitle">Manage user roles and account approvals</p>
+          </div>
+
+          <div className="um-tabs">
+            {TABS.map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                className={`um-tab ${activeTab === tab.key ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab.key)}
+              >
+                {tab.label} ({getTabCount(tab.key)})
+              </button>
+            ))}
+          </div>
+
+          <div className="um-search-wrapper">
+            <input
+              type="text"
+              className="um-search"
+              placeholder="Search by name or email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
+          <div className="um-table-container">
+            {loading ? (
+              <div className="um-loading">
+                <div className="um-spinner" />
+                <p>Loading users...</p>
+              </div>
+            ) : filteredUsers.length === 0 ? (
+              <div className="um-empty">
+                <p>No users found.</p>
+              </div>
+            ) : (
+              <>
+                <table className="um-table">
+                  <thead>
+                    <tr>
+                      <th>USER</th>
+                      <th>USER TYPE</th>
+                      <th>ROLE</th>
+                      <th>STATUS</th>
+                      <th>ACTIONS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredUsers.map((user) => (
+                      <tr key={user.id}>
+                        <td>
+                          <div className="um-user-cell">
+                            <p className="um-user-name">{getDisplayName(user)}</p>
+                            <p className="um-user-email">{user.email || 'No email'}</p>
+                          </div>
+                        </td>
+                        <td>
+                          <span className="um-usertype">
+                            {user.userType || (user.registrationNumber ? 'STUDENT' : 'N/A')}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`um-role-badge role-${(user.role || 'USER').toLowerCase()}`}>
+                            {user.role || 'USER'}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`um-status-badge ${getStatusClass(user)}`}>
+                            {getStatusLabel(user)}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="um-actions">
+                            {editingUserId === user.id ? (
+                              <div className="um-edit-role-group">
+                                <select
+                                  value={editRole}
+                                  onChange={(e) => setEditRole(e.target.value)}
+                                  className="um-role-select"
+                                >
+                                  {ROLES.map((r) => (
+                                    <option key={r} value={r}>
+                                      {r}
+                                    </option>
+                                  ))}
+                                </select>
+                                <button
+                                  type="button"
+                                  className="um-btn save"
+                                  onClick={() => handleSaveRole(user.id)}
+                                  disabled={processingId === user.id}
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  type="button"
+                                  className="um-btn cancel"
+                                  onClick={cancelEdit}
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            ) : (
+                              <>
+                                <button
+                                  type="button"
+                                  className="um-btn edit"
+                                  onClick={() => startEditRole(user)}
+                                >
+                                  Edit Role
+                                </button>
+                                {!user.approved && (
+                                  <button
+                                    type="button"
+                                    className="um-btn approve"
+                                    onClick={() => handleApprove(user.id)}
+                                    disabled={processingId === user.id}
+                                  >
+                                    Approve
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  className={`um-btn ${user.suspended ? 'unsuspend' : 'suspend'}`}
+                                  onClick={() => handleToggleSuspend(user.id, user.suspended)}
+                                  disabled={processingId === user.id}
+                                >
+                                  {user.suspended ? 'Activate' : 'Suspend'}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="um-btn delete"
+                                  onClick={() => handleDelete(user.id)}
+                                  disabled={processingId === user.id}
+                                  title="Delete user"
+                                >
+                                  🗑
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <p className="um-footer-info">
+                  Showing {filteredUsers.length} of {users.length} users
+                </p>
+              </>
+            )}
+          </div>
+        </section>
+      </section>
+    </main>
+  )
+}

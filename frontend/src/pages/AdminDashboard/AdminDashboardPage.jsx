@@ -113,7 +113,7 @@ export default function AdminDashboardPage() {
           <button type="button">Resources</button>
           <button type="button">Bookings</button>
           <button type="button">Tickets</button>
-          <button type="button">User Management</button>
+          <button type="button" onClick={() => navigate('/admin/user-management')}>User Management</button>
         </nav>
 
         <button type="button" className="admin-logout" onClick={handleLogout}>Logout</button>

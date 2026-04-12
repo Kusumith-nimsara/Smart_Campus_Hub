@@ -49,6 +49,16 @@ public class AdminUserController {
         return ResponseEntity.ok(userService.approveUserById(id));
     }
 
+    @PutMapping("/{id}/suspend")
+    public ResponseEntity<UserResponse> suspendUserById(@PathVariable String id) {
+        return ResponseEntity.ok(userService.suspendUserById(id));
+    }
+
+    @PutMapping("/{id}/unsuspend")
+    public ResponseEntity<UserResponse> unsuspendUserById(@PathVariable String id) {
+        return ResponseEntity.ok(userService.unsuspendUserById(id));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<MessageResponse> deleteUserById(@PathVariable String id) {
         userService.deleteUserById(id);

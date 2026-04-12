@@ -166,8 +166,26 @@ public class UserService {
         try {
             return Role.valueOf(requestedRole.trim().toUpperCase());
         } catch (IllegalArgumentException ex) {
-            throw new IllegalArgumentException("Invalid role: " + requestedRole + ". Allowed: USER, ADMIN");
+            throw new IllegalArgumentException("Invalid role: " + requestedRole + ". Allowed: USER, ADMIN, MANAGER, TECHNICIAN");
         }
+    }
+
+    public UserResponse suspendUserById(String id) {
+        String safeId = Objects.requireNonNull(id, "User id cannot be null");
+        User user = Objects.requireNonNull(userRepository.findById(safeId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found")));
+        user.setSuspended(true);
+        userRepository.save(user);
+        return toUserResponse(user);
+    }
+
+    public UserResponse unsuspendUserById(String id) {
+        String safeId = Objects.requireNonNull(id, "User id cannot be null");
+        User user = Objects.requireNonNull(userRepository.findById(safeId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found")));
+        user.setSuspended(false);
+        userRepository.save(user);
+        return toUserResponse(user);
     }
 
     private UserResponse toUserResponse(User user) {
@@ -179,8 +197,10 @@ public class UserService {
                 user.getLastName(),
                 user.getRegistrationNumber(),
                 user.getMobileNumber(),
-            user.getRole().name(),
-            user.isApproved()
+                user.getRole().name(),
+                user.isApproved(),
+                user.getUserType(),
+                user.isSuspended()
         );
     }
 }

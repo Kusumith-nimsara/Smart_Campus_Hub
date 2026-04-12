@@ -28,7 +28,11 @@ public class User {
 
     private Role role = Role.USER;
 
-    private Boolean approved = Boolean.FALSE;
+    private boolean approved;
+
+    private String userType;
+
+    private boolean suspended = false;
 
     public User() {
     }
@@ -145,5 +149,21 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public boolean isSuspended() {
+        return suspended;
+    }
+
+    public void setSuspended(boolean suspended) {
+        this.suspended = suspended;
     }
 }
