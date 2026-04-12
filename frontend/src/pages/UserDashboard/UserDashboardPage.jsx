@@ -16,6 +16,9 @@ export default function UserDashboardPage() {
     lastName: '',
     registrationNumber: '',
     mobileNumber: '',
+    role: '',
+    userType: '',
+    suspended: false,
   })
 
   useEffect(() => {
@@ -45,6 +48,9 @@ export default function UserDashboardPage() {
           lastName: data?.lastName ?? '',
           registrationNumber: data?.registrationNumber ?? '',
           mobileNumber: data?.mobileNumber ?? '',
+          role: data?.role ?? '',
+          userType: data?.userType ?? '',
+          suspended: data?.suspended ?? false,
         })
         if (typeof data?.role === 'string') {
           localStorage.setItem('role', data.role.toUpperCase())
@@ -78,6 +84,9 @@ export default function UserDashboardPage() {
 
   const first = profile.firstName || profile.username || 'User'
   const fullName = `${profile.firstName} ${profile.lastName}`.trim() || profile.username || 'Campus User'
+  const displayRole = profile.role || localStorage.getItem('authRole') || 'USER'
+  const displayUserType = profile.userType || 'STUDENT'
+  const accountStatus = profile.suspended ? 'SUSPENDED' : 'ACTIVE'
   const today = new Date().toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'short',
@@ -92,7 +101,7 @@ export default function UserDashboardPage() {
 
         <p className="sidebar-user-label">Logged in as</p>
         <p className="sidebar-user-name">{fullName}</p>
-        <p className="sidebar-user-role">USER</p>
+        <p className="sidebar-user-role">{displayRole}</p>
 
         <nav className="sidebar-menu" aria-label="Dashboard Menu">
           <button type="button" className="active">📊 Dashboard</button>
@@ -119,15 +128,15 @@ export default function UserDashboardPage() {
         <div className="stats-grid">
           <article className="stat-card">
             <h3>Account Status</h3>
-            <p>ACTIVE</p>
+            <p>{accountStatus}</p>
           </article>
           <article className="stat-card">
             <h3>User Type</h3>
-            <p>STUDENT</p>
+            <p>{displayUserType}</p>
           </article>
           <article className="stat-card">
             <h3>Role</h3>
-            <p>USER</p>
+            <p>{displayRole}</p>
           </article>
           <article className="stat-card">
             <h3>Last Updated</h3>
@@ -161,9 +170,8 @@ export default function UserDashboardPage() {
 
           <article className="widget quick-links">
             <h2>⚡ Quick Links</h2>
-            <button type="button">📁 Resources</button>
-            <button type="button">📅 Bookings</button>
-            <button type="button">🎫 Tickets</button>
+            <button type="button" onClick={() => navigate('/profile')}>👤 Edit Profile</button>
+            <button type="button" onClick={() => navigate('/')}>🏠 Landing Page</button>
           </article>
         </div>
 

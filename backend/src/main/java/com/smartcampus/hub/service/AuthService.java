@@ -120,6 +120,11 @@ public class AuthService {
         String normalizedEmail = email.trim().toLowerCase();
 
         List<User> matchedUsers = userRepository.findAllByEmailIgnoreCase(normalizedEmail);
+
+        // Check if ANY account with this email is already approved
+        boolean anyApproved = matchedUsers.stream().anyMatch(User::isApproved);
+
+        // Pick the best user: prefer approved admin, then approved user, then any
         User user = matchedUsers.stream()
                 .filter(existing -> existing.getRole() == Role.ADMIN && existing.isApproved())
                 .findFirst()
@@ -133,12 +138,23 @@ public class AuthService {
             expectedRole = Role.ADMIN;
         }
 
-        boolean anyApproved = matchedUsers.stream().anyMatch(User::isApproved);
+        // If ANY account with this email was approved, this user should be approved too
         boolean expectedApproval = expectedRole == Role.ADMIN || user.isApproved() || anyApproved;
+
         if (user.getRole() != expectedRole || user.isApproved() != expectedApproval) {
             user.setRole(expectedRole);
             user.setApproved(expectedApproval);
             user = userRepository.save(user);
+        }
+
+        // Also approve all other accounts with the same email if any is approved
+        if (expectedApproval) {
+            for (User sameEmailUser : matchedUsers) {
+                if (!sameEmailUser.isApproved()) {
+                    sameEmailUser.setApproved(true);
+                    userRepository.save(sameEmailUser);
+                }
+            }
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
