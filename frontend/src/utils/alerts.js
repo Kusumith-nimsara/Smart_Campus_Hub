@@ -23,33 +23,6 @@ const baseOptions = {
   },
 }
 
-const toastBaseOptions = {
-  toast: true,
-  position: 'center',
-  showConfirmButton: false,
-  timer: 2600,
-  timerProgressBar: true,
-  showClass: {
-    popup: 'sc-toast-show',
-  },
-  hideClass: {
-    popup: 'sc-toast-hide',
-  },
-  customClass: {
-    title: 'sc-toast-title',
-    timerProgressBar: 'sc-toast-progress',
-    icon: 'sc-toast-icon',
-  },
-}
-
-function getToastPopupClass(icon, size) {
-  const normalizedIcon = ['success', 'error', 'warning', 'info', 'question'].includes(icon)
-    ? icon
-    : 'success'
-
-  const sizeClass = size === 'compact' ? 'sc-toast-compact' : 'sc-toast-large'
-  return `sc-toast-popup sc-toast-${normalizedIcon} ${sizeClass}`
-}
 
 export function showSuccess(title, text = '') {
   return Swal.fire({
@@ -157,14 +130,3 @@ export async function confirmAction({
   return result.isConfirmed
 }
 
-export function showToast(title, icon = 'success', size = 'large') {
-  return Swal.fire({
-    ...toastBaseOptions,
-    icon,
-    title,
-    customClass: {
-      ...toastBaseOptions.customClass,
-      popup: getToastPopupClass(icon, size),
-    },
-  })
-}

@@ -9,7 +9,6 @@ import {
   showLogoutAlert,
   showRunning,
   showSuccess,
-  showToast,
 } from '../../utils/alerts'
 import './ProfilePage.css'
 
@@ -133,7 +132,7 @@ export default function ProfilePage() {
       setPassword('')
       setMessage('Profile updated successfully.')
       closeAlert()
-      showToast('Profile updated')
+      showSuccess('Success', 'Profile updated successfully.')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to update profile.'
       setMessage(errorMessage)

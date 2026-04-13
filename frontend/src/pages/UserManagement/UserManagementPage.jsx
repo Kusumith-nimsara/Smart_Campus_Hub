@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
-import { confirmAction, showError, showLogoutAlert, showToast } from '../../utils/alerts'
+import { confirmAction, showError, showLogoutAlert, showSuccess } from '../../utils/alerts'
 import './UserManagementPage.css'
 
 const TABS = [
@@ -109,7 +109,7 @@ export default function UserManagementPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data?.message ?? 'Failed to approve')
       setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)))
-      showToast('User approved')
+      showSuccess('Success', 'User approved.')
     } catch (err) {
       console.error(err)
       const message = err instanceof Error ? err.message : 'Failed to approve user'
@@ -130,7 +130,7 @@ export default function UserManagementPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data?.message ?? `Failed to ${action}`)
       setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)))
-      showToast(currentlySuspended ? 'User activated' : 'User suspended')
+      showSuccess('Success', currentlySuspended ? 'User activated.' : 'User suspended.')
     } catch (err) {
       console.error(err)
       const message = err instanceof Error ? err.message : `Failed to ${action} user`
@@ -157,7 +157,7 @@ export default function UserManagementPage() {
       setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)))
       setEditingUserId(null)
       setEditRole('')
-      showToast('Role updated')
+      showSuccess('Success', 'Role updated.')
     } catch (err) {
       console.error(err)
       const message = err instanceof Error ? err.message : 'Failed to update role'
@@ -199,7 +199,7 @@ export default function UserManagementPage() {
       if (!res.ok) throw new Error(data?.message ?? 'Failed to update user type')
       setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)))
       setActionMessage(`User type updated to ${nextUserType}.`)
-      showToast(`User type: ${nextUserType}`)
+      showSuccess('Success', `User type updated to ${nextUserType}.`)
     } catch (err) {
       // Revert optimistic update when save fails.
       setUsers((prev) =>
@@ -232,7 +232,7 @@ export default function UserManagementPage() {
         throw new Error(data?.message ?? 'Failed to delete')
       }
       setUsers((prev) => prev.filter((u) => u.id !== userId))
-      showToast('User deleted')
+      showSuccess('Success', 'User deleted.')
     } catch (err) {
       console.error(err)
       const message = err instanceof Error ? err.message : 'Failed to delete user'
