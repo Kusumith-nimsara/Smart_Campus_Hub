@@ -9,6 +9,7 @@ export default function UserDashboardPage() {
 
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('Loading dashboard...')
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [profile, setProfile] = useState({
     username: '',
     email: '',
@@ -94,8 +95,8 @@ export default function UserDashboardPage() {
   })
 
   return (
-    <main className="user-dashboard-page">
-      <aside className="user-sidebar">
+    <main className={`user-dashboard-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
+      <aside className="user-sidebar" aria-hidden={!isSidebarOpen}>
         <div className="brand-mark">SC</div>
         <h2>Smart Campus</h2>
 
@@ -116,13 +117,25 @@ export default function UserDashboardPage() {
 
       <section className="user-content">
         <header className="user-topbar">
-          <div>
-            <h1>Welcome back, {first}! 👋</h1>
-            <p>{today}</p>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <button 
+              type="button" 
+              className="sidebar-toggle-btn" 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              aria-label="Toggle Sidebar"
+            >
+              ☰
+            </button>
+            <div>
+              <h1>Welcome back, {first}! 👋</h1>
+              <p>{today}</p>
+            </div>
           </div>
-          <button type="button" className="user-top-action" onClick={() => navigate('/')}>
-            ← Back to Landing
-          </button>
+          <div className="topbar-right">
+            <button type="button" className="user-top-action" onClick={() => navigate('/')}>
+              ← Back to Landing
+            </button>
+          </div>
         </header>
 
         <div className="stats-grid">

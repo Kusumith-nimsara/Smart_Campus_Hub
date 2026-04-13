@@ -31,6 +31,7 @@ export default function UserManagementPage() {
   const [editRole, setEditRole] = useState('')
   const [processingId, setProcessingId] = useState(null)
   const [actionMessage, setActionMessage] = useState('')
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   useEffect(() => {
     fetchUsers()
@@ -279,8 +280,8 @@ export default function UserManagementPage() {
   }
 
   return (
-    <main className="um-page">
-      <aside className="um-sidebar">
+    <main className={`um-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
+      <aside className="um-sidebar" aria-hidden={!isSidebarOpen}>
         <div className="um-brand">
           <div className="um-logo">SC</div>
           <h2>Smart Campus</h2>
@@ -314,9 +315,19 @@ export default function UserManagementPage() {
 
       <section className="um-content">
         <header className="um-topbar">
-          <div>
-            <h1 className="um-topbar-name">{adminName}</h1>
-            <p className="um-topbar-date">{today}</p>
+          <div className="topbar-left">
+            <button 
+              type="button" 
+              className="sidebar-toggle-btn" 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              aria-label="Toggle Sidebar"
+            >
+              ☰
+            </button>
+            <div>
+              <h1 className="um-topbar-name">{adminName}</h1>
+              <p className="um-topbar-date">{today}</p>
+            </div>
           </div>
           <div className="um-topbar-avatar">
             <span>{adminName.charAt(0).toUpperCase()}</span>

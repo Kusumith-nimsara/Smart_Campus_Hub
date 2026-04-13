@@ -22,6 +22,7 @@ export default function AdminDashboardPage() {
   const [loadingUsers, setLoadingUsers] = useState(true)
   const [processingUserId, setProcessingUserId] = useState('')
   const [statusMessage, setStatusMessage] = useState('Loading users...')
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   useEffect(() => {
     async function loadUsers() {
@@ -132,8 +133,8 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <main className="admin-dashboard-page">
-      <aside className="admin-sidebar">
+    <main className={`admin-dashboard-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
+      <aside className="admin-sidebar" aria-hidden={!isSidebarOpen}>
         <div className="admin-brand">
           <div className="admin-logo">SC</div>
           <h2>Smart Campus</h2>
@@ -165,13 +166,25 @@ export default function AdminDashboardPage() {
 
       <section className="admin-content">
         <header className="admin-topbar">
-          <div>
-            <h1>Welcome to Smart Campus 👋</h1>
-            <p>{today}</p>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <button 
+              type="button" 
+              className="sidebar-toggle-btn" 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              aria-label="Toggle Sidebar"
+            >
+              ☰
+            </button>
+            <div>
+              <h1>Welcome to Smart Campus 👋</h1>
+              <p>{today}</p>
+            </div>
           </div>
-          <button type="button" className="back-btn" onClick={() => navigate('/')}>
-            ← Back to Landing
-          </button>
+          <div className="topbar-right">
+            <button type="button" className="back-btn" onClick={() => navigate('/')}>
+              ← Back to Landing
+            </button>
+          </div>
         </header>
 
         <section className="admin-stats-grid">

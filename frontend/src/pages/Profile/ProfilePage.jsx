@@ -11,6 +11,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [message, setMessage] = useState('Loading profile...')
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [role, setRole] = useState(() => (localStorage.getItem('authRole') || localStorage.getItem('role') || 'USER'))
 
   const [username, setUsername] = useState('')
@@ -180,8 +181,8 @@ export default function ProfilePage() {
   })
 
   return (
-    <main className="profile-page">
-      <aside className="profile-sidebar">
+    <main className={`profile-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
+      <aside className="profile-sidebar" aria-hidden={!isSidebarOpen}>
         <div className="brand-mark">SC</div>
         <h2>Smart Campus</h2>
 
@@ -205,13 +206,25 @@ export default function ProfilePage() {
 
       <section className="profile-content">
         <header className="profile-topbar">
-          <div>
-            <h1>Welcome back, {firstName || username || 'User'}!</h1>
-            <p>{today}</p>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <button 
+              type="button" 
+              className="sidebar-toggle-btn" 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              aria-label="Toggle Sidebar"
+            >
+              ☰
+            </button>
+            <div>
+              <h1>Welcome back, {firstName || username || 'User'}!</h1>
+              <p>{today}</p>
+            </div>
           </div>
-          <button type="button" className="profile-top-action" onClick={() => navigate('/')}>
-            Back to Landing
-          </button>
+          <div className="topbar-right">
+            <button type="button" className="profile-top-action" onClick={() => navigate('/')}>
+              Back to Landing
+            </button>
+          </div>
         </header>
 
         <div className="profile-widgets">
