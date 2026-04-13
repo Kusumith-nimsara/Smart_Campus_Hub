@@ -3,9 +3,9 @@ import Swal from 'sweetalert2'
 const baseOptions = {
   width: 600,
   background: '#ffffff',
-  color: '#0f172a',
-  iconColor: '#0ea5e9',
-  confirmButtonColor: '#0ea5e9',
+  color: '#111827',
+  iconColor: '#2563eb',
+  confirmButtonColor: '#2563eb',
   showClass: {
     popup: 'sc-swal-show',
   },
@@ -55,8 +55,14 @@ export function showSuccess(title, text = '') {
   return Swal.fire({
     ...baseOptions,
     icon: 'success',
+    iconColor: '#059669',
+    confirmButtonColor: '#059669',
     title,
     text,
+    customClass: {
+      ...baseOptions.customClass,
+      popup: 'sc-swal-popup sc-swal-success',
+    },
   })
 }
 
@@ -64,8 +70,14 @@ export function showError(title, text = '') {
   return Swal.fire({
     ...baseOptions,
     icon: 'error',
+    iconColor: '#dc2626',
+    confirmButtonColor: '#dc2626',
     title,
     text,
+    customClass: {
+      ...baseOptions.customClass,
+      popup: 'sc-swal-popup sc-swal-error',
+    },
   })
 }
 
@@ -73,8 +85,14 @@ export function showInfo(title, text = '') {
   return Swal.fire({
     ...baseOptions,
     icon: 'info',
+    iconColor: '#7c3aed',
+    confirmButtonColor: '#7c3aed',
     title,
     text,
+    customClass: {
+      ...baseOptions.customClass,
+      popup: 'sc-swal-popup sc-swal-info',
+    },
   })
 }
 
@@ -82,9 +100,15 @@ export function showLogoutAlert() {
   return Swal.fire({
     ...baseOptions,
     icon: 'info',
+    iconColor: '#7c3aed',
+    confirmButtonColor: '#7c3aed',
     title: 'Info',
     text: 'Logged out successfully.',
     confirmButtonText: 'OK',
+    customClass: {
+      ...baseOptions.customClass,
+      popup: 'sc-swal-popup sc-swal-info',
+    },
   })
 }
 
@@ -116,6 +140,7 @@ export async function confirmAction({
   const result = await Swal.fire({
     ...baseOptions,
     icon: 'warning',
+    iconColor: '#b45309',
     title,
     text,
     showCancelButton: true,
@@ -123,6 +148,10 @@ export async function confirmAction({
     cancelButtonText: cancelText,
     confirmButtonColor,
     reverseButtons: true,
+    customClass: {
+      ...baseOptions.customClass,
+      popup: 'sc-swal-popup sc-swal-warning',
+    },
   })
 
   return result.isConfirmed

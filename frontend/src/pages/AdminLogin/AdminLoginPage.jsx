@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { closeAlert, showError, showInfo, showRunning, showToast } from '../../utils/alerts'
+import { closeAlert, showError, showInfo, showRunning, showSuccess } from '../../utils/alerts'
 import './AdminLoginPage.css'
 
 function normalizeRole(input) {
@@ -75,7 +75,7 @@ export default function AdminLoginPage() {
       setResult(data)
       setMessage('Admin login successful. Redirecting...')
       closeAlert()
-      showToast('Admin login successful')
+      await showSuccess('Admin login successful', 'Welcome to your dashboard.')
       navigate('/admin-dashboard', { replace: true })
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Admin login failed.'

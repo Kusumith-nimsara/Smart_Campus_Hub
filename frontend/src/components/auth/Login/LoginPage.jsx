@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import GoogleLoginButton from '../GoogleLoginButton'
-import { closeAlert, showError, showInfo, showRunning, showToast } from '../../../utils/alerts'
+import { closeAlert, showError, showInfo, showRunning, showSuccess } from '../../../utils/alerts'
 import './LoginPage.css'
 
 function extractGoogleProfileFromJwt(idToken) {
@@ -127,14 +127,14 @@ export default function LoginPage() {
       if (effectiveRole === 'ADMIN') {
         setMessage('Admin login successful. Redirecting...')
         closeAlert()
-        showToast('Admin login successful')
+        await showSuccess('Admin login successful', 'Welcome to your dashboard.')
         navigate('/admin-dashboard', { replace: true })
         return
       }
 
       setMessage('Login successful. Redirecting...')
       closeAlert()
-      showToast('Login successful')
+      await showSuccess('Login successful', 'Welcome back.')
       navigate('/dashboard')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Google auth failed.'
