@@ -10,7 +10,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
-  const [message, setMessage] = useState('Loading profile...')
+  const [message, setMessage] = useState('')
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [role, setRole] = useState(() => (localStorage.getItem('authRole') || localStorage.getItem('role') || 'USER'))
 
@@ -54,7 +54,6 @@ export default function ProfilePage() {
         localStorage.setItem('role', loadedRole)
         localStorage.setItem('authRole', loadedRole)
         localStorage.setItem('authApproved', String(loadedApproved))
-        setMessage('Profile loaded.')
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to load profile.'
         setMessage(errorMessage)
