@@ -3,18 +3,22 @@ import { useNavigate } from 'react-router-dom'
 import GoogleLoginButton from '../GoogleLoginButton'
 import './LoginPage.css'
 
-function extractEmailFromJwt(idToken) {
+function extractGoogleProfileFromJwt(idToken) {
   try {
     const payloadBase64 = idToken.split('.')[1]
     if (!payloadBase64) {
-      return ''
+      return { email: '', name: '', picture: '' }
     }
 
     const payloadJson = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'))
     const payload = JSON.parse(payloadJson)
-    return typeof payload?.email === 'string' ? payload.email.trim().toLowerCase() : ''
+    return {
+      email: typeof payload?.email === 'string' ? payload.email.trim().toLowerCase() : '',
+      name: typeof payload?.name === 'string' ? payload.name.trim() : '',
+      picture: typeof payload?.picture === 'string' ? payload.picture.trim() : '',
+    }
   } catch {
-    return ''
+    return { email: '', name: '', picture: '' }
   }
 }
 
@@ -50,14 +54,15 @@ export default function LoginPage() {
         throw new Error(data?.message ?? 'Google auth failed.')
       }
 
-      const googleEmail = extractEmailFromJwt(idToken)
+      const googleProfile = extractGoogleProfileFromJwt(idToken)
+      const googleEmail = googleProfile.email
       const backendEmail = typeof data?.email === 'string' ? data.email.trim().toLowerCase() : ''
       const effectiveEmail = googleEmail || backendEmail
       const backendRole = String(data?.role ?? '').toUpperCase()
       // Trust the backend role assignment (admin email is now configured server-side)
       const role = backendRole === 'ADMIN' ? 'ADMIN' : 'USER'
       const approved = typeof data?.approved === 'boolean' ? data.approved : role === 'ADMIN'
-      const savedUsername = data?.username ?? effectiveEmail ?? ''
+      const savedUsername = data?.username ?? googleProfile.name ?? effectiveEmail ?? ''
 
       if (data?.token) {
         localStorage.setItem('token', data.token)
@@ -67,7 +72,12 @@ export default function LoginPage() {
       localStorage.setItem('authRole', role)
       localStorage.setItem('authApproved', String(approved))
       localStorage.setItem('username', savedUsername)
-      localStorage.setItem('authLoginType', role === 'ADMIN' ? 'admin' : 'user')
+      localStorage.setItem('authLoginType', 'google')
+      if (googleProfile.picture) {
+        localStorage.setItem('authAvatarUrl', googleProfile.picture)
+      } else {
+        localStorage.removeItem('authAvatarUrl')
+      }
 
       let effectiveRole = role
       let effectiveApproved = approved
@@ -93,7 +103,7 @@ export default function LoginPage() {
             if (verifyData?.username) {
               localStorage.setItem('username', String(verifyData.username))
             }
-            localStorage.setItem('authLoginType', effectiveRole === 'ADMIN' ? 'admin' : 'user')
+            localStorage.setItem('authLoginType', 'google')
           }
         } catch {
           // If /user/me fails, fallback to auth response values.
@@ -121,9 +131,15 @@ export default function LoginPage() {
       const isSuspended = errorMessage.toLowerCase().includes('suspended')
       
       if (isPending || isSuspended) {
-        const googleEmail = extractEmailFromJwt(idToken)
-        if (googleEmail) {
+        const googleProfile = extractGoogleProfileFromJwt(idToken)
+        const googleEmail = googleProfile.email
+        if (googleProfile.name) {
+          localStorage.setItem('username', googleProfile.name)
+        } else if (googleEmail) {
           localStorage.setItem('username', googleEmail.split('@')[0] || googleEmail)
+        }
+        if (googleProfile.picture) {
+          localStorage.setItem('authAvatarUrl', googleProfile.picture)
         }
         
         if (isSuspended) {

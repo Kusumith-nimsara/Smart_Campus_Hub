@@ -16,7 +16,7 @@ export default function PrivateRoute({ children, fallback = null }) {
 
   // Token exists but is expired or malformed — clear auth and redirect
   if (isTokenExpired()) {
-    const keys = ['token', 'authToken', 'role', 'authRole', 'authApproved', 'username', 'authLoginType']
+    const keys = ['token', 'authToken', 'role', 'authRole', 'authApproved', 'username', 'authLoginType', 'authAvatarUrl']
     keys.forEach((key) => localStorage.removeItem(key))
     return <Navigate to="/login" replace />
   }

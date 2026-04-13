@@ -7,6 +7,8 @@ export default function AdminDashboardPage() {
   const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
   const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
   const adminName = localStorage.getItem('username') || 'Admin User'
+  const isGoogleLogin = localStorage.getItem('authLoginType') === 'google'
+  const googleAvatarUrl = localStorage.getItem('authAvatarUrl') || ''
   const today = new Date().toLocaleDateString(undefined, {
     weekday: 'long',
     month: 'short',
@@ -129,6 +131,7 @@ export default function AdminDashboardPage() {
     localStorage.removeItem('username')
     localStorage.removeItem('authToken')
     localStorage.removeItem('authLoginType')
+    localStorage.removeItem('authAvatarUrl')
     navigate('/login')
   }
 
@@ -181,9 +184,31 @@ export default function AdminDashboardPage() {
             </div>
           </div>
           <div className="topbar-right">
-            <button type="button" className="back-btn" onClick={() => navigate('/')}>
-              ← Back to Landing
-            </button>
+            <div className="admin-topbar-user">
+              <span>
+                {isGoogleLogin && googleAvatarUrl ? (
+                  <img src={googleAvatarUrl} alt={accountName || adminName} className="admin-topbar-avatar-image" />
+                ) : (
+                  (accountName || adminName).charAt(0).toUpperCase()
+                )}
+              </span>
+              <div>
+                <p className="admin-topbar-uname">{accountName || adminName}</p>
+                <p className="admin-topbar-urole">
+                  {accountRole || 'ADMIN'}
+                  {isGoogleLogin && (
+                    <span className="admin-login-provider" aria-label="Signed in with Google">
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path fill="#EA4335" d="M12 10.2v3.9h5.4c-.2 1.3-1.5 3.9-5.4 3.9-3.2 0-5.9-2.7-5.9-6s2.7-6 5.9-6c1.8 0 3.1.8 3.8 1.4l2.6-2.5C16.8 3.4 14.6 2.5 12 2.5 6.8 2.5 2.6 6.8 2.6 12s4.2 9.5 9.4 9.5c5.4 0 8.9-3.8 8.9-9.1 0-.6-.1-1-.1-1.4H12z"/>
+                        <path fill="#34A853" d="M3.7 7.6l3.2 2.3c.9-1.8 2.8-3 5.1-3 1.8 0 3.1.8 3.8 1.4l2.6-2.5C16.8 3.4 14.6 2.5 12 2.5 8.4 2.5 5.3 4.6 3.7 7.6z"/>
+                        <path fill="#4A90E2" d="M12 21.5c2.5 0 4.7-.8 6.3-2.2l-2.9-2.4c-.8.6-1.9 1.1-3.4 1.1-3.8 0-5.2-2.5-5.4-3.8l-3.2 2.5c1.6 3 4.7 4.8 8.6 4.8z"/>
+                        <path fill="#FBBC05" d="M3.7 16.7l3.2-2.5c-.2-.6-.3-1.2-.3-1.8s.1-1.3.3-1.8L3.7 7.6C3 8.9 2.6 10.4 2.6 12s.4 3.1 1.1 4.7z"/>
+                      </svg>
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
           </div>
         </header>
 

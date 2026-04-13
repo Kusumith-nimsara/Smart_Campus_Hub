@@ -207,23 +207,60 @@
   font-weight: 500;
 }
 
-.back-btn {
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
-  font-weight: 600;
-  padding: 10px 16px;
-  color: #334155;
-  background: #ffffff;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+.admin-topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.back-btn:hover {
-  background: #f8fafc;
+.admin-topbar-user > span {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.admin-topbar-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.admin-topbar-uname {
+  margin: 0 0 2px;
+  font-weight: 700;
+  font-size: 15px;
   color: #0f172a;
-  border-color: #94a3b8;
+}
+
+.admin-topbar-urole {
+  margin: 0;
+  font-size: 12px;
+  color: #4f46e5;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-login-provider {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  line-height: 0;
+}
+
+.admin-login-provider svg {
+  width: 14px;
+  height: 14px;
 }
 
 /* ── Stats ── */
