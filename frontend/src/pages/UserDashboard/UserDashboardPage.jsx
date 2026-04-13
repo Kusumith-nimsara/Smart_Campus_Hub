@@ -8,10 +8,12 @@ export default function UserDashboardPage() {
   const token = useMemo(() => localStorage.getItem('authToken') ?? '', [])
   const isGoogleLogin = localStorage.getItem('authLoginType') === 'google'
   const googleAvatarUrl = localStorage.getItem('authAvatarUrl') || ''
+  const googleEmail = localStorage.getItem('authEmail') || ''
 
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('Loading dashboard...')
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [profile, setProfile] = useState({
     username: '',
     email: '',
@@ -83,12 +85,16 @@ export default function UserDashboardPage() {
     localStorage.removeItem('authToken')
     localStorage.removeItem('authLoginType')
     localStorage.removeItem('authAvatarUrl')
+    localStorage.removeItem('authEmail')
     navigate('/login')
   }
 
   const first = profile.firstName || profile.username || 'User'
   const fullName = `${profile.firstName} ${profile.lastName}`.trim() || profile.username || 'Campus User'
   const displayRole = profile.role || localStorage.getItem('authRole') || 'USER'
+  const googleAvatarCandidate =
+    googleAvatarUrl ||
+    (googleEmail ? `https://www.google.com/s2/photos/profile/${encodeURIComponent(googleEmail)}?sz=128` : '')
   const displayUserType = profile.userType || 'STUDENT'
   const accountStatus = profile.suspended ? 'SUSPENDED' : 'ACTIVE'
   const today = new Date().toLocaleDateString(undefined, {
@@ -137,8 +143,14 @@ export default function UserDashboardPage() {
           <div className="topbar-right">
             <div className="user-topbar-user">
               <span>
-                {isGoogleLogin && googleAvatarUrl ? (
-                  <img src={googleAvatarUrl} alt={fullName} className="user-topbar-avatar-image" />
+                {isGoogleLogin && googleAvatarCandidate && !avatarLoadFailed ? (
+                  <img
+                    src={googleAvatarCandidate}
+                    alt={fullName}
+                    className="user-topbar-avatar-image"
+                    onError={() => setAvatarLoadFailed(true)}
+                    referrerPolicy="no-referrer"
+                  />
                 ) : (
                   (fullName || first).charAt(0).toUpperCase()
                 )}

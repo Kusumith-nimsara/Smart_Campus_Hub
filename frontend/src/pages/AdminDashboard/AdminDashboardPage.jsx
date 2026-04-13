@@ -9,6 +9,7 @@ export default function AdminDashboardPage() {
   const adminName = localStorage.getItem('username') || 'Admin User'
   const isGoogleLogin = localStorage.getItem('authLoginType') === 'google'
   const googleAvatarUrl = localStorage.getItem('authAvatarUrl') || ''
+  const googleEmail = localStorage.getItem('authEmail') || ''
   const today = new Date().toLocaleDateString(undefined, {
     weekday: 'long',
     month: 'short',
@@ -25,6 +26,10 @@ export default function AdminDashboardPage() {
   const [processingUserId, setProcessingUserId] = useState('')
   const [statusMessage, setStatusMessage] = useState('Loading users...')
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
+  const googleAvatarCandidate =
+    googleAvatarUrl ||
+    (googleEmail ? `https://www.google.com/s2/photos/profile/${encodeURIComponent(googleEmail)}?sz=128` : '')
 
   useEffect(() => {
     async function loadUsers() {
@@ -132,6 +137,7 @@ export default function AdminDashboardPage() {
     localStorage.removeItem('authToken')
     localStorage.removeItem('authLoginType')
     localStorage.removeItem('authAvatarUrl')
+    localStorage.removeItem('authEmail')
     navigate('/login')
   }
 
@@ -186,8 +192,14 @@ export default function AdminDashboardPage() {
           <div className="topbar-right">
             <div className="admin-topbar-user">
               <span>
-                {isGoogleLogin && googleAvatarUrl ? (
-                  <img src={googleAvatarUrl} alt={accountName || adminName} className="admin-topbar-avatar-image" />
+                {isGoogleLogin && googleAvatarCandidate && !avatarLoadFailed ? (
+                  <img
+                    src={googleAvatarCandidate}
+                    alt={accountName || adminName}
+                    className="admin-topbar-avatar-image"
+                    onError={() => setAvatarLoadFailed(true)}
+                    referrerPolicy="no-referrer"
+                  />
                 ) : (
                   (accountName || adminName).charAt(0).toUpperCase()
                 )}

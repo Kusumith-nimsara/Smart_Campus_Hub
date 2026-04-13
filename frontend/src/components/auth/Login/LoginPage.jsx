@@ -75,6 +75,7 @@ export default function LoginPage() {
       localStorage.setItem('authApproved', String(approved))
       localStorage.setItem('username', savedUsername)
       localStorage.setItem('authLoginType', 'google')
+      localStorage.setItem('authEmail', effectiveEmail)
       if (googleProfile.picture) {
         localStorage.setItem('authAvatarUrl', googleProfile.picture)
       } else {
@@ -103,6 +104,9 @@ export default function LoginPage() {
           localStorage.setItem('authApproved', String(effectiveApproved))
           if (verifyData?.username) {
             localStorage.setItem('username', String(verifyData.username))
+          }
+          if (typeof verifyData?.email === 'string' && verifyData.email.trim()) {
+            localStorage.setItem('authEmail', verifyData.email.trim().toLowerCase())
           }
           localStorage.setItem('authLoginType', 'google')
         }
@@ -140,6 +144,9 @@ export default function LoginPage() {
         }
         if (googleProfile.picture) {
           localStorage.setItem('authAvatarUrl', googleProfile.picture)
+        }
+        if (googleEmail) {
+          localStorage.setItem('authEmail', googleEmail)
         }
         
         if (isSuspended) {

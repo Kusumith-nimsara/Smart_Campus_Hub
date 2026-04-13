@@ -19,6 +19,7 @@ export default function UserManagementPage() {
   const adminName = localStorage.getItem('username') || 'Admin'
   const isGoogleLogin = localStorage.getItem('authLoginType') === 'google'
   const googleAvatarUrl = localStorage.getItem('authAvatarUrl') || ''
+  const googleEmail = localStorage.getItem('authEmail') || ''
   const today = new Date().toLocaleDateString(undefined, {
     weekday: 'long',
     month: 'long',
@@ -34,6 +35,10 @@ export default function UserManagementPage() {
   const [processingId, setProcessingId] = useState(null)
   const [actionMessage, setActionMessage] = useState('')
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
+  const googleAvatarCandidate =
+    googleAvatarUrl ||
+    (googleEmail ? `https://www.google.com/s2/photos/profile/${encodeURIComponent(googleEmail)}?sz=128` : '')
 
   useEffect(() => {
     fetchUsers()
@@ -279,6 +284,7 @@ export default function UserManagementPage() {
     localStorage.removeItem('authToken')
     localStorage.removeItem('authLoginType')
     localStorage.removeItem('authAvatarUrl')
+    localStorage.removeItem('authEmail')
     navigate('/login')
   }
 
@@ -334,8 +340,14 @@ export default function UserManagementPage() {
           </div>
           <div className="um-topbar-avatar">
             <span>
-              {isGoogleLogin && googleAvatarUrl ? (
-                <img src={googleAvatarUrl} alt={adminName} className="um-topbar-avatar-image" />
+              {isGoogleLogin && googleAvatarCandidate && !avatarLoadFailed ? (
+                <img
+                  src={googleAvatarCandidate}
+                  alt={adminName}
+                  className="um-topbar-avatar-image"
+                  onError={() => setAvatarLoadFailed(true)}
+                  referrerPolicy="no-referrer"
+                />
               ) : (
                 adminName.charAt(0).toUpperCase()
               )}

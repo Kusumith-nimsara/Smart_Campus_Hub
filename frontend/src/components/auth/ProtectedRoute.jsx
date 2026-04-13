@@ -15,7 +15,7 @@ export default function ProtectedRoute({ children, requiredRole = null }) {
 
   if (!token || isTokenExpired()) {
     // Clear stale auth state
-    const keys = ['token', 'authToken', 'role', 'authRole', 'authApproved', 'username', 'authLoginType', 'authAvatarUrl']
+    const keys = ['token', 'authToken', 'role', 'authRole', 'authApproved', 'username', 'authLoginType', 'authAvatarUrl', 'authEmail']
     keys.forEach((key) => localStorage.removeItem(key))
     return <Navigate to="/login" replace />
   }
