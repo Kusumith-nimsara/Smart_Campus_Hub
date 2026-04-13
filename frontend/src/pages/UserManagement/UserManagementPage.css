@@ -169,6 +169,7 @@
   align-items: center;
   margin-bottom: 24px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  position: relative;
 }
 
 .topbar-left {
@@ -212,6 +213,24 @@
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.um-account-menu {
+  position: relative;
+}
+
+.um-account-trigger {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.um-account-trigger:focus-visible {
+  outline: 2px solid #818cf8;
+  outline-offset: 6px;
+  border-radius: 12px;
 }
 
 .um-topbar-avatar > span {
@@ -262,6 +281,36 @@
 .um-login-provider svg {
   width: 14px;
   height: 14px;
+}
+
+.um-account-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 140px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 16px 30px -18px rgba(15, 23, 42, 0.4);
+  padding: 8px;
+  z-index: 50;
+}
+
+.um-account-dropdown button {
+  width: 100%;
+  border: 0;
+  background: #fff5f5;
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.um-account-dropdown button:hover {
+  background: #fee2e2;
 }
 
 /* ── Main Card ── */
