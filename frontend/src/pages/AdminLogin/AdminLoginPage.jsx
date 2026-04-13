@@ -52,7 +52,6 @@ export default function AdminLoginPage() {
 
         setResult(null)
         setMessage('Access denied: only ADMIN users can log in here. Please use User Login.')
-        window.alert('Access denied: only ADMIN users can log in on Admin Login.')
         navigate('/unauthorized', { replace: true })
         return
       }
@@ -70,8 +69,7 @@ export default function AdminLoginPage() {
       localStorage.setItem('authLoginType', 'admin')
 
       setResult(data)
-      setMessage('Admin login successful.')
-      window.alert('Admin login successful')
+      setMessage('Admin login successful. Redirecting...')
       navigate('/admin-dashboard', { replace: true })
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Admin login failed.'

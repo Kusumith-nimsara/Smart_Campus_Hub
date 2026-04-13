@@ -28,7 +28,7 @@ import java.util.UUID;
 @Service
 public class AuthService {
 
-    private static final String ADMIN_GOOGLE_EMAIL = "vihanga.shehan99@gmail.com";
+    private final String adminGoogleEmail;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -43,13 +43,15 @@ public class AuthService {
             AuthenticationManager authenticationManager,
             CustomUserDetailsService userDetailsService,
             JwtService jwtService,
-            @Value("${app.google.client-id}") String googleClientId
+            @Value("${app.google.client-id}") String googleClientId,
+            @Value("${app.admin.google-email:}") String adminGoogleEmail
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtService = jwtService;
+        this.adminGoogleEmail = adminGoogleEmail != null ? adminGoogleEmail.trim().toLowerCase() : "";
         this.googleIdTokenVerifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), GsonFactory.getDefaultInstance())
                 .setAudience(Set.of(googleClientId))
                 .build();
@@ -103,6 +105,16 @@ public class AuthService {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
 
+        // Block suspended users with a clear message
+        if (user.isSuspended()) {
+            throw new IllegalArgumentException("Your account has been suspended. Please contact an administrator.");
+        }
+
+        // Block unapproved non-admin users
+        if (!user.isApproved() && user.getRole() != Role.ADMIN) {
+            throw new IllegalArgumentException("Your account is pending admin approval.");
+        }
+
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
         String token = jwtService.generateToken(userDetails);
 
@@ -133,8 +145,10 @@ public class AuthService {
                         .findFirst()
                         .orElseGet(() -> matchedUsers.stream().findFirst().orElseGet(() -> createGoogleUser(email))));
 
+        // Only override role to ADMIN for the configured admin email;
+        // otherwise preserve the existing DB role (e.g. MANAGER, TECHNICIAN)
         Role expectedRole = user.getRole();
-        if (normalizedEmail.equals(ADMIN_GOOGLE_EMAIL)) {
+        if (!adminGoogleEmail.isEmpty() && normalizedEmail.equals(adminGoogleEmail)) {
             expectedRole = Role.ADMIN;
         }
 
@@ -155,6 +169,16 @@ public class AuthService {
                     userRepository.save(sameEmailUser);
                 }
             }
+        }
+
+        // Block suspended users from obtaining a token via Google login
+        if (user.isSuspended()) {
+            throw new IllegalArgumentException("Your account has been suspended. Please contact an administrator.");
+        }
+
+        // Block unapproved non-admin users
+        if (!user.isApproved() && user.getRole() != Role.ADMIN) {
+            throw new IllegalArgumentException("Your account is pending admin approval.");
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
@@ -185,7 +209,7 @@ public class AuthService {
         }
 
         String username = generateUniqueUsername(normalizedEmail);
-        Role role = normalizedEmail.equals(ADMIN_GOOGLE_EMAIL) ? Role.ADMIN : Role.USER;
+        Role role = (!adminGoogleEmail.isEmpty() && normalizedEmail.equals(adminGoogleEmail)) ? Role.ADMIN : Role.USER;
         User user = new User(
                 username,
                 normalizedEmail,

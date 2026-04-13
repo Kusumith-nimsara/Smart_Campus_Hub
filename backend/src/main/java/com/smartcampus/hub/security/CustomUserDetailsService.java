@@ -24,10 +24,18 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
+        // Block suspended users and unapproved non-admin users at the security level
+        boolean isEnabled = !user.isSuspended()
+                && (user.isApproved() || user.getRole() == com.smartcampus.hub.model.Role.ADMIN);
+
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-            Collections.singleton(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+                isEnabled,                // enabled — false if suspended or unapproved
+                true,                     // accountNonExpired
+                true,                     // credentialsNonExpired
+                true,                     // accountNonLocked
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
         );
     }
 }

@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import GoogleLoginButton from '../GoogleLoginButton'
 import './LoginPage.css'
 
-const ADMIN_EMAIL = 'vihanga.shehan99@gmail.com'
-
 function extractEmailFromJwt(idToken) {
   try {
     const payloadBase64 = idToken.split('.')[1]
@@ -20,15 +18,10 @@ function extractEmailFromJwt(idToken) {
   }
 }
 
-function getRoleByEmail(email) {
-  return email === ADMIN_EMAIL ? 'ADMIN' : 'USER'
-}
-
 export default function LoginPage() {
   const navigate = useNavigate()
 
   const [message, setMessage] = useState('Continue with Google to sign in.')
-  const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
 
   const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
@@ -60,9 +53,9 @@ export default function LoginPage() {
       const googleEmail = extractEmailFromJwt(idToken)
       const backendEmail = typeof data?.email === 'string' ? data.email.trim().toLowerCase() : ''
       const effectiveEmail = googleEmail || backendEmail
-      const derivedRole = getRoleByEmail(effectiveEmail)
       const backendRole = String(data?.role ?? '').toUpperCase()
-      const role = derivedRole === 'ADMIN' || backendRole === 'ADMIN' ? 'ADMIN' : 'USER'
+      // Trust the backend role assignment (admin email is now configured server-side)
+      const role = backendRole === 'ADMIN' ? 'ADMIN' : 'USER'
       const approved = typeof data?.approved === 'boolean' ? data.approved : role === 'ADMIN'
       const savedUsername = data?.username ?? effectiveEmail ?? ''
 
@@ -108,27 +101,21 @@ export default function LoginPage() {
       }
 
       if (!effectiveApproved) {
-        setResult(data)
         setMessage('Your account is pending admin approval. Redirecting...')
         navigate('/unauthorized', { replace: true })
         return
       }
 
       if (effectiveRole === 'ADMIN') {
-        setResult(data)
-        setMessage('Admin email detected. Redirecting to Admin Dashboard...')
-        window.alert('Admin login successful')
+        setMessage('Admin login successful. Redirecting...')
         navigate('/admin-dashboard', { replace: true })
         return
       }
 
-      setResult(data)
-      setMessage('Google login successful.')
-      window.alert('Login successful')
+      setMessage('Login successful. Redirecting...')
       navigate('/dashboard')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Google auth failed.'
-      setResult(null)
       setMessage(errorMessage)
     } finally {
       setLoading(false)
@@ -188,9 +175,6 @@ export default function LoginPage() {
 
           <p className="status">{message}</p>
 
-          {result && <pre className="response-panel">{JSON.stringify(result, null, 2)}</pre>}
-
-          <p className="hint">Admin rule: {ADMIN_EMAIL}</p>
           <p className="hint">API: {backendBaseUrl}</p>
         </article>
       </section>

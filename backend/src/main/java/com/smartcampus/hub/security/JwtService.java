@@ -10,6 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.PostConstruct;
+
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -74,6 +76,29 @@ public class JwtService {
                 .getBody();
     }
 
+    @PostConstruct
+    public void validateJwtSecret() {
+        // Validate key strength at startup so weak keys fail fast
+        try {
+            byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+            if (keyBytes.length < 32) {
+                throw new IllegalStateException(
+                        "JWT secret must be at least 32 bytes (256 bits) for HS256. " +
+                        "Current key is only " + keyBytes.length + " bytes. " +
+                        "Please set a stronger Base64-encoded key in the JWT_SECRET environment variable.");
+            }
+        } catch (IllegalArgumentException ex) {
+            // Not valid Base64 — check raw byte length
+            byte[] rawBytes = jwtSecret.getBytes();
+            if (rawBytes.length < 32) {
+                throw new IllegalStateException(
+                        "JWT secret must be at least 32 bytes (256 bits) for HS256. " +
+                        "Current key is only " + rawBytes.length + " bytes. " +
+                        "Please set a stronger key in the JWT_SECRET environment variable.");
+            }
+        }
+    }
+
     private Key getSigningKey() {
         byte[] keyBytes;
 
@@ -81,10 +106,6 @@ public class JwtService {
             keyBytes = Decoders.BASE64.decode(jwtSecret);
         } catch (IllegalArgumentException ex) {
             keyBytes = jwtSecret.getBytes();
-        }
-
-        if (keyBytes.length < 32) {
-            throw new IllegalStateException("JWT secret must be at least 32 bytes for HS256.");
         }
 
         return Keys.hmacShaKeyFor(keyBytes);
