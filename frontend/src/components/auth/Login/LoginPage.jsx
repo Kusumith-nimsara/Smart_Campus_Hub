@@ -59,15 +59,17 @@ export default function LoginPage() {
       const backendEmail = typeof data?.email === 'string' ? data.email.trim().toLowerCase() : ''
       const effectiveEmail = googleEmail || backendEmail
       const backendRole = String(data?.role ?? '').toUpperCase()
+      if (!data?.token) {
+        throw new Error(data?.message ?? 'Google auth failed.')
+      }
       // Trust the backend role assignment (admin email is now configured server-side)
       const role = backendRole === 'ADMIN' ? 'ADMIN' : 'USER'
-      const approved = typeof data?.approved === 'boolean' ? data.approved : role === 'ADMIN'
+      // Backend blocks pending users before issuing token. If approved is omitted, treat as approved.
+      const approved = typeof data?.approved === 'boolean' ? data.approved : true
       const savedUsername = data?.username ?? googleProfile.name ?? effectiveEmail ?? ''
 
-      if (data?.token) {
-        localStorage.setItem('token', data.token)
-        localStorage.setItem('authToken', data.token)
-      }
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('authToken', data.token)
       localStorage.setItem('role', role)
       localStorage.setItem('authRole', role)
       localStorage.setItem('authApproved', String(approved))
@@ -81,33 +83,31 @@ export default function LoginPage() {
 
       let effectiveRole = role
       let effectiveApproved = approved
-      if (data?.token) {
-        try {
-          const verifyResponse = await fetch(`${backendBaseUrl}/user/me`, {
-            headers: {
-              Authorization: `Bearer ${data.token}`,
-            },
-          })
+      try {
+        const verifyResponse = await fetch(`${backendBaseUrl}/user/me`, {
+          headers: {
+            Authorization: `Bearer ${data.token}`,
+          },
+        })
 
-          const verifyData = await verifyResponse.json()
-          if (verifyResponse.ok) {
-            const verifyRole = String(verifyData?.role ?? effectiveRole).toUpperCase()
-            const verifyApproved = typeof verifyData?.approved === 'boolean' ? verifyData.approved : effectiveApproved
+        const verifyData = await verifyResponse.json()
+        if (verifyResponse.ok) {
+          const verifyRole = String(verifyData?.role ?? effectiveRole).toUpperCase()
+          const verifyApproved = typeof verifyData?.approved === 'boolean' ? verifyData.approved : effectiveApproved
 
-            effectiveRole = verifyRole === 'ADMIN' ? 'ADMIN' : 'USER'
-            effectiveApproved = effectiveRole === 'ADMIN' ? true : verifyApproved
+          effectiveRole = verifyRole === 'ADMIN' ? 'ADMIN' : 'USER'
+          effectiveApproved = effectiveRole === 'ADMIN' ? true : verifyApproved
 
-            localStorage.setItem('role', effectiveRole)
-            localStorage.setItem('authRole', effectiveRole)
-            localStorage.setItem('authApproved', String(effectiveApproved))
-            if (verifyData?.username) {
-              localStorage.setItem('username', String(verifyData.username))
-            }
-            localStorage.setItem('authLoginType', 'google')
+          localStorage.setItem('role', effectiveRole)
+          localStorage.setItem('authRole', effectiveRole)
+          localStorage.setItem('authApproved', String(effectiveApproved))
+          if (verifyData?.username) {
+            localStorage.setItem('username', String(verifyData.username))
           }
-        } catch {
-          // If /user/me fails, fallback to auth response values.
+          localStorage.setItem('authLoginType', 'google')
         }
+      } catch {
+        // If /user/me fails, fallback to auth response values.
       }
 
       if (!effectiveApproved) {

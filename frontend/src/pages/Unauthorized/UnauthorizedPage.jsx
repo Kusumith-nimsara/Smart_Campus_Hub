@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { clearAuthState } from '../../utils/api'
 import './UnauthorizedPage.css'
 
 export default function UnauthorizedPage() {
@@ -6,13 +7,7 @@ export default function UnauthorizedPage() {
   const userName = localStorage.getItem('username') || 'User'
 
   function handleLogout() {
-    localStorage.removeItem('token')
-    localStorage.removeItem('role')
-    localStorage.removeItem('authRole')
-    localStorage.removeItem('authApproved')
-    localStorage.removeItem('username')
-    localStorage.removeItem('authToken')
-    localStorage.removeItem('authLoginType')
+    clearAuthState()
     navigate('/login', { replace: true })
   }
 
@@ -32,8 +27,9 @@ export default function UnauthorizedPage() {
         </p>
 
         <div className="unauthorized-actions">
-          <button type="button" className="secondary" onClick={handleLogout}>
-            Logout
+          <button type="button" className="btn-signout" onClick={handleLogout}>
+            <span aria-hidden="true">↪</span>
+            Sign Out
           </button>
         </div>
       </section>
