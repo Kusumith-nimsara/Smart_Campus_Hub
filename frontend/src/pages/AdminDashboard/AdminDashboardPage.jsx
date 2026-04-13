@@ -146,10 +146,18 @@ export default function AdminDashboardPage() {
         </div>
 
         <nav className="admin-nav" aria-label="Admin Dashboard Navigation">
-          <button type="button" className="active">📊 Dashboard</button>
-          <button type="button" onClick={() => navigate('/profile')}>👤 Profile</button>
-          <button type="button">🔔 Notifications</button>
-          <button type="button" onClick={() => navigate('/admin/user-management')}>👥 User Management</button>
+          <button type="button" className="active" onClick={() => navigate('/admin-dashboard')}>
+            <span className="nav-icon">📊</span> Dashboard
+          </button>
+          <button type="button" onClick={() => navigate('/admin/user-management')}>
+            <span className="nav-icon">👥</span> User Management
+          </button>
+          <button type="button" onClick={() => navigate('/profile')}>
+            <span className="nav-icon">👤</span> Profile
+          </button>
+          <button type="button">
+            <span className="nav-icon">🔔</span> Notifications
+          </button>
         </nav>
 
         <button type="button" className="admin-logout" onClick={handleLogout}>↪ Logout</button>

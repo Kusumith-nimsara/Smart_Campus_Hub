@@ -293,17 +293,17 @@ export default function UserManagementPage() {
         </div>
 
         <nav className="um-nav" aria-label="Admin Navigation">
+          <button type="button" onClick={() => navigate('/admin-dashboard')}>
+            <span className="nav-icon">📊</span> Dashboard
+          </button>
+          <button type="button" className="active" onClick={() => navigate('/admin/user-management')}>
+            <span className="nav-icon">👥</span> User Management
+          </button>
           <button type="button" onClick={() => navigate('/profile')}>
             <span className="nav-icon">👤</span> Profile
           </button>
           <button type="button">
             <span className="nav-icon">🔔</span> Notifications
-          </button>
-          <button type="button" onClick={() => navigate('/admin-dashboard')}>
-            <span className="nav-icon">📊</span> Admin Dashboard
-          </button>
-          <button type="button" className="active">
-            <span className="nav-icon">👥</span> User Management
           </button>
         </nav>
 
