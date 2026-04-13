@@ -11,7 +11,6 @@ export default function UserDashboardPage() {
   const googleEmail = localStorage.getItem('authEmail') || ''
 
   const [loading, setLoading] = useState(true)
-  const [message, setMessage] = useState('Loading dashboard...')
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [profile, setProfile] = useState({
@@ -29,7 +28,6 @@ export default function UserDashboardPage() {
   useEffect(() => {
     async function loadProfile() {
       if (!token) {
-        setMessage('No session found. Please login.')
         setLoading(false)
         return
       }
@@ -64,10 +62,8 @@ export default function UserDashboardPage() {
         if (typeof data?.approved === 'boolean') {
           localStorage.setItem('authApproved', String(data.approved))
         }
-        setMessage('Dashboard ready.')
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Failed to load dashboard data.'
-        setMessage(errorMessage)
+      } catch {
+        // Keep dashboard layout available even when profile fetch fails.
       } finally {
         setLoading(false)
       }
@@ -224,8 +220,6 @@ export default function UserDashboardPage() {
             <button type="button" onClick={() => navigate('/')}>🏠 Landing Page</button>
           </article>
         </div>
-
-        <p className="dashboard-status">{message}</p>
       </section>
     </main>
   )

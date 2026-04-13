@@ -24,7 +24,6 @@ export default function AdminDashboardPage() {
   const [accountActive, setAccountActive] = useState(true)
   const [loadingUsers, setLoadingUsers] = useState(true)
   const [processingUserId, setProcessingUserId] = useState('')
-  const [statusMessage, setStatusMessage] = useState('Loading users...')
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const googleAvatarCandidate =
@@ -34,7 +33,6 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     async function loadUsers() {
       if (!token) {
-        setStatusMessage('Missing token. Please login again.')
         setLoadingUsers(false)
         return
       }
@@ -53,10 +51,8 @@ export default function AdminDashboardPage() {
 
         const normalized = Array.isArray(data) ? data : (data?.content ? data.content : [])
         setUsers(normalized)
-        setStatusMessage('Users loaded.')
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Failed to load users.'
-        setStatusMessage(errorMessage)
+      } catch {
+        // Keep dashboard usable even when users list fails to load.
       } finally {
         setLoadingUsers(false)
       }
@@ -101,7 +97,6 @@ export default function AdminDashboardPage() {
 
   async function handleApproveUser(userId) {
     setProcessingUserId(userId)
-    setStatusMessage('Approving user...')
 
     try {
       const response = await fetch(`${backendBaseUrl}/admin/users/${userId}/approve`, {
@@ -117,10 +112,8 @@ export default function AdminDashboardPage() {
       }
 
       setUsers((prev) => prev.map((user) => (user.id === userId ? data : user)))
-      setStatusMessage('User approved successfully.')
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to approve user.'
-      setStatusMessage(errorMessage)
+    } catch {
+      // Approval errors are handled by keeping current state unchanged.
     } finally {
       setProcessingUserId('')
     }
@@ -303,7 +296,6 @@ export default function AdminDashboardPage() {
           </article>
         </section>
 
-        <p className="admin-status">{statusMessage}</p>
       </section>
     </main>
   )
