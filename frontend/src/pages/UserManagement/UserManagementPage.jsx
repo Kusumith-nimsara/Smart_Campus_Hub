@@ -47,7 +47,7 @@ export default function UserManagementPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data?.message ?? 'Failed to load users')
-      setUsers(Array.isArray(data) ? data : [])
+      setUsers(Array.isArray(data) ? data : (data?.content ? data.content : []))
     } catch (err) {
       console.error('Failed to fetch users:', err)
     } finally {

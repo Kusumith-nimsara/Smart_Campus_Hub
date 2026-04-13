@@ -116,6 +116,26 @@ export default function LoginPage() {
       navigate('/dashboard')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Google auth failed.'
+      
+      const isPending = errorMessage.toLowerCase().includes('pending')
+      const isSuspended = errorMessage.toLowerCase().includes('suspended')
+      
+      if (isPending || isSuspended) {
+        const googleEmail = extractEmailFromJwt(idToken)
+        if (googleEmail) {
+          localStorage.setItem('username', googleEmail.split('@')[0] || googleEmail)
+        }
+        
+        if (isSuspended) {
+          setMessage('Your account is suspended. Redirecting...')
+          setTimeout(() => navigate('/suspended', { replace: true }), 1500)
+        } else {
+          setMessage('Your account is pending admin approval. Redirecting...')
+          setTimeout(() => navigate('/unauthorized', { replace: true }), 1500)
+        }
+        return
+      }
+
       setMessage(errorMessage)
     } finally {
       setLoading(false)

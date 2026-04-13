@@ -8,6 +8,7 @@ import ProfilePage from './pages/Profile/ProfilePage'
 import AdminDashboardPage from './pages/AdminDashboard/AdminDashboardPage'
 import AdminLoginPage from './pages/AdminLogin/AdminLoginPage'
 import UnauthorizedPage from './pages/Unauthorized/UnauthorizedPage'
+import SuspendedPage from './pages/Suspended/SuspendedPage'
 import UserDashboardPage from './pages/UserDashboard/UserDashboardPage'
 import UserManagementPage from './pages/UserManagement/UserManagementPage'
 
@@ -20,6 +21,7 @@ function App() {
         <Route path="/register" element={<Navigate to="/login" replace />} />
         <Route path="/admin-login" element={<AdminLoginPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
+        <Route path="/suspended" element={<SuspendedPage />} />
         <Route
           path="/dashboard"
           element={

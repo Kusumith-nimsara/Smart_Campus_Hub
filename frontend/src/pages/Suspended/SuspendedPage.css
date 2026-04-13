@@ -1,0 +1,91 @@
+.suspended-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #0f1117;
+  color: #e4e6eb;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  padding: 1rem;
+}
+
+.suspended-card {
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-top: 4px solid #ef4444;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  max-width: 450px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.suspended-card .icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.suspended-card h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #ef4444;
+  margin-bottom: 0.5rem;
+}
+
+.suspended-card .greeting {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #f3f4f6;
+  margin-bottom: 1.5rem;
+}
+
+.suspended-card .message {
+  font-size: 1rem;
+  color: #d1d5db;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.suspended-card .sub-message {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}
+
+.suspended-card .button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.support-btn, .home-btn {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.support-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+}
+
+.support-btn:hover {
+  background: #dc2626;
+}
+
+.home-btn {
+  background: transparent;
+  color: #e4e6eb;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.home-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}

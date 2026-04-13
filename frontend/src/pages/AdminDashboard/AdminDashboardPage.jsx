@@ -43,7 +43,7 @@ export default function AdminDashboardPage() {
           throw new Error(data?.message ?? 'Failed to load users.')
         }
 
-        const normalized = Array.isArray(data) ? data : []
+        const normalized = Array.isArray(data) ? data : (data?.content ? data.content : [])
         setUsers(normalized)
         setStatusMessage('Users loaded.')
       } catch (error) {
