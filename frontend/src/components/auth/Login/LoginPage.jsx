@@ -175,7 +175,6 @@ export default function LoginPage() {
 
           <p className="status">{message}</p>
 
-          <p className="hint">API: {backendBaseUrl}</p>
         </article>
       </section>
     </main>
