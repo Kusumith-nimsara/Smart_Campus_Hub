@@ -138,7 +138,7 @@
 
 /* ══════════ CONTENT ══════════ */
 .profile-content {
-  padding: 32px;
+  padding: 40px;
   overflow-y: auto;
 }
 
@@ -146,12 +146,12 @@
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  padding: 24px 32px;
+  padding: 24px 34px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .topbar-right {
@@ -300,17 +300,49 @@
 /* ── Widgets ── */
 .profile-widgets {
   display: grid;
-  grid-template-columns: 1fr;
-  max-width: 800px;
+  grid-template-columns: minmax(0, 1.8fr) minmax(280px, 1fr);
+  width: 100%;
+  max-width: 1240px;
   gap: 24px;
+}
+
+.profile-widget {
+  min-height: 680px;
 }
 
 .widget {
   border: 1px solid #e2e8f0;
   border-radius: 16px;
   background: #ffffff;
-  padding: 32px;
+  padding: 34px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.quick-links {
+  position: sticky;
+  top: 24px;
+  height: fit-content;
+}
+
+.quick-links button {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-links button:hover {
+  border-color: #c7d2fe;
+  background: #f8faff;
+  color: #1e293b;
 }
 
 .widget h2 {
@@ -324,7 +356,7 @@
 .profile-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 22px;
 }
 
 .profile-form label {
@@ -345,7 +377,7 @@
 .profile-form input {
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  padding: 12px 14px;
+  padding: 13px 14px;
   background: #ffffff;
   font-size: 15px;
   color: #0f172a;
@@ -364,7 +396,7 @@
 }
 
 .profile-actions {
-  margin-top: 12px;
+  margin-top: 16px;
   display: flex;
   justify-content: flex-start;
   gap: 16px;
@@ -407,11 +439,26 @@
 }
 
 .profile-status {
-  margin: 16px 0 0;
+  margin: 20px 0 0;
   color: #64748b;
   font-weight: 600;
   font-size: 14px;
   grid-column: 1 / -1;
+}
+
+@media (max-width: 1200px) {
+  .profile-widgets {
+    grid-template-columns: 1fr;
+    max-width: 960px;
+  }
+
+  .profile-widget {
+    min-height: auto;
+  }
+
+  .quick-links {
+    position: static;
+  }
 }
 
 /* ── Responsive ── */
