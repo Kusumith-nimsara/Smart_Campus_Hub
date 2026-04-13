@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { closeAlert, showError, showInfo, showRunning, showToast } from '../../utils/alerts'
 import './AdminLoginPage.css'
 
 function normalizeRole(input) {
@@ -25,6 +26,7 @@ export default function AdminLoginPage() {
     event.preventDefault()
     setLoading(true)
     setMessage('Verifying admin login...')
+    showRunning('Signing in', 'Verifying admin login...')
 
     try {
       const response = await fetch(`${backendBaseUrl}/auth/login`, {
@@ -52,6 +54,8 @@ export default function AdminLoginPage() {
 
         setResult(null)
         setMessage('Access denied: only ADMIN users can log in here. Please use User Login.')
+        closeAlert()
+        showInfo('Access denied', 'Only ADMIN users can log in here. Please use User Login.')
         navigate('/unauthorized', { replace: true })
         return
       }
@@ -70,11 +74,15 @@ export default function AdminLoginPage() {
 
       setResult(data)
       setMessage('Admin login successful. Redirecting...')
+      closeAlert()
+      showToast('Admin login successful')
       navigate('/admin-dashboard', { replace: true })
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Admin login failed.'
       setResult(null)
       setMessage(errorMessage)
+      closeAlert()
+      showError('Login failed', errorMessage)
     } finally {
       setLoading(false)
     }

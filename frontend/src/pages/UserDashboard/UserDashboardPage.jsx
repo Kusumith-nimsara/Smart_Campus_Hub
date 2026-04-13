@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
+import { showLogoutAlert } from '../../utils/alerts'
 import './UserDashboardPage.css'
 
 export default function UserDashboardPage() {
@@ -77,6 +78,7 @@ export default function UserDashboardPage() {
   function handleLogout() {
     clearAuthState()
     setIsAccountMenuOpen(false)
+    showLogoutAlert()
     navigate('/', { replace: true })
   }
 

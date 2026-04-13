@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
+import { showLogoutAlert } from '../../utils/alerts'
 import './UnauthorizedPage.css'
 
 export default function UnauthorizedPage() {
@@ -8,6 +9,7 @@ export default function UnauthorizedPage() {
 
   function handleLogout() {
     clearAuthState()
+    showLogoutAlert()
     navigate('/login', { replace: true })
   }
 

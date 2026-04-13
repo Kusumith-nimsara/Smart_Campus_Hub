@@ -1,6 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
+import {
+  closeAlert,
+  confirmAction,
+  showError,
+  showInfo,
+  showLogoutAlert,
+  showRunning,
+  showSuccess,
+  showToast,
+} from '../../utils/alerts'
 import './ProfilePage.css'
 
 export default function ProfilePage() {
@@ -33,6 +43,8 @@ export default function ProfilePage() {
       if (!token) {
         setMessage('No token found. Please login first.')
         setLoading(false)
+        showInfo('Session expired', 'Please login again to continue.')
+        navigate('/login', { replace: true })
         return
       }
 
@@ -63,6 +75,7 @@ export default function ProfilePage() {
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to load profile.'
         setMessage(errorMessage)
+        showError('Profile load failed', errorMessage)
       } finally {
         setLoading(false)
       }
@@ -75,6 +88,7 @@ export default function ProfilePage() {
     event.preventDefault()
     setSaving(true)
     setMessage('Saving profile updates...')
+    showRunning('Saving profile', 'Updating your profile details...')
 
     try {
       const payload = {
@@ -118,22 +132,31 @@ export default function ProfilePage() {
       localStorage.setItem('authApproved', String(updatedApproved))
       setPassword('')
       setMessage('Profile updated successfully.')
+      closeAlert()
+      showToast('Profile updated')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to update profile.'
       setMessage(errorMessage)
+      closeAlert()
+      showError('Update failed', errorMessage)
     } finally {
       setSaving(false)
     }
   }
 
   async function handleDeleteAccount() {
-    const confirmed = window.confirm('Are you sure you want to delete your account? This cannot be undone.')
+    const confirmed = await confirmAction({
+      title: 'Delete account?',
+      text: 'This action cannot be undone.',
+      confirmText: 'Delete',
+    })
     if (!confirmed) {
       return
     }
 
     setDeleting(true)
     setMessage('Deleting account...')
+    showRunning('Deleting account', 'Please wait while we remove your account...')
 
     try {
       const response = await fetch(`${backendBaseUrl}/user/me`, {
@@ -148,18 +171,16 @@ export default function ProfilePage() {
         throw new Error(data?.message ?? 'Failed to delete account.')
       }
 
-      localStorage.removeItem('token')
-      localStorage.removeItem('role')
-      localStorage.removeItem('authRole')
-      localStorage.removeItem('authApproved')
-      localStorage.removeItem('username')
-      localStorage.removeItem('authToken')
-      localStorage.removeItem('authLoginType')
+      clearAuthState()
       setMessage('Account deleted successfully.')
+      closeAlert()
+      await showSuccess('Account deleted', 'Your account has been removed successfully.')
       navigate('/')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to delete account.'
       setMessage(errorMessage)
+      closeAlert()
+      showError('Delete failed', errorMessage)
     } finally {
       setDeleting(false)
     }
@@ -168,6 +189,7 @@ export default function ProfilePage() {
   function handleLogout() {
     clearAuthState()
     setIsAccountMenuOpen(false)
+    showLogoutAlert()
     navigate('/', { replace: true })
   }
 

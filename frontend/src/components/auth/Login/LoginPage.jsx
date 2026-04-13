@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import GoogleLoginButton from '../GoogleLoginButton'
+import { closeAlert, showError, showInfo, showRunning, showToast } from '../../../utils/alerts'
 import './LoginPage.css'
 
 function extractGoogleProfileFromJwt(idToken) {
@@ -34,6 +35,7 @@ export default function LoginPage() {
   async function loginWithGoogle(idToken) {
     setLoading(true)
     setMessage('Checking Google login with backend...')
+    showRunning('Signing in', 'Checking Google login...')
     try {
       const response = await fetch(`${backendBaseUrl}/auth/google`, {
         method: 'POST',
@@ -116,17 +118,23 @@ export default function LoginPage() {
 
       if (!effectiveApproved) {
         setMessage('Your account is pending admin approval. Redirecting...')
+        closeAlert()
+        showInfo('Pending approval', 'Your account is waiting for admin approval.')
         navigate('/unauthorized', { replace: true })
         return
       }
 
       if (effectiveRole === 'ADMIN') {
         setMessage('Admin login successful. Redirecting...')
+        closeAlert()
+        showToast('Admin login successful')
         navigate('/admin-dashboard', { replace: true })
         return
       }
 
       setMessage('Login successful. Redirecting...')
+      closeAlert()
+      showToast('Login successful')
       navigate('/dashboard')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Google auth failed.'
@@ -151,15 +159,21 @@ export default function LoginPage() {
         
         if (isSuspended) {
           setMessage('Your account is suspended. Redirecting...')
+          closeAlert()
+          showInfo('Account suspended', 'Your account has been suspended. Contact administration for help.')
           setTimeout(() => navigate('/suspended', { replace: true }), 1500)
         } else {
           setMessage('Your account is pending admin approval. Redirecting...')
+          closeAlert()
+          showInfo('Pending approval', 'Your account is waiting for admin approval.')
           setTimeout(() => navigate('/unauthorized', { replace: true }), 1500)
         }
         return
       }
 
       setMessage(errorMessage)
+      closeAlert()
+      showError('Login failed', errorMessage)
     } finally {
       setLoading(false)
     }
@@ -210,7 +224,14 @@ export default function LoginPage() {
             <GoogleLoginButton
               clientId={googleClientId}
               onCredential={loginWithGoogle}
-              onError={setMessage}
+              onError={(errorText) => {
+                const nextMessage =
+                  typeof errorText === 'string' && errorText.trim()
+                    ? errorText
+                    : 'Google sign-in failed.'
+                setMessage(nextMessage)
+                showError('Google sign-in error', nextMessage)
+              }}
             />
           ) : (
             <p className="warning">Add VITE_GOOGLE_CLIENT_ID to .env so Google button can render.</p>

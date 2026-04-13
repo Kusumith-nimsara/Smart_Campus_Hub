@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
+import { showError, showLogoutAlert, showToast } from '../../utils/alerts'
 import './AdminDashboardPage.css'
 
 export default function AdminDashboardPage() {
@@ -128,8 +129,11 @@ export default function AdminDashboardPage() {
       }
 
       setUsers((prev) => prev.map((user) => (user.id === userId ? data : user)))
-    } catch {
+      showToast('User approved')
+    } catch (error) {
       // Approval errors are handled by keeping current state unchanged.
+      const errorMessage = error instanceof Error ? error.message : 'Failed to approve user.'
+      showError('Approval failed', errorMessage)
     } finally {
       setProcessingUserId('')
     }
@@ -140,6 +144,7 @@ export default function AdminDashboardPage() {
   function handleLogout() {
     clearAuthState()
     setIsAccountMenuOpen(false)
+    showLogoutAlert()
     navigate('/', { replace: true })
   }
 

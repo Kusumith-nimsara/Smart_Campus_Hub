@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { closeAlert, showError, showRunning, showSuccess } from '../../utils/alerts'
 import './RegisterPage.css'
 
 export default function RegisterPage() {
@@ -24,11 +25,13 @@ export default function RegisterPage() {
 
     if (password !== confirmPassword) {
       setMessage('Passwords do not match.')
+      showError('Validation failed', 'Passwords do not match.')
       return
     }
 
     setLoading(true)
     setMessage('Creating account...')
+    showRunning('Creating account', 'Please wait while we register your profile...')
 
     try {
       const response = await fetch(`${backendBaseUrl}/auth/register`, {
@@ -56,11 +59,15 @@ export default function RegisterPage() {
 
       setResult(data)
       setMessage('Registration successful.')
+      closeAlert()
+      await showSuccess('Registration successful', 'Your account has been created.')
       navigate('/profile')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Registration failed.'
       setResult(null)
       setMessage(errorMessage)
+      closeAlert()
+      showError('Registration failed', errorMessage)
     } finally {
       setLoading(false)
     }

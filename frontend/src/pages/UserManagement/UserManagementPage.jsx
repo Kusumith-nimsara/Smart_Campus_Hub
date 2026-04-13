@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
-import { confirmAction, showError, showToast } from '../../utils/alerts'
+import { confirmAction, showError, showLogoutAlert, showToast } from '../../utils/alerts'
 import './UserManagementPage.css'
 
 const TABS = [
@@ -300,6 +300,7 @@ export default function UserManagementPage() {
   function handleLogout() {
     clearAuthState()
     setIsAccountMenuOpen(false)
+    showLogoutAlert()
     navigate('/', { replace: true })
   }
 
