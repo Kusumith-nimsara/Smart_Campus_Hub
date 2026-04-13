@@ -158,6 +158,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  position: relative;
 }
 
 .sidebar-toggle-btn {
@@ -192,23 +193,108 @@
   font-weight: 500;
 }
 
-.profile-top-action {
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
-  background: #ffffff;
-  color: #334155;
-  padding: 10px 16px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+.profile-account-menu {
+  position: relative;
 }
 
-.profile-top-action:hover {
-  background: #f8fafc;
+.profile-account-trigger {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.profile-account-trigger:focus-visible {
+  outline: 2px solid #818cf8;
+  outline-offset: 6px;
+  border-radius: 12px;
+}
+
+.profile-topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-topbar-user > span {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.profile-topbar-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.profile-topbar-uname {
+  margin: 0 0 2px;
+  font-weight: 700;
+  font-size: 15px;
   color: #0f172a;
-  border-color: #94a3b8;
+}
+
+.profile-topbar-urole {
+  margin: 0;
+  font-size: 12px;
+  color: #4f46e5;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-login-provider {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  line-height: 0;
+}
+
+.profile-login-provider svg {
+  width: 14px;
+  height: 14px;
+}
+
+.profile-account-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 140px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 16px 30px -18px rgba(15, 23, 42, 0.4);
+  padding: 8px;
+  z-index: 50;
+}
+
+.profile-account-dropdown button {
+  width: 100%;
+  border: 0;
+  background: #fff5f5;
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profile-account-dropdown button:hover {
+  background: #fee2e2;
 }
 
 /* ── Widgets ── */
