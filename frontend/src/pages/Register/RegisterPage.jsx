@@ -84,7 +84,7 @@ export default function RegisterPage() {
   <p className="register-subtitle">Create a standard user account in Smart Campus Hub.</p>
 
         <form className="register-form" onSubmit={handleRegister}>
-          <label>
+          <label className="form-group-full">
             Username
             <input
               type="text"
@@ -95,7 +95,7 @@ export default function RegisterPage() {
             />
           </label>
 
-          <label>
+          <label className="form-group-full">
             Email
             <input
               type="email"
@@ -150,7 +150,7 @@ export default function RegisterPage() {
             />
           </label>
 
-          <label>
+          <label className="form-group-full">
             Password
             <input
               type="password"
@@ -162,7 +162,7 @@ export default function RegisterPage() {
             />
           </label>
 
-          <label>
+          <label className="form-group-full">
             Confirm Password
             <input
               type="password"
@@ -174,7 +174,7 @@ export default function RegisterPage() {
             />
           </label>
 
-          <button type="submit" disabled={loading}>
+          <button type="submit" className="btn-register" disabled={loading}>
             {loading ? 'Please wait...' : 'Register'}
           </button>
         </form>
