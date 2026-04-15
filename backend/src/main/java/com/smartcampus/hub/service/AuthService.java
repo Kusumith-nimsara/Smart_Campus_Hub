@@ -98,12 +98,19 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
+        String identifier = request.getUsername();
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(identifier, request.getPassword())
         );
 
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+        User user = null;
+        if (identifier.contains("@")) {
+            user = userRepository.findByEmailIgnoreCase(identifier).orElse(null);
+        }
+        if (user == null) {
+            user = userRepository.findByUsername(identifier)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+        }
 
         // Block suspended users with a clear message
         if (user.isSuspended()) {
