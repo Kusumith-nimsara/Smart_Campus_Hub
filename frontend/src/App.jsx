@@ -3,6 +3,7 @@ import LoginPage from './components/auth/Login/LoginPage'
 import PrivateRoute from './components/auth/PrivateRoute'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import ErrorBoundary from './components/common/ErrorBoundary'
+import RegisterPage from './pages/Register/RegisterPage'
 import LandingPage from './pages/Landing/LandingPage'
 import ProfilePage from './pages/Profile/ProfilePage'
 import AdminDashboardPage from './pages/AdminDashboard/AdminDashboardPage'
@@ -17,7 +18,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<Navigate to="/login" replace />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/admin-login" element={<Navigate to="/login" replace />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
         <Route path="/suspended" element={<SuspendedPage />} />
