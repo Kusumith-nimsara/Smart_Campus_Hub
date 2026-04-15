@@ -14,7 +14,7 @@
 .modern-glass-card {
   position: relative;
   z-index: 10;
-  width: min(650px, 100%);
+  width: min(800px, 95vw);
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(16px);

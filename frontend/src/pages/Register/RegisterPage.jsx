@@ -24,6 +24,38 @@ export default function RegisterPage() {
   async function handleRegister(event) {
     event.preventDefault()
 
+    if (firstName.trim().length < 2 || lastName.trim().length < 2) {
+      const err = 'First and Last name must be at least 2 characters.'
+      setMessage(err)
+      showError('Validation failed', err)
+      return
+    }
+    if (username.trim().length < 3) {
+      const err = 'Username must be at least 3 characters.'
+      setMessage(err)
+      showError('Validation failed', err)
+      return
+    }
+    if (registrationNumber.trim().length < 3) {
+      const err = 'Registration Number must be at least 3 characters.'
+      setMessage(err)
+      showError('Validation failed', err)
+      return
+    }
+    const phoneRegex = /^\+?[0-9\s-]{7,20}$/
+    if (!phoneRegex.test(mobileNumber.trim())) {
+      const err = 'Please enter a valid mobile number.'
+      setMessage(err)
+      showError('Validation failed', err)
+      return
+    }
+    const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
+    if (!passRegex.test(password)) {
+      const err = 'Password must be at least 8 characters, with 1 uppercase, 1 lowercase, and 1 digit.'
+      setMessage(err)
+      showError('Validation failed', err)
+      return
+    }
     if (password !== confirmPassword) {
       setMessage('Passwords do not match.')
       showError('Validation failed', 'Passwords do not match.')
@@ -97,6 +129,8 @@ export default function RegisterPage() {
               value={username}
               onChange={(event) => setUsername(event.target.value)}
               placeholder="Enter username"
+              minLength={3}
+              maxLength={50}
               required
             />
           </label>
@@ -119,6 +153,8 @@ export default function RegisterPage() {
               value={firstName}
               onChange={(event) => setFirstName(event.target.value)}
               placeholder="Enter first name"
+              minLength={2}
+              maxLength={50}
               required
             />
           </label>
@@ -130,6 +166,8 @@ export default function RegisterPage() {
               value={lastName}
               onChange={(event) => setLastName(event.target.value)}
               placeholder="Enter last name"
+              minLength={2}
+              maxLength={50}
               required
             />
           </label>
@@ -141,6 +179,8 @@ export default function RegisterPage() {
               value={registrationNumber}
               onChange={(event) => setRegistrationNumber(event.target.value)}
               placeholder="Enter registration number"
+              minLength={3}
+              maxLength={50}
               required
             />
           </label>
@@ -152,6 +192,10 @@ export default function RegisterPage() {
               value={mobileNumber}
               onChange={(event) => setMobileNumber(event.target.value)}
               placeholder="Enter mobile number"
+              minLength={7}
+              maxLength={20}
+              pattern="^\+?[0-9\s-]{7,20}$"
+              title="Enter a valid mobile number (e.g. +94771234567)"
               required
             />
           </label>
@@ -162,8 +206,10 @@ export default function RegisterPage() {
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="Enter password"
-              minLength={6}
+              placeholder="At least 8 chars, 1 uppercase, 1 lowercase, 1 digit"
+              minLength={8}
+              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              title="Must contain at least one number, one uppercase and lowercase letter, and at least 8 characters"
               required
             />
           </label>
@@ -175,7 +221,7 @@ export default function RegisterPage() {
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
               placeholder="Confirm password"
-              minLength={6}
+              minLength={8}
               required
             />
           </label>
