@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { closeAlert, showError, showRunning, showSuccess } from '../../utils/alerts'
+import '../Landing/LandingPage.css'
 import './RegisterPage.css'
 
 export default function RegisterPage() {
