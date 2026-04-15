@@ -1,27 +1,28 @@
-/* Premium Light Single Card Theme */
-.register-page {
-  min-height: 100vh;
+/* ═══════════════════════════════════════════════════════
+   REGISTER PAGE — Landing Page Connected Theme
+   ═══════════════════════════════════════════════════════ */
+
+/* Reusing .landing-page class from LandingPage.css handles the basic background.
+   Below we add the specific layout logic for the centering. */
+.register-layout-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 24px;
-  background: #f8fafc; /* Slate 50 */
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  padding: 40px 24px;
 }
 
-.register-card {
-  width: min(600px, 100%);
-  border-radius: 20px;
-  background: #ffffff;
+.modern-glass-card {
+  position: relative;
+  z-index: 10;
+  width: min(650px, 100%);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 0 15px rgba(0,0,0,0.02);
-  padding: 40px;
-  border: 1px solid #f1f5f9;
-  animation: rise-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes rise-in {
-  from { opacity: 0; transform: translateY(20px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  padding: clamp(30px, 5vw, 45px);
+  animation: fade-up 0.6s ease;
 }
 
 .back-link {
@@ -39,92 +40,92 @@
   transition: color 0.2s ease;
 }
 
-.back-link::before {
-  content: "←";
-}
-
 .back-link:hover {
   color: #0f172a;
 }
 
-.register-card h1 {
+.modern-glass-card h1 {
   margin: 0 0 8px;
-  font-size: 28px;
+  font-size: clamp(28px, 4vw, 34px);
   color: #0f172a;
   font-weight: 800;
 }
 
 .register-subtitle {
-  margin: 0 0 24px;
-  color: #64748b;
+  margin: 0 0 28px;
+  color: #475569;
   font-size: 15px;
   line-height: 1.6;
 }
 
-.register-form {
+.modern-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 20px 16px;
 }
 
 .form-group-full {
   grid-column: 1 / -1;
 }
 
-.register-form label {
+.modern-form-grid label {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   font-size: 14px;
   font-weight: 600;
   color: #334155;
 }
 
-.register-form input {
-  padding: 12px 16px;
+.modern-form-grid input {
+  padding: 14px 16px;
   border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 15px;
   color: #0f172a;
+  background: #ffffff;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
   width: 100%;
   box-sizing: border-box;
 }
 
-.register-form input:focus {
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+.modern-form-grid input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  background: #ffffff;
 }
 
-.btn-register {
+.btn-modern-primary {
   grid-column: 1 / -1;
-  margin-top: 12px;
-  padding: 14px;
+  margin-top: 16px;
+  padding: 16px;
   border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  background: #4f46e5;
-  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  transition: all 0.25s ease;
 }
 
-.btn-register:hover:not(:disabled) {
-  background: #4338ca;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+.btn-modern-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+  background: linear-gradient(135deg, #4338ca, #6d28d9);
 }
 
-.btn-register:disabled {
+.btn-modern-primary:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
 }
 
-.register-status {
+.modern-status {
   text-align: center;
-  margin: 20px 0 0;
+  margin: 24px 0 0;
   color: #4f46e5;
   font-weight: 600;
   font-size: 14px;
@@ -139,12 +140,12 @@
   color: #0f172a;
   font-size: 12px;
   padding: 12px;
-  max-height: 220px;
+  max-height: 180px;
   overflow: auto;
 }
 
 @media (max-width: 600px) {
-  .register-form {
+  .modern-form-grid {
     grid-template-columns: 1fr;
   }
 }

@@ -74,16 +74,21 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="register-page">
-      <section className="register-card">
+    <main className="landing-page register-layout-wrapper">
+      {/* Animated background orbs from landing page */}
+      <div className="landing-orb orb-1" />
+      <div className="landing-orb orb-2" />
+      <div className="landing-orb orb-3" />
+
+      <section className="register-card modern-glass-card">
         <button type="button" className="back-link" onClick={() => navigate('/')}>
-          Back to Landing
+          ← Back to Landing
         </button>
 
         <h1>Create Account</h1>
-  <p className="register-subtitle">Create a standard user account in Smart Campus Hub.</p>
+        <p className="register-subtitle">Create a standard user account in Smart Campus Hub.</p>
 
-        <form className="register-form" onSubmit={handleRegister}>
+        <form className="register-form modern-form-grid" onSubmit={handleRegister}>
           <label className="form-group-full">
             Username
             <input
@@ -174,12 +179,12 @@ export default function RegisterPage() {
             />
           </label>
 
-          <button type="submit" className="btn-register" disabled={loading}>
+          <button type="submit" className="btn-modern-primary form-group-full" disabled={loading}>
             {loading ? 'Please wait...' : 'Register'}
           </button>
         </form>
 
-        <p className="register-status">{message}</p>
+        {message && <p className="register-status modern-status">{message}</p>}
         {result && <pre className="register-response">{JSON.stringify(result, null, 2)}</pre>}
       </section>
     </main>
