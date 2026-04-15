@@ -26,8 +26,10 @@ function extractGoogleProfileFromJwt(idToken) {
 export default function LoginPage() {
   const navigate = useNavigate()
 
-  const [message, setMessage] = useState('Continue with Google to sign in.')
+  const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
   const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? ''
@@ -179,6 +181,99 @@ export default function LoginPage() {
     }
   }
 
+  async function loginWithLocal(e) {
+    e.preventDefault()
+    if (!username.trim() || !password.trim()) {
+      setMessage('Please enter both username and password.')
+      return
+    }
+
+    setLoading(true)
+    setMessage('Signing in...')
+    showRunning('Signing in', 'Validating credentials...')
+    
+    try {
+      const response = await fetch(`${backendBaseUrl}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username.trim(), password }),
+      })
+
+      const contentType = response.headers.get('content-type') || ''
+      let data = {}
+      if (contentType.includes('application/json')) {
+        data = await response.json()
+      } else {
+        const rawBody = await response.text()
+        data = rawBody ? { message: rawBody } : {}
+      }
+
+      if (!response.ok) {
+        throw new Error(data?.message ?? 'Login failed.')
+      }
+
+      const role = String(data?.role ?? 'USER').toUpperCase()
+      const approved = typeof data?.approved === 'boolean' ? data.approved : true
+
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('authToken', data.token)
+      localStorage.setItem('role', role)
+      localStorage.setItem('authRole', role)
+      localStorage.setItem('authApproved', String(approved))
+      localStorage.setItem('username', data.username ?? username)
+      localStorage.setItem('authEmail', data.email ?? username)
+      localStorage.setItem('authLoginType', 'local')
+
+      if (!approved) {
+        setMessage('Your account is pending admin approval.')
+        closeAlert()
+        showInfo('Pending approval', 'Your account is waiting for admin approval.')
+        navigate('/unauthorized', { replace: true })
+        return
+      }
+
+      if (role === 'ADMIN') {
+        setMessage('Admin login successful.')
+        closeAlert()
+        await showSuccess('Admin login successful', 'Welcome to your dashboard.')
+        navigate('/admin-dashboard', { replace: true })
+        return
+      }
+
+      setMessage('Login successful.')
+      closeAlert()
+      await showSuccess('Login successful', 'Welcome back.')
+      navigate('/dashboard')
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Login failed.'
+      
+      const isSuspended = errorMessage.toLowerCase().includes('suspended')
+      const isPending = errorMessage.toLowerCase().includes('pending')
+      
+      if (isSuspended || isPending) {
+        localStorage.setItem('username', username)
+        if (isSuspended) {
+          setMessage('Your account is suspended.')
+          closeAlert()
+          showInfo('Account suspended', 'Your account has been suspended. Contact administration.')
+          setTimeout(() => navigate('/suspended', { replace: true }), 1500)
+        } else {
+          setMessage('Your account is pending admin approval.')
+          closeAlert()
+          showInfo('Pending approval', 'Your account is waiting for admin approval.')
+          setTimeout(() => navigate('/unauthorized', { replace: true }), 1500)
+        }
+        return
+      }
+
+      setMessage(errorMessage)
+      closeAlert()
+      showError('Login failed', errorMessage)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <main className="auth-page">
       <section className="auth-layout">
@@ -218,26 +313,66 @@ export default function LoginPage() {
           </button>
 
           <h2>Welcome Back</h2>
-          <p className="auth-note">Sign in with Google to access your Smart Campus dashboard.</p>
+          <p className="auth-note">Sign in to access your Smart Campus dashboard.</p>
+
+          <form className="local-login-form" onSubmit={loginWithLocal}>
+            <div className="form-group">
+              <label htmlFor="username">Username or Email</label>
+              <input
+                type="text"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter your username"
+                disabled={loading}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                disabled={loading}
+                required
+              />
+            </div>
+            <button type="submit" className="login-btn btn-primary" disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign In'}
+            </button>
+          </form>
+
+          <div className="auth-divider">
+            <span>or continue with</span>
+          </div>
 
           {googleClientId ? (
-            <GoogleLoginButton
-              clientId={googleClientId}
-              onCredential={loginWithGoogle}
-              onError={(errorText) => {
-                const nextMessage =
-                  typeof errorText === 'string' && errorText.trim()
-                    ? errorText
-                    : 'Google sign-in failed.'
-                setMessage(nextMessage)
-                showError('Google sign-in error', nextMessage)
-              }}
-            />
+            <div className="google-button-container">
+              <GoogleLoginButton
+                clientId={googleClientId}
+                onCredential={loginWithGoogle}
+                onError={(errorText) => {
+                  const nextMessage =
+                    typeof errorText === 'string' && errorText.trim()
+                      ? errorText
+                      : 'Google sign-in failed.'
+                  setMessage(nextMessage)
+                  showError('Google sign-in error', nextMessage)
+                }}
+              />
+            </div>
           ) : (
             <p className="warning">Add VITE_GOOGLE_CLIENT_ID to .env so Google button can render.</p>
           )}
 
           <p className="status">{message}</p>
+          
+          <p className="auth-register-link">
+            Don't have an account? <button type="button" onClick={() => navigate('/register')} className="btn-link">Register here</button>
+          </p>
 
         </article>
       </section>
