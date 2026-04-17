@@ -31,16 +31,16 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
 
         // Block suspended users and unapproved non-admin users at the security level
-        boolean isEnabled = !user.isSuspended()
-                && (user.isApproved() || user.getRole() == com.smartcampus.hub.model.Role.ADMIN);
+        boolean isApprovedOrAdmin = user.isApproved() || user.getRole() == com.smartcampus.hub.model.Role.ADMIN;
+        boolean isSuspended = user.isSuspended();
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                isEnabled,                // enabled — false if suspended or unapproved
+                isApprovedOrAdmin,        // enabled — false if unapproved
                 true,                     // accountNonExpired
                 true,                     // credentialsNonExpired
-                true,                     // accountNonLocked
+                !isSuspended,             // accountNonLocked — false if suspended
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
         );
     }
