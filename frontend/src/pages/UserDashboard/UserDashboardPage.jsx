@@ -107,9 +107,12 @@ export default function UserDashboardPage() {
         <p className="sidebar-user-role">{displayRole}</p>
 
         <nav className="sidebar-menu" aria-label="Dashboard Menu">
-          <button type="button" className="active">📊 Dashboard</button>
+          <button type="button" className="active" onClick={() => navigate('/dashboard')}>📊 Dashboard</button>
           <button type="button" onClick={() => navigate('/profile')}>👤 Profile</button>
-          <button type="button">🔔 Notifications</button>
+          <button type="button" onClick={() => navigate('/notifications')}>🔔 Notifications</button>
+          <button type="button" onClick={() => navigate('/catalogue')}>📚 Catalogue</button>
+          <button type="button" onClick={() => navigate('/tickets')}>🎫 Tickets</button>
+          <button type="button" onClick={() => navigate('/bookings')}>📅 Bookings</button>
         </nav>
 
         <button type="button" className="sidebar-logout" onClick={handleLogout}>

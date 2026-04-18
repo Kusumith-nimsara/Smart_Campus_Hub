@@ -172,8 +172,17 @@ export default function AdminDashboardPage() {
           <button type="button" onClick={() => navigate('/profile')}>
             <span className="nav-icon">👤</span> Profile
           </button>
-          <button type="button">
+          <button type="button" onClick={() => navigate('/notifications')}>
             <span className="nav-icon">🔔</span> Notifications
+          </button>
+          <button type="button" onClick={() => navigate('/catalogue')}>
+            <span className="nav-icon">📚</span> Catalogue
+          </button>
+          <button type="button" onClick={() => navigate('/tickets')}>
+            <span className="nav-icon">🎫</span> Tickets
+          </button>
+          <button type="button" onClick={() => navigate('/bookings')}>
+            <span className="nav-icon">📅</span> Bookings
           </button>
         </nav>
 
