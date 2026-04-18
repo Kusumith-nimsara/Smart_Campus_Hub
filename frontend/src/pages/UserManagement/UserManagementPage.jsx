@@ -1,5 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { clearAuthState } from '../../utils/api'
+import { confirmAction, showError, showLogoutAlert, showSuccess } from '../../utils/alerts'
 import './UserManagementPage.css'
 
 const TABS = [
@@ -17,6 +19,9 @@ export default function UserManagementPage() {
   const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
   const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
   const adminName = localStorage.getItem('username') || 'Admin'
+  const isGoogleLogin = localStorage.getItem('authLoginType') === 'google'
+  const googleAvatarUrl = localStorage.getItem('authAvatarUrl') || ''
+  const googleEmail = localStorage.getItem('authEmail') || ''
   const today = new Date().toLocaleDateString(undefined, {
     weekday: 'long',
     month: 'long',
@@ -31,6 +36,12 @@ export default function UserManagementPage() {
   const [editRole, setEditRole] = useState('')
   const [processingId, setProcessingId] = useState(null)
   const [actionMessage, setActionMessage] = useState('')
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
+  const googleAvatarCandidate =
+    googleAvatarUrl ||
+    (googleEmail ? `https://www.google.com/s2/photos/profile/${encodeURIComponent(googleEmail)}?sz=128` : '')
 
   useEffect(() => {
     fetchUsers()
@@ -98,8 +109,11 @@ export default function UserManagementPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data?.message ?? 'Failed to approve')
       setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)))
+      showSuccess('Success', 'User approved.')
     } catch (err) {
       console.error(err)
+      const message = err instanceof Error ? err.message : 'Failed to approve user'
+      showError('Action failed', message)
     } finally {
       setProcessingId(null)
     }
@@ -116,8 +130,11 @@ export default function UserManagementPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data?.message ?? `Failed to ${action}`)
       setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)))
+      showSuccess('Success', currentlySuspended ? 'User activated.' : 'User suspended.')
     } catch (err) {
       console.error(err)
+      const message = err instanceof Error ? err.message : `Failed to ${action} user`
+      showError('Action failed', message)
     } finally {
       setProcessingId(null)
     }
@@ -140,8 +157,11 @@ export default function UserManagementPage() {
       setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)))
       setEditingUserId(null)
       setEditRole('')
+      showSuccess('Success', 'Role updated.')
     } catch (err) {
       console.error(err)
+      const message = err instanceof Error ? err.message : 'Failed to update role'
+      showError('Update failed', message)
     } finally {
       setProcessingId(null)
     }
@@ -179,6 +199,7 @@ export default function UserManagementPage() {
       if (!res.ok) throw new Error(data?.message ?? 'Failed to update user type')
       setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)))
       setActionMessage(`User type updated to ${nextUserType}.`)
+      showSuccess('Success', `User type updated to ${nextUserType}.`)
     } catch (err) {
       // Revert optimistic update when save fails.
       setUsers((prev) =>
@@ -187,13 +208,19 @@ export default function UserManagementPage() {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update user type'
       setActionMessage(errorMessage)
       console.error(err)
+      showError('Update failed', errorMessage)
     } finally {
       setProcessingId(null)
     }
   }
 
   async function handleDelete(userId) {
-    if (!window.confirm('Are you sure you want to delete this user?')) return
+    const confirmed = await confirmAction({
+      title: 'Delete user?',
+      text: 'This action cannot be undone.',
+      confirmText: 'Delete',
+    })
+    if (!confirmed) return
     setProcessingId(userId)
     try {
       const res = await fetch(`${backendBaseUrl}/admin/users/${userId}`, {
@@ -205,8 +232,11 @@ export default function UserManagementPage() {
         throw new Error(data?.message ?? 'Failed to delete')
       }
       setUsers((prev) => prev.filter((u) => u.id !== userId))
+      showSuccess('Success', 'User deleted.')
     } catch (err) {
       console.error(err)
+      const message = err instanceof Error ? err.message : 'Failed to delete user'
+      showError('Delete failed', message)
     } finally {
       setProcessingId(null)
     }
@@ -268,19 +298,15 @@ export default function UserManagementPage() {
   }
 
   function handleLogout() {
-    localStorage.removeItem('token')
-    localStorage.removeItem('role')
-    localStorage.removeItem('authRole')
-    localStorage.removeItem('authApproved')
-    localStorage.removeItem('username')
-    localStorage.removeItem('authToken')
-    localStorage.removeItem('authLoginType')
-    navigate('/login')
+    clearAuthState()
+    setIsAccountMenuOpen(false)
+    showLogoutAlert()
+    navigate('/', { replace: true })
   }
 
   return (
-    <main className="um-page">
-      <aside className="um-sidebar">
+    <main className={`um-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
+      <aside className="um-sidebar" aria-hidden={!isSidebarOpen}>
         <div className="um-brand">
           <div className="um-logo">SC</div>
           <h2>Smart Campus</h2>
@@ -293,17 +319,17 @@ export default function UserManagementPage() {
         </div>
 
         <nav className="um-nav" aria-label="Admin Navigation">
+          <button type="button" onClick={() => navigate('/admin-dashboard')}>
+            <span className="nav-icon">📊</span> Dashboard
+          </button>
+          <button type="button" className="active" onClick={() => navigate('/admin/user-management')}>
+            <span className="nav-icon">👥</span> User Management
+          </button>
           <button type="button" onClick={() => navigate('/profile')}>
             <span className="nav-icon">👤</span> Profile
           </button>
           <button type="button">
             <span className="nav-icon">🔔</span> Notifications
-          </button>
-          <button type="button" onClick={() => navigate('/admin-dashboard')}>
-            <span className="nav-icon">📊</span> Admin Dashboard
-          </button>
-          <button type="button" className="active">
-            <span className="nav-icon">👥</span> User Management
           </button>
         </nav>
 
@@ -314,16 +340,69 @@ export default function UserManagementPage() {
 
       <section className="um-content">
         <header className="um-topbar">
-          <div>
-            <h1 className="um-topbar-name">{adminName}</h1>
-            <p className="um-topbar-date">{today}</p>
-          </div>
-          <div className="um-topbar-avatar">
-            <span>{adminName.charAt(0).toUpperCase()}</span>
-            <div className="um-topbar-info">
-              <p className="um-topbar-uname">{adminName}</p>
-              <p className="um-topbar-urole">ADMIN</p>
+          <div className="topbar-left">
+            <button 
+              type="button" 
+              className="sidebar-toggle-btn" 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              aria-label="Toggle Sidebar"
+            >
+              ☰
+            </button>
+            <div>
+              <h1 className="um-topbar-name">{adminName}</h1>
+              <p className="um-topbar-date">{today}</p>
             </div>
+          </div>
+          <div className="um-account-menu">
+            <button
+              type="button"
+              className="um-account-trigger"
+              onClick={() => setIsAccountMenuOpen((prev) => !prev)}
+              aria-haspopup="menu"
+              aria-expanded={isAccountMenuOpen}
+              aria-label="Open account menu"
+            >
+              <div className="um-topbar-avatar">
+                <span>
+                  {isGoogleLogin && googleAvatarCandidate && !avatarLoadFailed ? (
+                    <img
+                      src={googleAvatarCandidate}
+                      alt={adminName}
+                      className="um-topbar-avatar-image"
+                      onError={() => setAvatarLoadFailed(true)}
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    adminName.charAt(0).toUpperCase()
+                  )}
+                </span>
+                <div className="um-topbar-info">
+                  <p className="um-topbar-uname">{adminName}</p>
+                  <p className="um-topbar-urole">
+                    ADMIN
+                    {isGoogleLogin && (
+                      <span className="um-login-provider" aria-label="Signed in with Google">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path fill="#EA4335" d="M12 10.2v3.9h5.4c-.2 1.3-1.5 3.9-5.4 3.9-3.2 0-5.9-2.7-5.9-6s2.7-6 5.9-6c1.8 0 3.1.8 3.8 1.4l2.6-2.5C16.8 3.4 14.6 2.5 12 2.5 6.8 2.5 2.6 6.8 2.6 12s4.2 9.5 9.4 9.5c5.4 0 8.9-3.8 8.9-9.1 0-.6-.1-1-.1-1.4H12z"/>
+                          <path fill="#34A853" d="M3.7 7.6l3.2 2.3c.9-1.8 2.8-3 5.1-3 1.8 0 3.1.8 3.8 1.4l2.6-2.5C16.8 3.4 14.6 2.5 12 2.5 8.4 2.5 5.3 4.6 3.7 7.6z"/>
+                          <path fill="#4A90E2" d="M12 21.5c2.5 0 4.7-.8 6.3-2.2l-2.9-2.4c-.8.6-1.9 1.1-3.4 1.1-3.8 0-5.2-2.5-5.4-3.8l-3.2 2.5c1.6 3 4.7 4.8 8.6 4.8z"/>
+                          <path fill="#FBBC05" d="M3.7 16.7l3.2-2.5c-.2-.6-.3-1.2-.3-1.8s.1-1.3.3-1.8L3.7 7.6C3 8.9 2.6 10.4 2.6 12s.4 3.1 1.1 4.7z"/>
+                        </svg>
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
+            </button>
+
+            {isAccountMenuOpen && (
+              <div className="um-account-dropdown" role="menu" aria-label="Account actions">
+                <button type="button" onClick={handleLogout} role="menuitem">
+                  Sign out
+                </button>
+              </div>
+            )}
           </div>
         </header>
 

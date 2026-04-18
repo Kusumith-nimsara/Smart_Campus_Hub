@@ -1,17 +1,33 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { clearAuthState } from '../../utils/api'
+import {
+  closeAlert,
+  confirmAction,
+  showError,
+  showInfo,
+  showLogoutAlert,
+  showRunning,
+  showSuccess,
+} from '../../utils/alerts'
 import './ProfilePage.css'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
   const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
   const token = useMemo(() => localStorage.getItem('authToken') ?? '', [])
+  const isGoogleLogin = localStorage.getItem('authLoginType') === 'google'
+  const googleAvatarUrl = localStorage.getItem('authAvatarUrl') || ''
+  const googleEmail = localStorage.getItem('authEmail') || ''
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
-  const [message, setMessage] = useState('Loading profile...')
+  const [message, setMessage] = useState('')
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [role, setRole] = useState(() => (localStorage.getItem('authRole') || localStorage.getItem('role') || 'USER'))
+  const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
 
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
@@ -26,6 +42,8 @@ export default function ProfilePage() {
       if (!token) {
         setMessage('No token found. Please login first.')
         setLoading(false)
+        showInfo('Session expired', 'Please login again to continue.')
+        navigate('/login', { replace: true })
         return
       }
 
@@ -53,10 +71,10 @@ export default function ProfilePage() {
         localStorage.setItem('role', loadedRole)
         localStorage.setItem('authRole', loadedRole)
         localStorage.setItem('authApproved', String(loadedApproved))
-        setMessage('Profile loaded.')
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to load profile.'
         setMessage(errorMessage)
+        showError('Profile load failed', errorMessage)
       } finally {
         setLoading(false)
       }
@@ -69,6 +87,7 @@ export default function ProfilePage() {
     event.preventDefault()
     setSaving(true)
     setMessage('Saving profile updates...')
+    showRunning('Saving profile', 'Updating your profile details...')
 
     try {
       const payload = {
@@ -112,22 +131,31 @@ export default function ProfilePage() {
       localStorage.setItem('authApproved', String(updatedApproved))
       setPassword('')
       setMessage('Profile updated successfully.')
+      closeAlert()
+      showSuccess('Success', 'Profile updated successfully.')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to update profile.'
       setMessage(errorMessage)
+      closeAlert()
+      showError('Update failed', errorMessage)
     } finally {
       setSaving(false)
     }
   }
 
   async function handleDeleteAccount() {
-    const confirmed = window.confirm('Are you sure you want to delete your account? This cannot be undone.')
+    const confirmed = await confirmAction({
+      title: 'Delete account?',
+      text: 'This action cannot be undone.',
+      confirmText: 'Delete',
+    })
     if (!confirmed) {
       return
     }
 
     setDeleting(true)
     setMessage('Deleting account...')
+    showRunning('Deleting account', 'Please wait while we remove your account...')
 
     try {
       const response = await fetch(`${backendBaseUrl}/user/me`, {
@@ -142,37 +170,34 @@ export default function ProfilePage() {
         throw new Error(data?.message ?? 'Failed to delete account.')
       }
 
-      localStorage.removeItem('token')
-      localStorage.removeItem('role')
-      localStorage.removeItem('authRole')
-      localStorage.removeItem('authApproved')
-      localStorage.removeItem('username')
-      localStorage.removeItem('authToken')
-      localStorage.removeItem('authLoginType')
+      clearAuthState()
       setMessage('Account deleted successfully.')
+      closeAlert()
+      await showSuccess('Account deleted', 'Your account has been removed successfully.')
       navigate('/')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to delete account.'
       setMessage(errorMessage)
+      closeAlert()
+      showError('Delete failed', errorMessage)
     } finally {
       setDeleting(false)
     }
   }
 
   function handleLogout() {
-    localStorage.removeItem('token')
-    localStorage.removeItem('role')
-    localStorage.removeItem('authRole')
-    localStorage.removeItem('authApproved')
-    localStorage.removeItem('username')
-    localStorage.removeItem('authToken')
-    localStorage.removeItem('authLoginType')
-    navigate('/login')
+    clearAuthState()
+    setIsAccountMenuOpen(false)
+    showLogoutAlert()
+    navigate('/', { replace: true })
   }
 
   const isAdmin = role === 'ADMIN' || role === 'ROLE_ADMIN'
   const loginType = isAdmin ? 'ADMIN' : 'USER'
   const fullName = `${firstName} ${lastName}`.trim() || username || 'Campus User'
+  const googleAvatarCandidate =
+    googleAvatarUrl ||
+    (googleEmail ? `https://www.google.com/s2/photos/profile/${encodeURIComponent(googleEmail)}?sz=128` : '')
   const today = new Date().toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'short',
@@ -180,8 +205,8 @@ export default function ProfilePage() {
   })
 
   return (
-    <main className="profile-page">
-      <aside className="profile-sidebar">
+    <main className={`profile-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
+      <aside className="profile-sidebar" aria-hidden={!isSidebarOpen}>
         <div className="brand-mark">SC</div>
         <h2>Smart Campus</h2>
 
@@ -205,13 +230,72 @@ export default function ProfilePage() {
 
       <section className="profile-content">
         <header className="profile-topbar">
-          <div>
-            <h1>Welcome back, {firstName || username || 'User'}!</h1>
-            <p>{today}</p>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <button 
+              type="button" 
+              className="sidebar-toggle-btn" 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              aria-label="Toggle Sidebar"
+            >
+              ☰
+            </button>
+            <div>
+              <h1>Welcome back, {firstName || username || 'User'}!</h1>
+              <p>{today}</p>
+            </div>
           </div>
-          <button type="button" className="profile-top-action" onClick={() => navigate('/')}>
-            Back to Landing
-          </button>
+          <div className="topbar-right">
+            <div className="profile-account-menu">
+              <button
+                type="button"
+                className="profile-account-trigger"
+                onClick={() => setIsAccountMenuOpen((prev) => !prev)}
+                aria-haspopup="menu"
+                aria-expanded={isAccountMenuOpen}
+                aria-label="Open account menu"
+              >
+                <div className="profile-topbar-user">
+                  <span>
+                    {isGoogleLogin && googleAvatarCandidate && !avatarLoadFailed ? (
+                      <img
+                        src={googleAvatarCandidate}
+                        alt={fullName}
+                        className="profile-topbar-avatar-image"
+                        onError={() => setAvatarLoadFailed(true)}
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      (fullName || username || 'U').charAt(0).toUpperCase()
+                    )}
+                  </span>
+                  <div>
+                    <p className="profile-topbar-uname">{fullName}</p>
+                    <p className="profile-topbar-urole">
+                      {loginType}
+                      {isGoogleLogin && (
+                        <span className="profile-login-provider" aria-label="Signed in with Google">
+                          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path fill="#EA4335" d="M12 10.2v3.9h5.4c-.2 1.3-1.5 3.9-5.4 3.9-3.2 0-5.9-2.7-5.9-6s2.7-6 5.9-6c1.8 0 3.1.8 3.8 1.4l2.6-2.5C16.8 3.4 14.6 2.5 12 2.5 6.8 2.5 2.6 6.8 2.6 12s4.2 9.5 9.4 9.5c5.4 0 8.9-3.8 8.9-9.1 0-.6-.1-1-.1-1.4H12z"/>
+                            <path fill="#34A853" d="M3.7 7.6l3.2 2.3c.9-1.8 2.8-3 5.1-3 1.8 0 3.1.8 3.8 1.4l2.6-2.5C16.8 3.4 14.6 2.5 12 2.5 8.4 2.5 5.3 4.6 3.7 7.6z"/>
+                            <path fill="#4A90E2" d="M12 21.5c2.5 0 4.7-.8 6.3-2.2l-2.9-2.4c-.8.6-1.9 1.1-3.4 1.1-3.8 0-5.2-2.5-5.4-3.8l-3.2 2.5c1.6 3 4.7 4.8 8.6 4.8z"/>
+                            <path fill="#FBBC05" d="M3.7 16.7l3.2-2.5c-.2-.6-.3-1.2-.3-1.8s.1-1.3.3-1.8L3.7 7.6C3 8.9 2.6 10.4 2.6 12s.4 3.1 1.1 4.7z"/>
+                          </svg>
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </button>
+
+              {isAccountMenuOpen && (
+                <div className="profile-account-dropdown" role="menu" aria-label="Account actions">
+                  <button type="button" onClick={handleLogout} role="menuitem">
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </header>
 
         <div className="profile-widgets">

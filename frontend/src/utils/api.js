@@ -16,7 +16,7 @@ function getAuthHeaders() {
 }
 
 function clearAuthState() {
-  const keys = ['token', 'authToken', 'role', 'authRole', 'authApproved', 'username', 'authLoginType']
+  const keys = ['token', 'authToken', 'role', 'authRole', 'authApproved', 'username', 'authLoginType', 'authAvatarUrl', 'authEmail']
   keys.forEach((key) => localStorage.removeItem(key))
 }
 

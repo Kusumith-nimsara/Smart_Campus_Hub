@@ -1,91 +1,151 @@
-.register-page {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 24px;
+/* ═══════════════════════════════════════════════════════
+   REGISTER PAGE — Landing Page Connected Theme
+   ═══════════════════════════════════════════════════════ */
+
+/* Reusing .landing-page class from LandingPage.css handles the basic background.
+   Below we add the specific layout logic for the centering. */
+.register-layout-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 24px;
 }
 
-.register-card {
-  width: min(520px, 95vw);
+.modern-glass-card {
+  position: relative;
+  z-index: 10;
+  width: min(800px, 95vw);
   border-radius: 24px;
-  border: 1px solid var(--border-soft);
-  background: var(--surface-glass);
-  box-shadow: var(--shadow-lg);
-  backdrop-filter: blur(6px);
-  padding: 30px;
-  animation: rise-in 0.45s ease;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 0 15px rgba(0,0,0,0.02);
+  padding: clamp(30px, 5vw, 45px);
+  animation: fade-up 0.6s ease;
 }
 
 .back-link {
   border: 0;
   background: transparent;
-  color: #216b87;
-  font-weight: 700;
+  color: #64748b;
+  font-weight: 600;
   padding: 0;
   cursor: pointer;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 24px;
+  transition: color 0.2s ease;
 }
 
-.register-card h1 {
-  margin: 14px 0 6px;
-  color: var(--text-primary);
+.back-link:hover {
+  color: #0f172a;
+}
+
+.modern-glass-card h1 {
+  margin: 0 0 8px;
+  font-size: clamp(28px, 4vw, 34px);
+  color: #0f172a;
+  font-weight: 800;
 }
 
 .register-subtitle {
-  margin: 0 0 18px;
-  color: var(--text-secondary);
-}
-
-.register-form {
-  display: grid;
-  gap: 12px;
-}
-
-.register-form label {
-  display: grid;
-  gap: 6px;
-  color: #204050;
-  font-weight: 600;
-}
-
-.register-form input,
-.register-form select {
-  border: 1px solid var(--border-strong);
-  border-radius: 12px;
-  padding: 11px;
-  background: var(--surface-soft);
+  margin: 0 0 28px;
+  color: #475569;
   font-size: 15px;
+  line-height: 1.6;
 }
 
-.register-form button {
-  margin-top: 4px;
-  border: 0;
-  border-radius: 12px;
-  padding: 12px;
-  font-weight: 700;
-  color: #ffffff;
-  background: linear-gradient(125deg, var(--brand-start), var(--brand-end));
-  cursor: pointer;
+.modern-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 16px;
 }
 
-.register-form button:disabled {
-  opacity: 0.7;
-  cursor: wait;
+.form-group-full {
+  grid-column: 1 / -1;
 }
 
-.register-status {
-  margin: 14px 0 10px;
-  color: #1d4a5c;
+.modern-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
   font-weight: 600;
+  color: #334155;
+}
+
+.modern-form-grid input {
+  padding: 14px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 15px;
+  color: #0f172a;
+  background: #ffffff;
+  outline: none;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modern-form-grid input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  background: #ffffff;
+}
+
+.btn-modern-primary {
+  grid-column: 1 / -1;
+  margin-top: 16px;
+  padding: 16px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  transition: all 0.25s ease;
+}
+
+.btn-modern-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+  background: linear-gradient(135deg, #4338ca, #6d28d9);
+}
+
+.btn-modern-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.modern-status {
+  text-align: center;
+  margin: 24px 0 0;
+  color: #4f46e5;
+  font-weight: 600;
+  font-size: 14px;
+  min-height: 20px;
 }
 
 .register-response {
-  margin: 0;
-  border-radius: 14px;
-  border: 1px solid var(--border-soft);
-  background: #eff8fc;
-  color: #123541;
+  margin: 16px 0 0;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #0f172a;
   font-size: 12px;
   padding: 12px;
-  max-height: 220px;
+  max-height: 180px;
   overflow: auto;
+}
+
+@media (max-width: 600px) {
+  .modern-form-grid {
+    grid-template-columns: 1fr;
+  }
 }
