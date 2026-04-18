@@ -11,6 +11,10 @@ import UnauthorizedPage from './pages/Unauthorized/UnauthorizedPage'
 import SuspendedPage from './pages/Suspended/SuspendedPage'
 import UserDashboardPage from './pages/UserDashboard/UserDashboardPage'
 import UserManagementPage from './pages/UserManagement/UserManagementPage'
+import CataloguePage from './pages/Catalogue/CataloguePage'
+import TicketsPage from './pages/Tickets/TicketsPage'
+import BookingsPage from './pages/Bookings/BookingsPage'
+import NotificationsPage from './pages/Notifications/NotificationsPage'
 
 function App() {
   return (
@@ -57,6 +61,38 @@ function App() {
             <ProtectedRoute requiredRole="ADMIN">
               <UserManagementPage />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/catalogue"
+          element={
+            <PrivateRoute fallback={<Navigate to="/login" replace />}>
+              <CataloguePage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/tickets"
+          element={
+            <PrivateRoute fallback={<Navigate to="/login" replace />}>
+              <TicketsPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/bookings"
+          element={
+            <PrivateRoute fallback={<Navigate to="/login" replace />}>
+              <BookingsPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <PrivateRoute fallback={<Navigate to="/login" replace />}>
+              <NotificationsPage />
+            </PrivateRoute>
           }
         />
         <Route path="/user-dashboard" element={<Navigate to="/dashboard" replace />} />
