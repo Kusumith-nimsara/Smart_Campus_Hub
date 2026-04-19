@@ -1,11 +1,23 @@
+import { useState, useCallback } from 'react'
+import CreateTicketModal from '../../components/tickets/CreateTicketModal'
+import TicketListPage from '../../components/tickets/TicketListPage'
+
 export default function TicketsPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  const handleTicketCreated = useCallback(() => {
+    setRefreshKey(prev => prev + 1)
+  }, [])
+
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>🎫 Tickets</h1>
-      <p>View and manage your support tickets.</p>
-      <div style={{ marginTop: '20px', padding: '20px', backgroundColor: '#f0f4f8', borderRadius: '8px' }}>
-        <p>Tickets management features will be available soon.</p>
-      </div>
+    <div>
+      <TicketListPage key={refreshKey} onCreateNew={() => setIsModalOpen(true)} />
+      <CreateTicketModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onTicketCreated={handleTicketCreated}
+      />
     </div>
   )
 }
