@@ -36,3 +36,77 @@
 .availability-row select, .availability-row input { padding:0.4rem }
 .filter-bar { display:flex; flex-wrap:wrap; gap:0.75rem; margin-bottom:1.5rem; align-items:center }
 .empty-state { text-align:center; padding:4rem 2rem; color:#6b7280 }
+
+.resources-layout { display:flex; gap:1.5rem; align-items:flex-start }
+
+/* Ensure the shared admin sidebar is pinned on the left and always visible */
+.resources-layout > .admin-sidebar {
+  flex: 0 0 260px;
+  width: 260px;
+  min-width: 220px;
+}
+/* hide when collapsed */
+.resources-layout > .admin-sidebar.collapsed,
+.admin-sidebar.collapsed {
+  display: none;
+}
+.resources-layout .resources-content { flex: 1 }
+
+@media (max-width: 900px) {
+  .resources-layout { flex-direction: column }
+  .resources-layout > .admin-sidebar { width: 100%; flex: 0 0 auto }
+}
+
+/* small toggle button used in the header */
+.sidebar-toggle-btn {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 8px;
+  color: #475569;
+  font-size: 14px;
+  cursor: pointer;
+}
+.sidebar-toggle-btn:hover { background: #f1f5f9; color: #0f172a }
+.resources-toolbar {
+  width:100%;
+  margin-top: 0.75rem;
+  background: #f3f4f6; /* light gray toolbar background */
+  padding: 0.5rem; /* breathing room for controls */
+  border-radius: 12px;
+  border: 1px solid #e6e6e6;
+}
+.resources-sidebar { width:260px; min-width:220px; background:var(--card-bg,#fff); padding:1rem; border-radius:12px; border:1px solid rgba(16,24,40,0.04); }
+.resources-content { flex:1 }
+.resources-sidebar label { display:block; font-size:0.8rem; color:#374151; margin-top:0.5rem }
+.resources-sidebar input, .resources-sidebar select { width:100%; padding:0.5rem; margin-top:0.25rem; border-radius:6px; border:1px solid #e6e6e6 }
+.sidebar-actions { display:flex; gap:0.5rem }
+
+/* Toolbar (horizontal) presentation overrides when the sidebar is used as a top toolbar */
+.resources-toolbar .resources-sidebar { width:100%; min-width:unset; background:transparent; padding:0.25rem 0; border-radius:6px; border:none }
+.resources-toolbar .resources-sidebar select,
+.resources-toolbar .resources-sidebar input { background: #ffffff }
+.resources-toolbar .resources-sidebar h3 { display:none }
+.resources-toolbar .resources-sidebar form { display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; margin:0 }
+.resources-toolbar .resources-sidebar .filter-field { display:flex; flex-direction:column; gap:0.25rem; min-width:140px }
+.resources-toolbar .resources-sidebar label { display:block; font-size:0.75rem; color:#6b7280; margin:0 }
+.resources-toolbar .resources-sidebar select,
+.resources-toolbar .resources-sidebar input { width:auto; min-width:140px; padding:0.5rem; margin-top:0 }
+.resources-toolbar .resources-sidebar input[type="number"] { width:90px }
+
+@media (max-width: 768px) {
+  .resources-layout { flex-direction:column }
+  .resources-sidebar { width:100%; order:2 }
+  .resources-content { order:1 }
+}
+
+/* Position 'New Resource' button inside the header at the top-right corner */
+.resources-content > header { position: relative; padding-right: 6rem }
+.resources-content > header .btn-primary { position: absolute; top: 0.5rem; right: 0; }
+
+@media (max-width: 768px) {
+  .resources-content > header { padding-right: 0 }
+  .resources-content > header .btn-primary { position: static; margin-left: auto }
+}
+
+

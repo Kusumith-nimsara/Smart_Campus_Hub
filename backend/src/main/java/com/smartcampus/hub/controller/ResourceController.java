@@ -42,10 +42,9 @@ public class ResourceController {
     }
 
     @PostMapping
-    // Temporarily allow unauthenticated creation for smoke tests.
-    // This will use a fallback admin email when no authentication is present.
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResourceResponse> createResource(@Valid @RequestBody ResourceRequest request, Authentication authentication) {
-        String adminEmail = (authentication != null && authentication.getName() != null) ? authentication.getName() : "smoke-test-admin";
+        String adminEmail = authentication != null ? authentication.getName() : null;
         ResourceResponse resp = resourceService.createResource(request, adminEmail);
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }

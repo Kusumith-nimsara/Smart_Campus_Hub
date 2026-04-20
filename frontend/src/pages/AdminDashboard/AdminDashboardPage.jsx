@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { showError, showLogoutAlert, showSuccess } from '../../utils/alerts'
 import './AdminDashboardPage.css'
+import Sidebar from '../../components/common/Sidebar'
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate()
@@ -150,38 +151,7 @@ export default function AdminDashboardPage() {
 
   return (
     <main className={`admin-dashboard-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
-      <aside className="admin-sidebar" aria-hidden={!isSidebarOpen}>
-        <div className="admin-brand">
-          <div className="admin-logo">SC</div>
-          <h2>Smart Campus</h2>
-        </div>
-
-        <div className="admin-identity">
-          <p className="label">Logged in as</p>
-          <p className="name">{adminName}</p>
-          <p className="role">ADMIN</p>
-        </div>
-
-        <nav className="admin-nav" aria-label="Admin Dashboard Navigation">
-          <button type="button" className="active" onClick={() => navigate('/admin-dashboard')}>
-            <span className="nav-icon">📊</span> Dashboard
-          </button>
-          <button type="button" onClick={() => navigate('/admin/user-management')}>
-            <span className="nav-icon">👥</span> User Management
-          </button>
-          <button type="button" onClick={() => navigate('/resources')}>
-            <span className="nav-icon">📁</span> Resources
-          </button>
-          <button type="button" onClick={() => navigate('/profile')}>
-            <span className="nav-icon">👤</span> Profile
-          </button>
-          <button type="button">
-            <span className="nav-icon">🔔</span> Notifications
-          </button>
-        </nav>
-
-        <button type="button" className="admin-logout" onClick={handleLogout}>↪ Logout</button>
-      </aside>
+      <Sidebar isOpen={isSidebarOpen} onLogout={handleLogout} accountName={accountName} accountRole={accountRole} />
 
       <section className="admin-content">
         <header className="admin-topbar">

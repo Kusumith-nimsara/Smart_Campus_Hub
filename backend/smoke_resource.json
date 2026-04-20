@@ -1,1 +1,0 @@
-﻿{"name":"Smoke Test Room A","type":"MEETING_ROOM","capacity":10,"location":"Building 1, Floor 2","description":"Temporary room created by smoke test","availabilityWindows":[{"dayOfWeek":"MONDAY","startTime":"09:00","endTime":"17:00"}],"status":"ACTIVE","imageUrl":""}

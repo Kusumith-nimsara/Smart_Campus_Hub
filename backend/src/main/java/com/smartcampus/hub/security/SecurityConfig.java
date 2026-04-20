@@ -48,8 +48,8 @@ public class SecurityConfig {
                     // mappings here — do NOT include the servlet context-path in these
                     // matchers.
                     .requestMatchers("/auth/**").permitAll()
-                    // Allow unauthenticated access to /resources for smoke tests (temporary)
-                    .requestMatchers("/resources/**").permitAll()
+                    // Allow unauthenticated GET access to /resources (list/details)
+                    .requestMatchers(HttpMethod.GET, "/resources/**").permitAll()
                     .requestMatchers("/admin/**").hasRole("ADMIN")
                     .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN", "MANAGER", "TECHNICIAN")
                     .anyRequest().authenticated()
