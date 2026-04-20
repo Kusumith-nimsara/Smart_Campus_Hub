@@ -89,10 +89,10 @@ public class AuthService {
                 request.getLastName()
         );
 
-        userRepository.save(user);
+        user = userRepository.save(user);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
-        String token = jwtService.generateToken(userDetails);
+        String token = jwtService.generateTokenWithUserId(userDetails, user.getId());
 
         return new AuthResponse(token, user.getUsername(), user.getEmail(), user.getRole().name(), user.isApproved());
     }
@@ -123,7 +123,7 @@ public class AuthService {
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
-        String token = jwtService.generateToken(userDetails);
+        String token = jwtService.generateTokenWithUserId(userDetails, user.getId());
 
         return new AuthResponse(token, user.getUsername(), user.getEmail(), user.getRole().name(), user.isApproved());
     }
@@ -189,7 +189,7 @@ public class AuthService {
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
-        String token = jwtService.generateToken(userDetails);
+        String token = jwtService.generateTokenWithUserId(userDetails, user.getId());
 
         return new AuthResponse(token, user.getUsername(), user.getEmail(), user.getRole().name(), user.isApproved());
     }

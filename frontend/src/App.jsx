@@ -13,6 +13,7 @@ import UserDashboardPage from './pages/UserDashboard/UserDashboardPage'
 import UserManagementPage from './pages/UserManagement/UserManagementPage'
 import CataloguePage from './pages/Catalogue/CataloguePage'
 import TicketsPage from './pages/Tickets/TicketsPage'
+import TicketDetailPage from './pages/TicketDetail/TicketDetailPage'
 import BookingsPage from './pages/Bookings/BookingsPage'
 import NotificationsPage from './pages/Notifications/NotificationsPage'
 
@@ -35,6 +36,14 @@ function App() {
               ) : (
                 <UserDashboardPage />
               )}
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/user-dashboard"
+          element={
+            <PrivateRoute fallback={<Navigate to="/login" replace />}>
+              <UserDashboardPage />
             </PrivateRoute>
           }
         />
@@ -76,6 +85,14 @@ function App() {
           element={
             <PrivateRoute fallback={<Navigate to="/login" replace />}>
               <TicketsPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/ticket-detail/:ticketId"
+          element={
+            <PrivateRoute fallback={<Navigate to="/login" replace />}>
+              <TicketDetailPage />
             </PrivateRoute>
           }
         />

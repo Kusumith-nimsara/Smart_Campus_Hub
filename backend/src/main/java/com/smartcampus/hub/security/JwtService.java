@@ -31,6 +31,21 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public String extractUserId(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("userId", String.class);
+    }
+
+    public String extractRole(String token) {
+        Claims claims = extractAllClaims(token);
+        java.util.List<?> roles = claims.get("roles", java.util.List.class);
+        if (roles != null && !roles.isEmpty()) {
+            String role = roles.get(0).toString();
+            return role.replace("ROLE_", "");
+        }
+        return "USER";
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -42,6 +57,16 @@ public class JwtService {
                 "roles",
                 userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
         );
+        return generateToken(extraClaims, userDetails);
+    }
+
+    public String generateTokenWithUserId(UserDetails userDetails, String userId) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put(
+                "roles",
+                userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
+        );
+        extraClaims.put("userId", userId);
         return generateToken(extraClaims, userDetails);
     }
 
