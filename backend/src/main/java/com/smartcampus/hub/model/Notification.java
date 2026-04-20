@@ -20,9 +20,26 @@ public class Notification {
 
     private String userId;
 
+    private String title;
+
     private String message;
 
+    /**
+     * Category of notification. Examples:
+     * TICKET_CREATED, TICKET_UPDATED, TICKET_RESOLVED, TICKET_ASSIGNED,
+     * MAINTENANCE_SCHEDULED, INCIDENT_REPORTED, SYSTEM, INFO
+     */
     private String type;
+
+    /**
+     * Optional reference identifier linking to the source entity (e.g. a ticket ID).
+     */
+    private String referenceId;
+
+    /**
+     * The type of the referenced entity (e.g. "TICKET", "MAINTENANCE", "INCIDENT").
+     */
+    private String referenceType;
 
     private boolean isRead = false;
 
@@ -44,6 +61,14 @@ public class Notification {
         this.userId = userId;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getMessage() {
         return message;
     }
@@ -58,6 +83,22 @@ public class Notification {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getReferenceId() {
+        return referenceId;
+    }
+
+    public void setReferenceId(String referenceId) {
+        this.referenceId = referenceId;
+    }
+
+    public String getReferenceType() {
+        return referenceType;
+    }
+
+    public void setReferenceType(String referenceType) {
+        this.referenceType = referenceType;
     }
 
     public boolean isRead() {

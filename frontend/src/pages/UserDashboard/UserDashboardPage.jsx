@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { showLogoutAlert } from '../../utils/alerts'
@@ -27,6 +27,8 @@ export default function UserDashboardPage() {
     userType: '',
     suspended: false,
   })
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [currentUserId, setCurrentUserId] = useState('')
 
   useEffect(() => {
     async function loadProfile() {
@@ -58,6 +60,7 @@ export default function UserDashboardPage() {
           userType: data?.userType ?? '',
           suspended: data?.suspended ?? false,
         })
+        if (data?.id) setCurrentUserId(data.id)
         if (typeof data?.role === 'string') {
           localStorage.setItem('role', data.role.toUpperCase())
           localStorage.setItem('authRole', data.role.toUpperCase())
@@ -74,6 +77,27 @@ export default function UserDashboardPage() {
 
     loadProfile()
   }, [backendBaseUrl, token])
+
+  // Fetch unread notification count
+  useEffect(() => {
+    async function fetchUnreadCount() {
+      if (!currentUserId || !token) return
+      try {
+        const res = await fetch(`${backendBaseUrl}/notifications/user/${currentUserId}/unread-count`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setUnreadCount(data?.count ?? 0)
+        }
+      } catch {
+        // Unread count failure is non-blocking
+      }
+    }
+    fetchUnreadCount()
+    const interval = setInterval(fetchUnreadCount, 30000) // Poll every 30s
+    return () => clearInterval(interval)
+  }, [backendBaseUrl, token, currentUserId])
 
   function handleLogout() {
     clearAuthState()
@@ -109,7 +133,26 @@ export default function UserDashboardPage() {
         <nav className="sidebar-menu" aria-label="Dashboard Menu">
           <button type="button" className="active" onClick={() => navigate('/dashboard')}>📊 Dashboard</button>
           <button type="button" onClick={() => navigate('/profile')}>👤 Profile</button>
-          <button type="button" onClick={() => navigate('/notifications')}>🔔 Notifications</button>
+          <button type="button" onClick={() => navigate('/notifications')} style={{ position: 'relative' }}>
+            🔔 Notifications
+            {unreadCount > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '6px',
+                right: '10px',
+                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                color: '#fff',
+                borderRadius: '10px',
+                padding: '1px 7px',
+                fontSize: '11px',
+                fontWeight: '700',
+                lineHeight: '16px',
+                minWidth: '18px',
+                textAlign: 'center',
+                boxShadow: '0 2px 6px rgba(239,68,68,0.4)',
+              }}>{unreadCount > 99 ? '99+' : unreadCount}</span>
+            )}
+          </button>
           <button type="button" onClick={() => navigate('/catalogue')}>📚 Catalogue</button>
           <button type="button" onClick={() => navigate('/tickets')}>🎫 Tickets</button>
           <button type="button" onClick={() => navigate('/bookings')}>📅 Bookings</button>
@@ -229,8 +272,12 @@ export default function UserDashboardPage() {
 
           <article className="widget notifications">
             <h2>🔔 Notifications</h2>
-            <p className="widget-note">No new notifications</p>
-            <button type="button" className="link-btn">View All →</button>
+            <p className="widget-note">
+              {unreadCount > 0
+                ? `You have ${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}`
+                : 'No new notifications'}
+            </p>
+            <button type="button" className="link-btn" onClick={() => navigate('/notifications')}>View All →</button>
           </article>
 
           <article className="widget quick-links">

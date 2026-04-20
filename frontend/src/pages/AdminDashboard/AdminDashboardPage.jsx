@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { showError, showLogoutAlert, showSuccess } from '../../utils/alerts'
@@ -30,6 +30,8 @@ export default function AdminDashboardPage() {
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const accountMenuRef = useRef(null)
+  const [unreadNotifCount, setUnreadNotifCount] = useState(0)
+  const [currentAdminId, setCurrentAdminId] = useState('')
   const googleAvatarCandidate =
     googleAvatarUrl ||
     (googleEmail ? `https://www.google.com/s2/photos/profile/${encodeURIComponent(googleEmail)}?sz=128` : '')
@@ -104,6 +106,7 @@ export default function AdminDashboardPage() {
         setAccountName(displayName || data?.username || adminName)
         setAccountEmail(data?.email || localStorage.getItem('username') || 'admin@smartcampus')
         setAccountActive(!data?.suspended)
+        if (data?.id) setCurrentAdminId(data.id)
       } catch {
         // Keep default user type when profile lookup fails.
       }
@@ -111,6 +114,27 @@ export default function AdminDashboardPage() {
 
     loadCurrentUser()
   }, [backendBaseUrl, token])
+
+  // Fetch unread notification count
+  useEffect(() => {
+    async function fetchNotifCount() {
+      if (!currentAdminId || !token) return
+      try {
+        const res = await fetch(`${backendBaseUrl}/notifications/user/${currentAdminId}/unread-count`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setUnreadNotifCount(data?.count ?? 0)
+        }
+      } catch {
+        // Non-blocking
+      }
+    }
+    fetchNotifCount()
+    const interval = setInterval(fetchNotifCount, 30000)
+    return () => clearInterval(interval)
+  }, [backendBaseUrl, token, currentAdminId])
 
   async function handleApproveUser(userId) {
     setProcessingUserId(userId)
@@ -172,8 +196,25 @@ export default function AdminDashboardPage() {
           <button type="button" onClick={() => navigate('/profile')}>
             <span className="nav-icon">👤</span> Profile
           </button>
-          <button type="button" onClick={() => navigate('/notifications')}>
+          <button type="button" onClick={() => navigate('/notifications')} style={{ position: 'relative' }}>
             <span className="nav-icon">🔔</span> Notifications
+            {unreadNotifCount > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '6px',
+                right: '10px',
+                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                color: '#fff',
+                borderRadius: '10px',
+                padding: '1px 7px',
+                fontSize: '11px',
+                fontWeight: '700',
+                lineHeight: '16px',
+                minWidth: '18px',
+                textAlign: 'center',
+                boxShadow: '0 2px 6px rgba(239,68,68,0.4)',
+              }}>{unreadNotifCount > 99 ? '99+' : unreadNotifCount}</span>
+            )}
           </button>
           <button type="button" onClick={() => navigate('/catalogue')}>
             <span className="nav-icon">📚</span> Catalogue
@@ -293,7 +334,7 @@ export default function AdminDashboardPage() {
               <p>Track support and maintenance issues</p>
             </article>
             <article className="feature-item notifications">
-              <h4>🔔 Notifications</h4>
+              <h4>🔔 Notifications{unreadNotifCount > 0 ? ` (${unreadNotifCount})` : ''}</h4>
               <p>Broadcast updates to campus users</p>
             </article>
           </div>

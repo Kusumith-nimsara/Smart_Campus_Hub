@@ -4,22 +4,27 @@ import com.smartcampus.hub.dto.*;
 import com.smartcampus.hub.model.*;
 import com.smartcampus.hub.repository.TicketRepository;
 import com.smartcampus.hub.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
-@Slf4j
 @Service
 public class TicketService {
 
+    private static final Logger log = LoggerFactory.getLogger(TicketService.class);
+
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-    public TicketService(TicketRepository ticketRepository, UserRepository userRepository) {
+    public TicketService(TicketRepository ticketRepository, UserRepository userRepository,
+                         NotificationService notificationService) {
         this.ticketRepository = ticketRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     // ==================== USER OPERATIONS ====================
@@ -43,6 +48,32 @@ public class TicketService {
         );
 
         Ticket savedTicket = ticketRepository.save(ticket);
+
+        // --- NOTIFICATIONS ---
+        // 1. Notify the creator that their ticket was submitted successfully
+        try {
+            notificationService.notifyTicketCreated(userId, savedTicket.getId(), savedTicket.getTitle());
+        } catch (Exception e) {
+            log.warn("Failed to send ticket-created notification to creator: {}", e.getMessage());
+        }
+
+        // 2. Notify all admins about the new ticket
+        try {
+            List<User> admins = userRepository.findByRole(Role.ADMIN);
+            for (User admin : admins) {
+                notificationService.createNotification(
+                        admin.getId(),
+                        "New Ticket Submitted",
+                        "New " + savedTicket.getPriority() + " priority ticket from " + username + ": " + savedTicket.getTitle(),
+                        "TICKET_CREATED",
+                        savedTicket.getId(),
+                        "TICKET"
+                );
+            }
+        } catch (Exception e) {
+            log.warn("Failed to send ticket-created notification to admins: {}", e.getMessage());
+        }
+
         return new TicketResponse(savedTicket);
     }
 
@@ -75,6 +106,23 @@ public class TicketService {
         TicketComment comment = new TicketComment(request.getContent(), userId, username);
         ticket.addComment(comment);
         Ticket updatedTicket = ticketRepository.save(ticket);
+
+        // --- NOTIFICATIONS ---
+        // Notify the other party about the comment
+        try {
+            // If commenter is the creator, notify the assigned technician
+            if (ticket.getCreatedById().equals(userId) && ticket.getAssignedToId() != null) {
+                notificationService.notifyTicketComment(
+                        ticket.getAssignedToId(), ticket.getId(), ticket.getTitle(), username);
+            }
+            // If commenter is the technician, notify the creator
+            if (isTechnicianAssigned(ticket, userId)) {
+                notificationService.notifyTicketComment(
+                        ticket.getCreatedById(), ticket.getId(), ticket.getTitle(), username);
+            }
+        } catch (Exception e) {
+            log.warn("Failed to send comment notification: {}", e.getMessage());
+        }
 
         return new TicketResponse(updatedTicket);
     }
@@ -151,6 +199,21 @@ public class TicketService {
         }
 
         Ticket updatedTicket = ticketRepository.save(ticket);
+
+        // --- NOTIFICATIONS ---
+        try {
+            // Notify the technician that they've been assigned
+            notificationService.notifyTicketAssigned(
+                    technicianId, ticket.getId(), ticket.getTitle());
+
+            // Notify the ticket creator that their ticket is being worked on
+            notificationService.notifyTicketUpdated(
+                    ticket.getCreatedById(), ticket.getId(), ticket.getTitle(),
+                    "IN_PROGRESS (assigned to " + technician.getUsername() + ")");
+        } catch (Exception e) {
+            log.warn("Failed to send assignment notification: {}", e.getMessage());
+        }
+
         return new TicketResponse(updatedTicket);
     }
 
@@ -167,6 +230,29 @@ public class TicketService {
             }
 
             Ticket updatedTicket = ticketRepository.save(ticket);
+
+            // --- NOTIFICATIONS ---
+            try {
+                switch (status) {
+                    case RESOLVED -> notificationService.notifyTicketResolved(
+                            ticket.getCreatedById(), ticket.getId(), ticket.getTitle());
+                    case REJECTED -> notificationService.notifyTicketRejected(
+                            ticket.getCreatedById(), ticket.getId(), ticket.getTitle(), rejectionReason);
+                    case CLOSED -> notificationService.notifyTicketUpdated(
+                            ticket.getCreatedById(), ticket.getId(), ticket.getTitle(), "CLOSED");
+                    default -> notificationService.notifyTicketUpdated(
+                            ticket.getCreatedById(), ticket.getId(), ticket.getTitle(), status.name());
+                }
+
+                // Also notify the assigned technician if there is one
+                if (ticket.getAssignedToId() != null && !ticket.getAssignedToId().equals(ticket.getCreatedById())) {
+                    notificationService.notifyTicketUpdated(
+                            ticket.getAssignedToId(), ticket.getId(), ticket.getTitle(), status.name());
+                }
+            } catch (Exception e) {
+                log.warn("Failed to send status-update notification: {}", e.getMessage());
+            }
+
             return new TicketResponse(updatedTicket);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid status: " + newStatus);
@@ -184,6 +270,16 @@ public class TicketService {
 
         ticket.setResolutionNotes(notes);
         Ticket updatedTicket = ticketRepository.save(ticket);
+
+        // --- NOTIFICATIONS ---
+        // Notify the ticket creator about the resolution notes
+        try {
+            notificationService.notifyTicketUpdated(
+                    ticket.getCreatedById(), ticket.getId(), ticket.getTitle(),
+                    "Resolution notes added by " + ticket.getAssignedToUsername());
+        } catch (Exception e) {
+            log.warn("Failed to send resolution-notes notification: {}", e.getMessage());
+        }
 
         return new TicketResponse(updatedTicket);
     }
