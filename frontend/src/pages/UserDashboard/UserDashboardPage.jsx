@@ -108,6 +108,7 @@ export default function UserDashboardPage() {
 
         <nav className="sidebar-menu" aria-label="Dashboard Menu">
           <button type="button" className="active">📊 Dashboard</button>
+          <button type="button" onClick={() => navigate('/resources')}>📁 Resources</button>
           <button type="button" onClick={() => navigate('/profile')}>👤 Profile</button>
           <button type="button">🔔 Notifications</button>
         </nav>
@@ -233,6 +234,7 @@ export default function UserDashboardPage() {
           <article className="widget quick-links">
             <h2>⚡ Quick Links</h2>
             <button type="button" onClick={() => navigate('/profile')}>👤 Edit Profile</button>
+            <button type="button" onClick={() => navigate('/resources')}>📁 View Resources</button>
             <button type="button" onClick={() => navigate('/')}>🏠 Landing Page</button>
           </article>
         </div>

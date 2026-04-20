@@ -11,6 +11,7 @@ import UnauthorizedPage from './pages/Unauthorized/UnauthorizedPage'
 import SuspendedPage from './pages/Suspended/SuspendedPage'
 import UserDashboardPage from './pages/UserDashboard/UserDashboardPage'
 import UserManagementPage from './pages/UserManagement/UserManagementPage'
+import ResourcesPage from './pages/Resources/ResourcesPage'
 
 function App() {
   return (
@@ -60,6 +61,14 @@ function App() {
           }
         />
         <Route path="/user-dashboard" element={<Navigate to="/dashboard" replace />} />
+        <Route
+          path="/resources"
+          element={
+            <PrivateRoute fallback={<Navigate to="/login" replace />}>
+              <ResourcesPage />
+            </PrivateRoute>
+          }
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </ErrorBoundary>

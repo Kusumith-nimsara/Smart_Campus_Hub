@@ -216,6 +216,7 @@ export default function ProfilePage() {
 
         <nav className="sidebar-menu" aria-label="Dashboard Menu">
           <button type="button" onClick={() => navigate(isAdmin ? '/admin-dashboard' : '/dashboard')}>📊 Dashboard</button>
+          <button type="button" onClick={() => navigate('/resources')}>📁 Resources</button>
           <button type="button" className="active" onClick={() => navigate('/profile')}>👤 Profile</button>
           <button type="button">🔔 Notifications</button>
           {isAdmin && (
@@ -396,7 +397,7 @@ export default function ProfilePage() {
 
           <article className="widget quick-links">
             <h2>Quick Links</h2>
-            <button type="button">Resources</button>
+            <button type="button" onClick={() => navigate('/resources')}>Resources</button>
             <button type="button">Bookings</button>
             <button type="button">Tickets</button>
           </article>

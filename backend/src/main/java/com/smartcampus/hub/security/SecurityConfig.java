@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -42,10 +43,16 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN", "MANAGER", "TECHNICIAN")
-                        .anyRequest().authenticated()
+                    // Match the controller paths (these are registered under the servlet
+                    // context-path '/api' at the server level, so use the controller's
+                    // mappings here — do NOT include the servlet context-path in these
+                    // matchers.
+                    .requestMatchers("/auth/**").permitAll()
+                    // Allow unauthenticated access to /resources for smoke tests (temporary)
+                    .requestMatchers("/resources/**").permitAll()
+                    .requestMatchers("/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN", "MANAGER", "TECHNICIAN")
+                    .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

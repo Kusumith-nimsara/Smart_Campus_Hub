@@ -169,6 +169,9 @@ export default function AdminDashboardPage() {
           <button type="button" onClick={() => navigate('/admin/user-management')}>
             <span className="nav-icon">👥</span> User Management
           </button>
+          <button type="button" onClick={() => navigate('/resources')}>
+            <span className="nav-icon">📁</span> Resources
+          </button>
           <button type="button" onClick={() => navigate('/profile')}>
             <span className="nav-icon">👤</span> Profile
           </button>
@@ -271,7 +274,7 @@ export default function AdminDashboardPage() {
         <section className="admin-panel features">
           <h2>⚡ Features Overview</h2>
           <div className="feature-grid">
-            <article className="feature-item resources">
+            <article className="feature-item resources" onClick={() => navigate('/resources')} style={{ cursor: 'pointer' }}>
               <h4>📁 Resources</h4>
               <p>Manage campus resources and labs</p>
             </article>
@@ -293,9 +296,9 @@ export default function AdminDashboardPage() {
         <section className="admin-bottom-grid">
           <article className="admin-panel quick-actions">
             <h2>🚀 Quick Actions</h2>
-            <div className="action-grid">
+              <div className="action-grid">
               <button type="button" onClick={() => navigate('/profile')}>Manage Profile</button>
-              <button type="button">View Resources</button>
+              <button type="button" onClick={() => navigate('/resources')}>View Resources</button>
               <button type="button">Create Booking</button>
               <button type="button">Open Tickets</button>
             </div>
