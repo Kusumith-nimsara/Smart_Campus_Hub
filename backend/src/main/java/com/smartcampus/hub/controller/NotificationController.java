@@ -23,7 +23,7 @@ import com.smartcampus.hub.service.NotificationService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/notifications")
+@RequestMapping("/notifications")
 public class NotificationController {
 
     private final NotificationService notificationService;
