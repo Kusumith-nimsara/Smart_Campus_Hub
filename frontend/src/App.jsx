@@ -40,6 +40,14 @@ function App() {
           }
         />
         <Route
+          path="/user-dashboard"
+          element={
+            <PrivateRoute fallback={<Navigate to="/login" replace />}>
+              <UserDashboardPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
           path="/profile"
           element={
             <PrivateRoute fallback={<Navigate to="/login" replace />}>

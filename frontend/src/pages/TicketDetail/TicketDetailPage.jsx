@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ticketAPI } from '../../services/ticketAPI'
-import { showError, showSuccess } from '../../utils/alerts'
+import DashboardSidebar from '../../components/common/DashboardSidebar'
+import { clearAuthState } from '../../utils/api'
+import { showError, showSuccess, showLogoutAlert } from '../../utils/alerts'
 import './TicketDetailPage.css'
 
 const STATUS_COLORS = {
@@ -22,19 +24,37 @@ const PRIORITY_COLORS = {
 export default function TicketDetailPage() {
   const { ticketId } = useParams()
   const navigate = useNavigate()
+  const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
+  const token = localStorage.getItem('authToken') || ''
+  const fullName = (localStorage.getItem('username') || 'User').split('@')[0]
+  const role = (localStorage.getItem('authRole') || 'USER').toUpperCase()
+  const isGoogleLogin = localStorage.getItem('authLoginType') === 'google'
+  const googleAvatarUrl = localStorage.getItem('authAvatarUrl') || ''
+  const googleEmail = localStorage.getItem('authEmail') || ''
+  
   const [ticket, setTicket] = useState(null)
   const [loading, setLoading] = useState(true)
   const [commenting, setCommenting] = useState(false)
   const [newComment, setNewComment] = useState('')
   const [currentUser, setCurrentUser] = useState(null)
   const [selectedImage, setSelectedImage] = useState(null)
+  const [profile, setProfile] = useState({ firstName: '', lastName: '' })
 
   useEffect(() => {
+    if (token) {
+      fetch(`${backendBaseUrl}/user/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(r => r.json())
+        .then(data => setProfile(data))
+        .catch(() => {})
+    }
+
     const username = localStorage.getItem('authUsername')
     const userId = localStorage.getItem('authUserId')
     setCurrentUser({ username, userId })
     loadTicket()
-  }, [ticketId])
+  }, [ticketId, token, backendBaseUrl])
 
   const loadTicket = async () => {
     setLoading(true)
@@ -48,6 +68,14 @@ export default function TicketDetailPage() {
       setLoading(false)
     }
   }
+
+  function handleLogout() {
+    clearAuthState()
+    showLogoutAlert()
+    navigate('/', { replace: true })
+  }
+
+  const displayName = `${profile.firstName} ${profile.lastName}`.trim() || fullName
 
   const handleAddComment = async (e) => {
     e.preventDefault()
@@ -102,11 +130,23 @@ export default function TicketDetailPage() {
   }
 
   return (
-    <div className="ticket-detail-page">
-      <div className="detail-header">
-        <button className="back-btn" onClick={() => navigate('/tickets')}>
-          ← Back to Tickets
-        </button>
+    <div style={{ display: 'flex', minHeight: '100vh', marginLeft: '250px', backgroundColor: '#f8fafc' }}>
+      <DashboardSidebar
+        fullName={displayName}
+        role={role}
+        currentPage="tickets"
+        isGoogleLogin={isGoogleLogin}
+        googleAvatarUrl={googleAvatarUrl}
+        googleEmail={googleEmail}
+        onLogout={handleLogout}
+      />
+
+      <main style={{ flex: 1, padding: '32px', overflowY: 'auto' }}>
+        <div className="ticket-detail-page">
+          <div className="detail-header">
+            <button className="back-btn" onClick={() => navigate('/tickets')}>
+              ← Back to Tickets
+            </button>
         <h1>{ticket.title}</h1>
         <span
           className="status-badge-large"
@@ -276,6 +316,8 @@ export default function TicketDetailPage() {
           </div>
         </div>
       )}
+        </div>
+      </main>
     </div>
   )
 }
