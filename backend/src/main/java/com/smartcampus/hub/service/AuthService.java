@@ -27,9 +27,10 @@ import java.util.UUID;
 
 @Service
 public class AuthService {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AuthService.class);
 
     private final String adminGoogleEmail;
-
+    private final String googleClientId;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -52,6 +53,7 @@ public class AuthService {
         this.userDetailsService = userDetailsService;
         this.jwtService = jwtService;
         this.adminGoogleEmail = adminGoogleEmail != null ? adminGoogleEmail.trim().toLowerCase() : "";
+        this.googleClientId = googleClientId != null ? googleClientId.trim() : "";
         this.googleIdTokenVerifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), GsonFactory.getDefaultInstance())
                 .setAudience(Set.of(googleClientId))
                 .build();
@@ -196,12 +198,22 @@ public class AuthService {
 
     private GoogleIdToken.Payload verifyGoogleToken(String idToken) {
         try {
-            GoogleIdToken googleIdToken = googleIdTokenVerifier.verify(idToken);
-            if (googleIdToken == null) {
+            if (idToken == null || idToken.isBlank()) {
+                log.warn("Received empty idToken for Google login");
                 throw new IllegalArgumentException("Invalid Google token");
             }
+
+            log.debug("Verifying Google token (len={}) using configured clientId={}", idToken.length(), googleClientId);
+
+            GoogleIdToken googleIdToken = googleIdTokenVerifier.verify(idToken);
+            if (googleIdToken == null) {
+                log.warn("GoogleIdTokenVerifier returned null. Token may be invalid or audience mismatch. Configured clientId={}", googleClientId);
+                throw new IllegalArgumentException("Invalid Google token");
+            }
+
             return googleIdToken.getPayload();
         } catch (GeneralSecurityException | IOException ex) {
+            log.error("Exception while verifying Google token: {}", ex.toString());
             throw new IllegalArgumentException("Failed to verify Google token");
         }
     }
