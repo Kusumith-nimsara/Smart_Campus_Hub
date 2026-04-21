@@ -118,4 +118,54 @@
   .resources-content > header .btn-primary { position: static; margin-left: auto }
 }
 
+/* White-variant primary button used for the 'Clear' action in the resources sidebar */
+.btn-primary.btn-primary-white,
+.resources-sidebar .btn-primary-white {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #e6e6e6 !important;
+  box-shadow: 0 2px 6px rgba(2,6,23,0.06) !important;
+}
+
+.btn-primary.btn-primary-white:hover,
+.resources-sidebar .btn-primary-white:hover {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Toolbar: compact buttons and inline layout for Apply/Clear */
+.resources-toolbar .resources-sidebar form { align-items: center; }
+.resources-toolbar .sidebar-actions { display: flex; gap: 0.5rem; align-items: center; }
+/* Keep vertical padding consistent with primary buttons; reduce only horizontal space */
+.resources-toolbar .sidebar-actions button {
+  padding-top: 14px;
+  padding-bottom: 14px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  min-width: 72px;
+}
+.resources-toolbar .sidebar-actions button.btn-primary {
+  padding-top: 14px;
+  padding-bottom: 14px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+.resources-toolbar .sidebar-actions button.btn-primary.btn-primary-white {
+  padding-top: 14px;
+  padding-bottom: 14px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* Reduce per-field minimum to help everything fit on one row */
+.resources-toolbar .resources-sidebar .filter-field { min-width: 110px; }
+
+@media (max-width: 768px) {
+  .resources-toolbar .sidebar-actions { width: 100%; justify-content: flex-end; }
+  .resources-toolbar .sidebar-actions button { min-width: 0; }
+}
+
 

@@ -83,8 +83,8 @@ export default function ResourcesSidebar({ initialFilters = {}, onApply = () => 
         </div>
 
         <div className="sidebar-actions" style={{ marginTop: '0.75rem' }}>
-          <button className="btn-primary" onClick={apply}>Apply</button>
-          <button className="btn" onClick={clearAll} style={{ background: '#f3f4f6', border: '1px solid #e6e6e6' }}>Clear</button>
+          <button type="submit" className="btn-primary">Apply</button>
+          <button type="button" className="btn-primary btn-primary-white" onClick={clearAll}>Clear</button>
         </div>
       </form>
     </div>
