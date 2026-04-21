@@ -5,13 +5,13 @@ import ResourceCard from './ResourceCard'
 import ResourceFormModal from './ResourceFormModal'
 import DeleteConfirmModal from './DeleteConfirmModal'
 import ResourcesSidebar from './ResourcesSidebar'
-import Sidebar from '../../components/common/Sidebar'
+import { useSidebar } from '../../contexts/SidebarContext'
 
 export default function ResourcesPage() {
   const [resources, setResources] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const { isOpen, toggle } = useSidebar()
 
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -83,22 +83,19 @@ export default function ResourcesPage() {
   }
 
   return (
-    <main style={{ padding: '1rem' }}>
-      <div className="resources-layout">
-        <Sidebar isOpen={isSidebarOpen} />
-        <div className="resources-content">
-          <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <button
-                type="button"
-                aria-label={isSidebarOpen ? 'Collapse sidebar' : 'Open sidebar'}
-                className="sidebar-toggle-btn"
-                onClick={() => setIsSidebarOpen((s) => !s)}
-              >
-                ☰
-              </button>
-              <h1>Resources</h1>
-            </div>
+    <div className="resources-content" style={{ padding: '1rem' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button
+            type="button"
+            aria-label={isOpen ? 'Collapse sidebar' : 'Open sidebar'}
+            className="sidebar-toggle-btn"
+            onClick={toggle}
+          >
+            ☰
+          </button>
+          <h1>Resources</h1>
+        </div>
             {isAdmin && (
               <button onClick={openCreate} className="btn-primary">
                 +   New Resource
@@ -126,8 +123,6 @@ export default function ResourcesPage() {
               </div>
             )}
           </section>
-        </div>
-      </div>
 
       <ResourceFormModal
         open={showForm}
@@ -143,6 +138,7 @@ export default function ResourcesPage() {
         resourceId={deleting?.id}
         onDeleted={afterDeleted}
       />
-    </main>
+
+    </div>
   )
 }

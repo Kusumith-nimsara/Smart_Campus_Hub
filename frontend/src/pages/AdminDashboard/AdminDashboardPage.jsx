@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { showError, showLogoutAlert, showSuccess } from '../../utils/alerts'
 import './AdminDashboardPage.css'
-import Sidebar from '../../components/common/Sidebar'
+import { useSidebar } from '../../contexts/SidebarContext'
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate()
@@ -27,7 +27,7 @@ export default function AdminDashboardPage() {
   const [accountActive, setAccountActive] = useState(true)
   const [loadingUsers, setLoadingUsers] = useState(true)
   const [processingUserId, setProcessingUserId] = useState('')
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const { isOpen, toggle } = useSidebar()
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const accountMenuRef = useRef(null)
@@ -150,17 +150,14 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <main className={`admin-dashboard-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
-      <Sidebar isOpen={isSidebarOpen} onLogout={handleLogout} accountName={accountName} accountRole={accountRole} />
-
-      <section className="admin-content">
+    <section className="admin-content">
         <header className="admin-topbar">
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <button 
               type="button" 
               className="sidebar-toggle-btn" 
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              aria-label="Toggle Sidebar"
+              onClick={toggle}
+              aria-label={isOpen ? 'Collapse sidebar' : 'Open sidebar'}
             >
               ☰
             </button>
@@ -303,6 +300,5 @@ export default function AdminDashboardPage() {
         </section>
 
       </section>
-    </main>
   )
 }

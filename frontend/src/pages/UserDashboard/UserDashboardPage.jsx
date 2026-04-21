@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { showLogoutAlert } from '../../utils/alerts'
 import './UserDashboardPage.css'
+import { useSidebar } from '../../contexts/SidebarContext'
 
 export default function UserDashboardPage() {
   const navigate = useNavigate()
@@ -13,7 +14,7 @@ export default function UserDashboardPage() {
   const googleEmail = localStorage.getItem('authEmail') || ''
 
   const [loading, setLoading] = useState(true)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const { isOpen, toggle } = useSidebar()
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const [profile, setProfile] = useState({
@@ -97,43 +98,22 @@ export default function UserDashboardPage() {
   })
 
   return (
-    <main className={`user-dashboard-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
-      <aside className="user-sidebar" aria-hidden={!isSidebarOpen}>
-        <div className="brand-mark">SC</div>
-        <h2>Smart Campus</h2>
-
-        <p className="sidebar-user-label">Logged in as</p>
-        <p className="sidebar-user-name">{fullName}</p>
-        <p className="sidebar-user-role">{displayRole}</p>
-
-        <nav className="sidebar-menu" aria-label="Dashboard Menu">
-          <button type="button" className="active">📊 Dashboard</button>
-          <button type="button" onClick={() => navigate('/resources')}>📁 Resources</button>
-          <button type="button" onClick={() => navigate('/profile')}>👤 Profile</button>
-          <button type="button">🔔 Notifications</button>
-        </nav>
-
-        <button type="button" className="sidebar-logout" onClick={handleLogout}>
-          ↪ Logout
-        </button>
-      </aside>
-
-      <section className="user-content">
-        <header className="user-topbar">
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <button 
-              type="button" 
-              className="sidebar-toggle-btn" 
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              aria-label="Toggle Sidebar"
-            >
-              ☰
-            </button>
-            <div>
-              <h1>Welcome back, {first}! 👋</h1>
-              <p>{today}</p>
-            </div>
+    <section className="user-content">
+      <header className="user-topbar">
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <button 
+            type="button" 
+            className="sidebar-toggle-btn" 
+            onClick={toggle}
+            aria-label={isOpen ? 'Collapse sidebar' : 'Open sidebar'}
+          >
+            ☰
+          </button>
+          <div>
+            <h1>Welcome back, {first}! 👋</h1>
+            <p>{today}</p>
           </div>
+        </div>
           <div className="topbar-right">
             <div className="user-account-menu">
               <button
@@ -239,6 +219,5 @@ export default function UserDashboardPage() {
           </article>
         </div>
       </section>
-    </main>
   )
 }

@@ -2,9 +2,13 @@ import React from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import './Sidebar.css'
+import { useSidebar } from '../../contexts/SidebarContext'
 
-export default function Sidebar({ isOpen = true, onLogout, accountName, accountRole }) {
+export default function Sidebar({ isOpen: isOpenProp, onLogout, accountName, accountRole }) {
   const navigate = useNavigate()
+  const { isOpen: isOpenCtx } = useSidebar()
+
+  const isOpen = typeof isOpenProp === 'boolean' ? isOpenProp : (typeof isOpenCtx === 'boolean' ? isOpenCtx : true)
 
   const name = accountName || localStorage.getItem('username') || localStorage.getItem('authEmail') || 'SmartCampusHub'
   const role = (accountRole || localStorage.getItem('authRole') || localStorage.getItem('role') || 'ADMIN').toUpperCase()
