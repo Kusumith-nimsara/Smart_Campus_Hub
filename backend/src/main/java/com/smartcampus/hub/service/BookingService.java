@@ -269,6 +269,171 @@ public class BookingService {
     }
     
     /**
+     * Approve a booking request (admin only).
+     * 
+     * Workflow:
+     * 1. Find booking by ID
+     * 2. Verify booking is in PENDING status
+     * 3. Update status to APPROVED
+     * 4. Set approval reason and admin ID
+     * 5. Save booking
+     * 6. Send notification to user
+     * 7. Return updated booking
+     * 
+     * @param bookingId the booking ID to approve
+     * @param adminId the admin ID approving the booking
+     * @param reason the approval reason
+     * @return the approved booking DTO
+     * @throws BookingNotFoundException if booking doesn't exist
+     * @throws InvalidBookingException if booking is not in PENDING status
+     */
+    public BookingResponseDTO approveBooking(String bookingId, Long adminId, String reason) {
+        // Step 1: Find booking
+        Booking booking = bookingRepository.findById(bookingId)
+            .orElseThrow(() -> new BookingNotFoundException("id", Long.parseLong(bookingId)));
+        
+        // Step 2: Verify status
+        if (booking.getStatus() != BookingStatus.PENDING) {
+            throw new InvalidBookingException(
+                "Only PENDING bookings can be approved. Current status: " + booking.getStatus(),
+                "status"
+            );
+        }
+        
+        // Step 3-5: Update and save
+        booking.setStatus(BookingStatus.APPROVED);
+        booking.setApprovalReason(reason != null ? reason : "");
+        booking.setApprovedBy(adminId);
+        booking.setUpdatedAt(LocalDateTime.now());
+        
+        Booking savedBooking = bookingRepository.save(booking);
+        
+        // Step 6: Send notification to user
+        if (notificationService != null) {
+            try {
+                notificationService.sendBookingApprovedNotification(savedBooking);
+            } catch (Exception e) {
+                System.err.println("Failed to send approval notification: " + e.getMessage());
+            }
+        }
+        
+        // Step 7: Return response
+        return convertToResponseDTO(savedBooking);
+    }
+    
+    /**
+     * Reject a booking request (admin only).
+     * 
+     * Workflow:
+     * 1. Find booking by ID
+     * 2. Verify booking is in PENDING status
+     * 3. Update status to REJECTED
+     * 4. Set rejection reason and admin ID
+     * 5. Save booking
+     * 6. Send notification to user
+     * 7. Return updated booking
+     * 
+     * @param bookingId the booking ID to reject
+     * @param adminId the admin ID rejecting the booking
+     * @param reason the rejection reason
+     * @return the rejected booking DTO
+     * @throws BookingNotFoundException if booking doesn't exist
+     * @throws InvalidBookingException if booking is not in PENDING status
+     */
+    public BookingResponseDTO rejectBooking(String bookingId, Long adminId, String reason) {
+        // Step 1: Find booking
+        Booking booking = bookingRepository.findById(bookingId)
+            .orElseThrow(() -> new BookingNotFoundException("id", Long.parseLong(bookingId)));
+        
+        // Step 2: Verify status
+        if (booking.getStatus() != BookingStatus.PENDING) {
+            throw new InvalidBookingException(
+                "Only PENDING bookings can be rejected. Current status: " + booking.getStatus(),
+                "status"
+            );
+        }
+        
+        // Step 3-5: Update and save
+        booking.setStatus(BookingStatus.REJECTED);
+        booking.setRejectionReason(reason != null ? reason : "No reason provided");
+        booking.setRejectedBy(adminId);
+        booking.setUpdatedAt(LocalDateTime.now());
+        
+        Booking savedBooking = bookingRepository.save(booking);
+        
+        // Step 6: Send notification to user
+        if (notificationService != null) {
+            try {
+                notificationService.sendBookingRejectedNotification(savedBooking);
+            } catch (Exception e) {
+                System.err.println("Failed to send rejection notification: " + e.getMessage());
+            }
+        }
+        
+        // Step 7: Return response
+        return convertToResponseDTO(savedBooking);
+    }
+    
+    /**
+     * Cancel an approved booking (user or admin).
+     * 
+     * Workflow:
+     * 1. Find booking by ID
+     * 2. Verify booking is APPROVED (only approved can be cancelled)
+     * 3. Verify ownership (user must own booking or be admin)
+     * 4. Update status to CANCELLED
+     * 5. Save booking
+     * 6. Send notification to admin
+     * 7. Return updated booking
+     * 
+     * @param bookingId the booking ID to cancel
+     * @param userId the user ID cancelling (for ownership check)
+     * @param isAdmin whether the user is admin
+     * @return the cancelled booking DTO
+     * @throws BookingNotFoundException if booking doesn't exist
+     * @throws InvalidBookingException if booking is not APPROVED or user lacks permission
+     */
+    public BookingResponseDTO cancelBooking(String bookingId, Long userId, boolean isAdmin) {
+        // Step 1: Find booking
+        Booking booking = bookingRepository.findById(bookingId)
+            .orElseThrow(() -> new BookingNotFoundException("id", Long.parseLong(bookingId)));
+        
+        // Step 2: Verify status
+        if (booking.getStatus() != BookingStatus.APPROVED) {
+            throw new InvalidBookingException(
+                "Only APPROVED bookings can be cancelled. Current status: " + booking.getStatus(),
+                "status"
+            );
+        }
+        
+        // Step 3: Verify ownership
+        if (!isAdmin && !booking.getUserId().equals(userId)) {
+            throw new InvalidBookingException(
+                "You don't have permission to cancel this booking",
+                "authorization"
+            );
+        }
+        
+        // Step 4-5: Update and save
+        booking.setStatus(BookingStatus.CANCELLED);
+        booking.setUpdatedAt(LocalDateTime.now());
+        
+        Booking savedBooking = bookingRepository.save(booking);
+        
+        // Step 6: Send notification to admin
+        if (notificationService != null) {
+            try {
+                notificationService.sendBookingCancelledNotification(savedBooking);
+            } catch (Exception e) {
+                System.err.println("Failed to send cancellation notification: " + e.getMessage());
+            }
+        }
+        
+        // Step 7: Return response
+        return convertToResponseDTO(savedBooking);
+    }
+    
+    /**
      * Simple email validation.
      * 
      * @param email the email to validate
