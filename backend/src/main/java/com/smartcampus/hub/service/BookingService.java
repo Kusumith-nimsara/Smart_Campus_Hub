@@ -159,6 +159,7 @@ public class BookingService {
      * @param filters filter criteria (status, date range, etc.)
      * @return page of bookings matching criteria
      */
+    @Transactional(readOnly = true)
     public Page<BookingResponseDTO> getUserBookings(Long userId, BookingFilterDTO filters) {
         if (userId == null || userId <= 0) {
             throw new InvalidBookingException("Invalid user ID", "userId");
@@ -186,6 +187,7 @@ public class BookingService {
      * @param filters filter criteria (status, date range, resource, etc.)
      * @return page of all bookings matching criteria
      */
+    @Transactional(readOnly = true)
     public Page<BookingResponseDTO> getAllBookings(BookingFilterDTO filters) {
         // Create pagination request
         Pageable pageable = createPageable(filters);
@@ -212,6 +214,7 @@ public class BookingService {
      * @return the booking DTO
      * @throws BookingNotFoundException if booking doesn't exist
      */
+    @Transactional(readOnly = true)
     public BookingResponseDTO getBooking(String bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
             .orElseThrow(() -> new BookingNotFoundException("id", Long.parseLong(bookingId)));
@@ -287,6 +290,7 @@ public class BookingService {
      * @throws BookingNotFoundException if booking doesn't exist
      * @throws InvalidBookingException if booking is not in PENDING status
      */
+    @Transactional
     public BookingResponseDTO approveBooking(String bookingId, Long adminId, String reason) {
         // Step 1: Find booking
         Booking booking = bookingRepository.findById(bookingId)
@@ -340,6 +344,7 @@ public class BookingService {
      * @throws BookingNotFoundException if booking doesn't exist
      * @throws InvalidBookingException if booking is not in PENDING status
      */
+    @Transactional
     public BookingResponseDTO rejectBooking(String bookingId, Long adminId, String reason) {
         // Step 1: Find booking
         Booking booking = bookingRepository.findById(bookingId)
@@ -393,6 +398,7 @@ public class BookingService {
      * @throws BookingNotFoundException if booking doesn't exist
      * @throws InvalidBookingException if booking is not APPROVED or user lacks permission
      */
+    @Transactional
     public BookingResponseDTO cancelBooking(String bookingId, Long userId, boolean isAdmin) {
         // Step 1: Find booking
         Booking booking = bookingRepository.findById(bookingId)
