@@ -215,11 +215,28 @@ export default function ProfilePage() {
         <p className="sidebar-user-role">{loginType}</p>
 
         <nav className="sidebar-menu" aria-label="Dashboard Menu">
-          <button type="button" onClick={() => navigate(isAdmin ? '/admin-dashboard' : '/dashboard')}>📊 Dashboard</button>
-          <button type="button" className="active" onClick={() => navigate('/profile')}>👤 Profile</button>
-          <button type="button">🔔 Notifications</button>
+          <button type="button" onClick={() => navigate(isAdmin ? '/admin-dashboard' : '/dashboard')}>
+            <span role="img" aria-label="Dashboard">📊</span> Dashboard
+          </button>
+          <button type="button" className="active" onClick={() => navigate('/profile')}>
+            <span role="img" aria-label="Profile">👤</span> Profile
+          </button>
+          <button type="button" onClick={() => navigate('/notifications')}>
+            <span role="img" aria-label="Notifications">🔔</span> Notifications
+          </button>
+          <button type="button" onClick={() => navigate('/catalogue')}>
+            <span role="img" aria-label="Catalogue">📚</span> Catalogue
+          </button>
+          <button type="button" onClick={() => navigate('/tickets')}>
+            <span role="img" aria-label="Tickets">🎫</span> Tickets
+          </button>
+          <button type="button" onClick={() => navigate('/bookings')}>
+            <span role="img" aria-label="Bookings">📅</span> Bookings
+          </button>
           {isAdmin && (
-            <button type="button" onClick={() => navigate('/admin/user-management')}>👥 User Management</button>
+            <button type="button" onClick={() => navigate('/admin/user-management')}>
+              <span role="img" aria-label="User Management">👥</span> User Management
+            </button>
           )}
         </nav>
 
