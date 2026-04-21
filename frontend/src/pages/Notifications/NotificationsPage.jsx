@@ -311,21 +311,23 @@ export default function NotificationsPage() {
 
         {/* Controls */}
         <div className="notif-controls">
-          <div className="notif-filters">
-            {FILTER_OPTIONS.map((f) => (
-              <button
-                key={f.key}
-                type="button"
-                className={`notif-filter-btn ${activeFilter === f.key ? 'active' : ''}`}
-                onClick={() => setActiveFilter(f.key)}
-              >
-                {f.icon} {f.label}
-                {f.key === 'UNREAD' && unreadCount > 0 && (
-                  <span className="notif-filter-badge">{unreadCount}</span>
-                )}
-              </button>
-            ))}
-          </div>
+          {isAdmin && (
+            <div className="notif-filters">
+              {FILTER_OPTIONS.map((f) => (
+                <button
+                  key={f.key}
+                  type="button"
+                  className={`notif-filter-btn ${activeFilter === f.key ? 'active' : ''}`}
+                  onClick={() => setActiveFilter(f.key)}
+                >
+                  {f.icon} {f.label}
+                  {f.key === 'UNREAD' && unreadCount > 0 && (
+                    <span className="notif-filter-badge">{unreadCount}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
           <div className="notif-actions">
             {unreadCount > 0 && (
               <button type="button" className="notif-action-btn primary" onClick={handleMarkAllAsRead}>
