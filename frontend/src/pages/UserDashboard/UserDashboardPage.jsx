@@ -288,28 +288,52 @@ export default function UserDashboardPage() {
         {/* Stats Row */}
         <section className="ud-stats">
           <article className="ud-stat-card ud-simple-stat" style={{ '--accent': '#3b82f6' }}>
+            <div className="ud-stat-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--accent)' }}>
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>
+              </svg>
+            </div>
             <div className="ud-stat-info">
               <p className="ud-stat-label">Account Status</p>
               <p className="ud-stat-value">{accountStatus}</p>
             </div>
+            <div className="ud-stat-ring" />
           </article>
           <article className="ud-stat-card ud-simple-stat" style={{ '--accent': '#22c55e' }}>
+            <div className="ud-stat-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--accent)' }}>
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+              </svg>
+            </div>
             <div className="ud-stat-info">
               <p className="ud-stat-label">User Type</p>
               <p className="ud-stat-value">{displayUserType}</p>
             </div>
+            <div className="ud-stat-ring" />
           </article>
           <article className="ud-stat-card ud-simple-stat" style={{ '--accent': '#a855f7' }}>
+            <div className="ud-stat-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--accent)' }}>
+                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/>
+              </svg>
+            </div>
             <div className="ud-stat-info">
               <p className="ud-stat-label">Role</p>
               <p className="ud-stat-value">{displayRole}</p>
             </div>
+            <div className="ud-stat-ring" />
           </article>
           <article className="ud-stat-card ud-simple-stat" style={{ '--accent': '#f97316' }}>
+            <div className="ud-stat-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--accent)' }}>
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
             <div className="ud-stat-info">
               <p className="ud-stat-label">Last Updated</p>
               <p className="ud-stat-value">{new Date().toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: 'numeric' })}</p>
             </div>
+            <div className="ud-stat-ring" />
           </article>
         </section>
 
