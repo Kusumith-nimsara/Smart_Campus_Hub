@@ -5,26 +5,29 @@ import com.smartcampus.hub.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/resources")
+@RequestMapping("/resources")
 @CrossOrigin(origins = "*")
 public class ResourceController {
     @Autowired
     private ResourceService resourceService;
 
     /**
-     * Get all resources
+     * Get all resources - PUBLIC ACCESS
      */
     @GetMapping
-    public ResponseEntity<List<Resource>> getAllResources(@RequestHeader("Authorization") String authHeader) {
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<List<Resource>> getAllResources() {
         try {
             List<Resource> resources = resourceService.getAllResources();
             return ResponseEntity.ok(resources);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -35,7 +38,7 @@ public class ResourceController {
     @GetMapping("/{id}")
     public ResponseEntity<Resource> getResourceById(
             @PathVariable String id,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
             return resourceService.getResourceById(id)
                     .map(ResponseEntity::ok)
@@ -51,7 +54,7 @@ public class ResourceController {
     @GetMapping("/status/{status}")
     public ResponseEntity<List<Resource>> getResourcesByStatus(
             @PathVariable String status,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
             List<Resource> resources = resourceService.getResourcesByStatus(status);
             return ResponseEntity.ok(resources);
@@ -66,7 +69,7 @@ public class ResourceController {
     @GetMapping("/type/{type}")
     public ResponseEntity<List<Resource>> getResourcesByType(
             @PathVariable String type,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
             List<Resource> resources = resourceService.getResourcesByType(type);
             return ResponseEntity.ok(resources);
@@ -81,7 +84,7 @@ public class ResourceController {
     @PostMapping
     public ResponseEntity<Resource> createResource(
             @RequestBody Resource resource,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
             Resource created = resourceService.createResource(resource);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
@@ -97,7 +100,7 @@ public class ResourceController {
     public ResponseEntity<Resource> updateResource(
             @PathVariable String id,
             @RequestBody Resource resource,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
             Resource updated = resourceService.updateResource(id, resource);
             if (updated != null) {
@@ -115,7 +118,7 @@ public class ResourceController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteResource(
             @PathVariable String id,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
             resourceService.deleteResource(id);
             return ResponseEntity.noContent().build();

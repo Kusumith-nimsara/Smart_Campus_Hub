@@ -6,13 +6,21 @@ const getToken = () => localStorage.getItem('authToken') || ''
 export const resourceAPI = {
   // Get all resources
   getAllResources: async () => {
-    const response = await fetch(`${API_BASE_URL}/resources`, {
-      headers: {
-        'Authorization': `Bearer ${getToken()}`,
-      },
-    })
-    if (!response.ok) throw new Error('Failed to fetch resources')
-    return response.json()
+    try {
+      const response = await fetch(`${API_BASE_URL}/resources`, {
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+      })
+      if (!response.ok) {
+        console.error('Resources API error:', response.status)
+        throw new Error(`HTTP ${response.status}`)
+      }
+      return response.json()
+    } catch (error) {
+      console.error('Failed to fetch resources:', error)
+      throw new Error('Failed to fetch resources from database')
+    }
   },
 
   // Get resource by ID

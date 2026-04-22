@@ -33,9 +33,13 @@ export default function CreateTicketModal({ isOpen, onClose, onTicketCreated }) 
     setResourcesLoading(true)
     try {
       const data = await resourceAPI.getAllResources()
-      setResources(Array.isArray(data) ? data : [])
+      console.log('Resources fetched:', data)
+      // Handle both array and object responses
+      const resourcesArray = Array.isArray(data) ? data : (data?.content ? data.content : [])
+      setResources(resourcesArray)
     } catch (error) {
       console.error('Failed to fetch resources:', error)
+      showError('Error', 'Could not load resources from database')
       setResources([])
     } finally {
       setResourcesLoading(false)
@@ -234,26 +238,42 @@ export default function CreateTicketModal({ isOpen, onClose, onTicketCreated }) 
                 textAlign: 'center',
                 color: '#666'
               }}>
-                Loading resources...
+                ⏳ Loading resources...
               </div>
             ) : (
-              <select
-                name="resourceLocation"
-                value={formData.resourceLocation}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Select a Resource</option>
-                {resources.length > 0 ? (
-                  resources.map(resource => (
-                    <option key={resource.id} value={resource.location}>
-                      {resource.type} - {resource.location}
-                    </option>
-                  ))
-                ) : (
-                  <option disabled>No resources available</option>
+              <>
+                <select
+                  name="resourceLocation"
+                  value={formData.resourceLocation}
+                  onChange={(e) => {
+                    console.log('Selected location:', e.target.value)
+                    handleInputChange(e)
+                  }}
+                  required
+                  style={{
+                    backgroundColor: resources.length === 0 ? '#fff3cd' : 'white'
+                  }}
+                >
+                  <option value="">-- Select a Location --</option>
+                  {resources.length > 0 ? (
+                    resources.map(resource => (
+                      <option 
+                        key={resource.id || resource._id} 
+                        value={resource.location}
+                      >
+                        {resource.location}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>❌ No resources found in database</option>
+                  )}
+                </select>
+                {resources.length === 0 && (
+                  <small style={{ color: '#d32f2f', marginTop: '4px', display: 'block' }}>
+                    ⚠️ No resources available. Please add resources to the database.
+                  </small>
                 )}
-              </select>
+              </>
             )}
           </div>
 
