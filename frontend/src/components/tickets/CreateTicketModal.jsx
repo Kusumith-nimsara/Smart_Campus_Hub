@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ticketAPI } from '../../services/ticketAPI'
+import { resourceAPI } from '../../services/resourceAPI'
 import { showError, showSuccess } from '../../utils/alerts'
 import './CreateTicketModal.css'
 
@@ -18,6 +19,28 @@ export default function CreateTicketModal({ isOpen, onClose, onTicketCreated }) 
   const [images, setImages] = useState([])
   const [imagePreviews, setImagePreviews] = useState([])
   const [loading, setLoading] = useState(false)
+  const [resources, setResources] = useState([])
+  const [resourcesLoading, setResourcesLoading] = useState(false)
+
+  // Fetch resources on component mount
+  useEffect(() => {
+    if (isOpen) {
+      fetchResources()
+    }
+  }, [isOpen])
+
+  const fetchResources = async () => {
+    setResourcesLoading(true)
+    try {
+      const data = await resourceAPI.getAllResources()
+      setResources(Array.isArray(data) ? data : [])
+    } catch (error) {
+      console.error('Failed to fetch resources:', error)
+      setResources([])
+    } finally {
+      setResourcesLoading(false)
+    }
+  }
 
   if (!isOpen) return null
 
@@ -203,15 +226,35 @@ export default function CreateTicketModal({ isOpen, onClose, onTicketCreated }) 
 
           <div className="form-group">
             <label>Resource Location *</label>
-            <input
-              type="text"
-              name="resourceLocation"
-              value={formData.resourceLocation}
-              onChange={handleInputChange}
-              placeholder="e.g., Room 101, Building A"
-              maxLength={255}
-              required
-            />
+            {resourcesLoading ? (
+              <div style={{
+                padding: '10px',
+                backgroundColor: '#f0f0f0',
+                borderRadius: '4px',
+                textAlign: 'center',
+                color: '#666'
+              }}>
+                Loading resources...
+              </div>
+            ) : (
+              <select
+                name="resourceLocation"
+                value={formData.resourceLocation}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">Select a Resource</option>
+                {resources.length > 0 ? (
+                  resources.map(resource => (
+                    <option key={resource.id} value={resource.location}>
+                      {resource.type} - {resource.location}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>No resources available</option>
+                )}
+              </select>
+            )}
           </div>
 
           <div className="form-group">
