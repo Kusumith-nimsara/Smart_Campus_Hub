@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { confirmAction, showError, showLogoutAlert, showSuccess } from '../../utils/alerts'
+import DashboardSidebar from '../../components/common/DashboardSidebar'
 import './UserManagementPage.css'
 
 const TABS = [
@@ -305,40 +306,18 @@ export default function UserManagementPage() {
   }
 
   return (
-    <main className={`um-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
-      <aside className="um-sidebar" aria-hidden={!isSidebarOpen}>
-        <div className="um-brand">
-          <div className="um-logo">SC</div>
-          <h2>Smart Campus</h2>
-        </div>
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+      <DashboardSidebar
+        fullName={adminName}
+        role="ADMIN"
+        currentPage="user-management"
+        onLogout={handleLogout}
+        isGoogleLogin={isGoogleLogin}
+        googleAvatarUrl={googleAvatarUrl}
+        googleEmail={googleEmail}
+      />
 
-        <div className="um-identity">
-          <p className="um-label">Logged in as</p>
-          <p className="um-name">{adminName}</p>
-          <p className="um-role">ADMIN</p>
-        </div>
-
-        <nav className="um-nav" aria-label="Admin Navigation">
-          <button type="button" onClick={() => navigate('/admin-dashboard')}>
-            <span className="nav-icon">📊</span> Dashboard
-          </button>
-          <button type="button" className="active" onClick={() => navigate('/admin/user-management')}>
-            <span className="nav-icon">👥</span> User Management
-          </button>
-          <button type="button" onClick={() => navigate('/profile')}>
-            <span className="nav-icon">👤</span> Profile
-          </button>
-          <button type="button">
-            <span className="nav-icon">🔔</span> Notifications
-          </button>
-        </nav>
-
-        <button type="button" className="um-logout" onClick={handleLogout}>
-          Logout
-        </button>
-      </aside>
-
-      <section className="um-content">
+      <section className="um-content" style={{ flex: 1, marginLeft: '250px' }}>
         <header className="um-topbar">
           <div className="topbar-left">
             <button 
@@ -576,6 +555,6 @@ export default function UserManagementPage() {
           </div>
         </section>
       </section>
-    </main>
+    </div>
   )
 }

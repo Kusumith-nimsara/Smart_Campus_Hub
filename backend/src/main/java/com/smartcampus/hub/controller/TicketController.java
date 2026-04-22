@@ -199,6 +199,146 @@ public class TicketController {
         return ResponseEntity.ok(tickets);
     }
 
+    // ==================== TECHNICIAN OPERATIONS ====================
+
+    @PutMapping("/{ticketId}/technician/complete")
+    public ResponseEntity<TicketResponse> technicianCompleteTicket(
+            @PathVariable String ticketId,
+            @RequestBody Map<String, String> request,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = extractToken(authHeader);
+        String userId = jwtService.extractUserId(token);
+        String role = jwtService.extractRole(token);
+
+        if (!("TECHNICIAN".equals(role) || "MANAGER".equals(role))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        String resolutionNotes = request.getOrDefault("resolutionNotes", "");
+        TicketResponse response = ticketService.technicianCompleteTicket(ticketId, userId, resolutionNotes);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{ticketId}/technician/reject")
+    public ResponseEntity<TicketResponse> technicianRejectTicket(
+            @PathVariable String ticketId,
+            @RequestBody Map<String, String> request,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = extractToken(authHeader);
+        String userId = jwtService.extractUserId(token);
+        String role = jwtService.extractRole(token);
+
+        if (!("TECHNICIAN".equals(role) || "MANAGER".equals(role))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        String rejectionReason = request.getOrDefault("rejectionReason", "");
+        TicketResponse response = ticketService.technicianRejectTicket(ticketId, userId, rejectionReason);
+        return ResponseEntity.ok(response);
+    }
+
+    // ==================== ADMIN APPROVAL OPERATIONS ====================
+
+    @PutMapping("/{ticketId}/admin/approve")
+    public ResponseEntity<TicketResponse> adminApproveTicket(
+            @PathVariable String ticketId,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = extractToken(authHeader);
+        String role = jwtService.extractRole(token);
+
+        if (!"ADMIN".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        TicketResponse response = ticketService.adminApproveTicket(ticketId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{ticketId}/admin/reject-completion")
+    public ResponseEntity<TicketResponse> adminRejectCompletion(
+            @PathVariable String ticketId,
+            @RequestBody Map<String, String> request,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = extractToken(authHeader);
+        String role = jwtService.extractRole(token);
+
+        if (!"ADMIN".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        String rejectionReason = request.getOrDefault("rejectionReason", "");
+        TicketResponse response = ticketService.adminRejectCompletion(ticketId, rejectionReason);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/admin/open")
+    public ResponseEntity<Page<TicketResponse>> getOpenTickets(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = extractToken(authHeader);
+        String role = jwtService.extractRole(token);
+
+        if (!"ADMIN".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        Pageable pageable = PageRequest.of(page, Math.min(size, 100));
+        Page<TicketResponse> tickets = ticketService.getOpenTickets(pageable);
+        return ResponseEntity.ok(tickets);
+    }
+
+    @GetMapping("/admin/in-progress")
+    public ResponseEntity<Page<TicketResponse>> getInProgressTickets(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = extractToken(authHeader);
+        String role = jwtService.extractRole(token);
+
+        if (!"ADMIN".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        Pageable pageable = PageRequest.of(page, Math.min(size, 100));
+        Page<TicketResponse> tickets = ticketService.getInProgressTickets(pageable);
+        return ResponseEntity.ok(tickets);
+    }
+
+    @GetMapping("/admin/resolved")
+    public ResponseEntity<Page<TicketResponse>> getResolvedTickets(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = extractToken(authHeader);
+        String role = jwtService.extractRole(token);
+
+        if (!"ADMIN".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        Pageable pageable = PageRequest.of(page, Math.min(size, 100));
+        Page<TicketResponse> tickets = ticketService.getResolvedTickets(pageable);
+        return ResponseEntity.ok(tickets);
+    }
+
+    @GetMapping("/admin/closed")
+    public ResponseEntity<Page<TicketResponse>> getClosedTickets(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = extractToken(authHeader);
+        String role = jwtService.extractRole(token);
+
+        if (!"ADMIN".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        Pageable pageable = PageRequest.of(page, Math.min(size, 100));
+        Page<TicketResponse> tickets = ticketService.getClosedTickets(pageable);
+        return ResponseEntity.ok(tickets);
+    }
+
     // ==================== HELPER METHODS ====================
 
     private String extractToken(String authHeader) {

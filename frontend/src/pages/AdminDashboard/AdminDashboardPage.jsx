@@ -32,9 +32,7 @@ export default function AdminDashboardPage() {
   const accountMenuRef = useRef(null)
   const [unreadNotifCount, setUnreadNotifCount] = useState(0)
   const [currentAdminId, setCurrentAdminId] = useState('')
-  const googleAvatarCandidate =
-    googleAvatarUrl ||
-    (googleEmail ? `https://www.google.com/s2/photos/profile/${encodeURIComponent(googleEmail)}?sz=128` : '')
+  const googleAvatarCandidate = googleAvatarUrl || ''
 
   useEffect(() => {
     function handleOutsideClick(event) {
@@ -232,18 +230,19 @@ export default function AdminDashboardPage() {
 
       <section className="admin-content">
         <header className="admin-topbar">
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div className="topbar-left">
             <button 
               type="button" 
               className="sidebar-toggle-btn" 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               aria-label="Toggle Sidebar"
             >
-              ☰
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
-            <div>
-              <h1>Welcome to Smart Campus 👋</h1>
-              <p>{today}</p>
+            <div className="topbar-breadcrumb">
+              <span className="breadcrumb-muted">Admin Workspace</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              <span className="breadcrumb-active">Dashboard</span>
             </div>
           </div>
           <div className="topbar-right">
@@ -300,21 +299,59 @@ export default function AdminDashboardPage() {
           </div>
         </header>
 
+        <section className="admin-hero">
+          <div className="admin-hero-content">
+            <span className="hero-badge">Administrator Console</span>
+            <h1 className="hero-title">Welcome back, {accountName.split(' ')[0]} 👋</h1>
+            <p className="hero-subtitle">You have {pendingUsers.length} pending user approvals and {unreadNotifCount} unread notifications today.</p>
+          </div>
+          <div className="admin-hero-decoration">
+             <div className="hero-shape shape-1" />
+             <div className="hero-shape shape-2" />
+          </div>
+        </section>
+
         <section className="admin-stats-grid">
           <article className="stat-card account">
-            <h3>Your Account</h3>
-            <p className="primary">{accountName}</p>
-            <p className="secondary">{accountEmail}</p>
+            <div className="stat-card-icon account-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <div className="stat-card-body">
+              <h3>Your Account</h3>
+              <p className="primary">{accountName}</p>
+              <p className="secondary">{accountEmail}</p>
+            </div>
+            <div className="stat-card-ring" />
           </article>
           <article className="stat-card role-card">
-            <h3>Your Role</h3>
-            <p className="primary">{accountRole}</p>
-            <p className="secondary">{userType}</p>
+            <div className="stat-card-icon role-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+            </div>
+            <div className="stat-card-body">
+              <h3>Your Role</h3>
+              <p className="primary">{accountRole}</p>
+              <p className="secondary">{userType}</p>
+            </div>
+            <div className="stat-card-ring" />
           </article>
           <article className="stat-card status">
-            <h3>Status</h3>
-            <p className="primary">{accountActive ? 'Active' : 'Suspended'}</p>
-            <p className="secondary">{accountActive ? 'Secure Session' : 'Access Limited'}</p>
+            <div className="stat-card-icon status-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+            </div>
+            <div className="stat-card-body">
+              <h3>Status</h3>
+              <p className="primary">{accountActive ? 'Active' : 'Suspended'}</p>
+              <p className="secondary">{accountActive ? 'Secure Session' : 'Access Limited'}</p>
+            </div>
+            <div className="stat-card-ring" />
           </article>
         </section>
 
@@ -361,9 +398,14 @@ export default function AdminDashboardPage() {
               <div className="pending-list">
                 {pendingUsers.map((user) => (
                   <div key={user.id} className="pending-item">
-                    <div>
-                      <p className="pending-name">{user.firstName || user.username || 'User'}</p>
-                      <p className="pending-email">{user.email || 'No email'}</p>
+                    <div className="pending-item-left">
+                      <div className="pending-avatar">
+                        {(user.firstName || user.username || 'U').charAt(0).toUpperCase()}
+                      </div>
+                      <div className="pending-info">
+                        <p className="pending-name">{user.firstName || user.username || 'User'}</p>
+                        <p className="pending-email">{user.email || 'No email'}</p>
+                      </div>
                     </div>
                     <button
                       type="button"

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { showLogoutAlert, showSuccess, confirmAction } from '../../utils/alerts'
+import DashboardSidebar from '../../components/common/DashboardSidebar'
 import './NotificationsPage.css'
 
 const FILTER_OPTIONS = [
@@ -187,9 +188,9 @@ export default function NotificationsPage() {
   async function handleDeleteNotification(id, e) {
     e.stopPropagation()
     const confirmed = await confirmAction({
-      title: 'Delete Notification?',
+      title: 'Clear Notification?',
       text: 'This notification will be permanently removed.',
-      confirmText: 'Delete',
+      confirmText: 'Clear',
     })
     if (!confirmed) return
 
@@ -204,6 +205,30 @@ export default function NotificationsPage() {
       }
     } catch {
       // Delete failure is non-blocking
+    }
+  }
+
+  async function handleClearAll() {
+    if (!userId) return
+    const confirmed = await confirmAction({
+      title: 'Clear All Notifications?',
+      text: 'This will permanently delete all your notifications.',
+      confirmText: 'Clear All',
+    })
+    if (!confirmed) return
+
+    try {
+      const res = await fetch(`${backendBaseUrl}/notifications/user/${userId}/all`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        setNotifications([])
+        setUnreadCount(0)
+        showSuccess('Cleared', 'All notifications have been removed')
+      }
+    } catch {
+      // Clear all failure is non-blocking
     }
   }
 
@@ -222,52 +247,17 @@ export default function NotificationsPage() {
   const dashboardRoute = isAdmin ? '/admin-dashboard' : '/dashboard'
 
   return (
-    <main className={`notifications-layout ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
-      <aside className="notif-sidebar" aria-hidden={!isSidebarOpen}>
-        <div className="notif-brand">
-          <div className="notif-brand-icon">SC</div>
-          <h2>Smart Campus</h2>
-        </div>
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+      <DashboardSidebar
+        fullName={userName}
+        role={userRole}
+        unreadCount={unreadCount}
+        currentPage="notifications"
+        onLogout={handleLogout}
+      />
 
-        <div className="notif-identity">
-          <p className="label">Logged in as</p>
-          <p className="name">{userName}</p>
-          <p className="role">{userRole}</p>
-        </div>
+      <section className="notif-content" style={{ flex: 1, marginLeft: '250px' }}>
 
-        <nav className="notif-nav" aria-label="Notifications Navigation">
-          <button type="button" onClick={() => navigate(dashboardRoute)}>
-            <span>📊</span> Dashboard
-          </button>
-          {isAdmin && (
-            <button type="button" onClick={() => navigate('/admin/user-management')}>
-              <span>👥</span> User Management
-            </button>
-          )}
-          <button type="button" onClick={() => navigate('/profile')}>
-            <span>👤</span> Profile
-          </button>
-          <button type="button" className="active" onClick={() => navigate('/notifications')}>
-            <span>🔔</span> Notifications
-            {unreadCount > 0 && (
-              <span className="notif-filter-badge">{unreadCount}</span>
-            )}
-          </button>
-          <button type="button" onClick={() => navigate('/catalogue')}>
-            <span>📚</span> Catalogue
-          </button>
-          <button type="button" onClick={() => navigate('/tickets')}>
-            <span>🎫</span> Tickets
-          </button>
-          <button type="button" onClick={() => navigate('/bookings')}>
-            <span>📅</span> Bookings
-          </button>
-        </nav>
-
-        <button type="button" className="notif-logout" onClick={handleLogout}>↪ Logout</button>
-      </aside>
-
-      <section className="notif-content">
         <header className="notif-topbar">
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <button
@@ -311,21 +301,23 @@ export default function NotificationsPage() {
 
         {/* Controls */}
         <div className="notif-controls">
-          <div className="notif-filters">
-            {FILTER_OPTIONS.map((f) => (
-              <button
-                key={f.key}
-                type="button"
-                className={`notif-filter-btn ${activeFilter === f.key ? 'active' : ''}`}
-                onClick={() => setActiveFilter(f.key)}
-              >
-                {f.icon} {f.label}
-                {f.key === 'UNREAD' && unreadCount > 0 && (
-                  <span className="notif-filter-badge">{unreadCount}</span>
-                )}
-              </button>
-            ))}
-          </div>
+          {isAdmin && (
+            <div className="notif-filters">
+              {FILTER_OPTIONS.map((f) => (
+                <button
+                  key={f.key}
+                  type="button"
+                  className={`notif-filter-btn ${activeFilter === f.key ? 'active' : ''}`}
+                  onClick={() => setActiveFilter(f.key)}
+                >
+                  {f.icon} {f.label}
+                  {f.key === 'UNREAD' && unreadCount > 0 && (
+                    <span className="notif-filter-badge">{unreadCount}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
           <div className="notif-actions">
             {unreadCount > 0 && (
               <button type="button" className="notif-action-btn primary" onClick={handleMarkAllAsRead}>
@@ -335,6 +327,11 @@ export default function NotificationsPage() {
             <button type="button" className="notif-action-btn" onClick={fetchNotifications}>
               ↻ Refresh
             </button>
+            {notifications.length > 0 && (
+              <button type="button" className="notif-action-btn danger" style={{ color: 'red' }} onClick={handleClearAll}>
+                🗑 Clear All
+              </button>
+            )}
           </div>
         </div>
 
@@ -406,10 +403,10 @@ export default function NotificationsPage() {
                     <button
                       type="button"
                       className="notif-dismiss-btn"
-                      title="Delete notification"
+                      title="Clear notification"
                       onClick={(e) => handleDeleteNotification(notif.id, e)}
                     >
-                      ✕
+                      Clear
                     </button>
                   </div>
                 </article>
@@ -418,6 +415,6 @@ export default function NotificationsPage() {
           </div>
         )}
       </section>
-    </main>
+    </div>
   )
 }

@@ -1,0 +1,618 @@
+.admin-tickets-page {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.admin-tickets-page.sidebar-collapsed {
+  flex-direction: row-reverse;
+}
+
+.admin-sidebar {
+  width: 250px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  border-right: 1px solid #e5e7eb;
+  overflow-y: auto;
+  transition: width 0.3s ease;
+}
+
+.admin-sidebar.collapsed {
+  width: 80px;
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-logo {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.admin-brand h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.admin-identity {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px 0;
+}
+
+.admin-identity .label {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0 0 4px 0;
+}
+
+.admin-identity .name {
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.admin-identity .role {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.admin-nav button {
+  background: transparent;
+  border: none;
+  color: #d1d5db;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-nav button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.admin-nav button.active {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+}
+
+.admin-nav button .nav-icon {
+  font-size: 18px;
+}
+
+.admin-logout {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #d1d5db;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.admin-logout:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.admin-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.admin-topbar {
+  background: white;
+  padding: 20px 32px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.admin-topbar h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #1f2937;
+}
+
+.admin-topbar > div:first-child p {
+  margin: 4px 0 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.admin-account-menu {
+  position: relative;
+}
+
+.admin-account-trigger {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.admin-topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-topbar-user > span {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+}
+
+.admin-topbar-avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.admin-topbar-uname {
+  margin: 0;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin-topbar-urole {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.admin-account-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-top: 8px;
+  min-width: 150px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-account-dropdown button {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 12px 16px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  color: #1f2937;
+  transition: all 0.3s ease;
+}
+
+.admin-account-dropdown button:hover {
+  background: #f3f4f6;
+  color: #ef4444;
+}
+
+.sidebar-toggle-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  padding: 0 8px;
+}
+
+.ticket-workflow-tabs {
+  display: flex;
+  gap: 16px;
+  padding: 24px 32px;
+  border-bottom: 1px solid #e5e7eb;
+  background: white;
+  flex-wrap: wrap;
+}
+
+.ticket-workflow-tabs .tab {
+  background: #f3f4f6;
+  border: 2px solid transparent;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  transition: all 0.3s ease;
+}
+
+.ticket-workflow-tabs .tab:hover {
+  background: #e5e7eb;
+}
+
+.ticket-workflow-tabs .tab.active {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  border-color: transparent;
+}
+
+.tickets-grid {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+.ticket-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.ticket-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #d1d5db;
+}
+
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ticket-header h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #1f2937;
+  flex: 1;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge.open {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-badge.in-progress {
+  background: #fef3c7;
+  color: #a16207;
+}
+
+.status-badge.resolved {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.closed {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.ticket-id {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  color: #6b7280;
+  font-family: monospace;
+}
+
+.ticket-location,
+.ticket-category {
+  margin: 6px 0;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.ticket-meta {
+  display: flex;
+  gap: 12px;
+  margin: 12px 0;
+  flex-wrap: wrap;
+}
+
+.ticket-meta .priority {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ticket-meta .priority.high {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.ticket-meta .priority.medium {
+  background: #fef3c7;
+  color: #a16207;
+}
+
+.ticket-meta .priority.low {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.ticket-meta .date {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.ticket-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.action-btn.assign {
+  width: 100%;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+}
+
+.action-btn.assign:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.action-btn.approve {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.action-btn.approve:hover {
+  background: #a7f3d0;
+}
+
+.action-btn.reject {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.action-btn.reject:hover {
+  background: #fecaca;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+}
+
+.modal h2 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  color: #1f2937;
+}
+
+.modal-subtitle {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.modal-text {
+  margin: 0 0 24px 0;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1f2937;
+}
+
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  padding: 10px 20px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #374151;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background: #e5e7eb;
+}
+
+.btn-submit,
+.btn-approve,
+.btn-reject {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+}
+
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.btn-approve {
+  background: #10b981;
+  color: white;
+}
+
+.btn-approve:hover:not(:disabled) {
+  background: #059669;
+}
+
+.btn-reject {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-reject:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading,
+.empty-state {
+  text-align: center;
+  color: #6b7280;
+  padding: 40px 20px;
+  font-size: 16px;
+}
+
+@media (max-width: 1024px) {
+  .tickets-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-sidebar {
+    width: 200px;
+    padding: 16px;
+  }
+
+  .admin-topbar {
+    padding: 16px;
+  }
+
+  .tickets-grid {
+    padding: 16px;
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-workflow-tabs {
+    padding: 16px;
+    gap: 8px;
+  }
+
+  .ticket-workflow-tabs .tab {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+}

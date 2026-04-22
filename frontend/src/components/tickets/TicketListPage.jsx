@@ -25,22 +25,16 @@ export default function TicketListPage({ onCreateNew }) {
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
-  const [filterStatus, setFilterStatus] = useState('ALL')
   const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     loadTickets()
-  }, [page, filterStatus])
+  }, [page])
 
   const loadTickets = async () => {
     setLoading(true)
     try {
-      let response
-      if (filterStatus === 'ALL') {
-        response = await ticketAPI.getUserTickets(page, 10)
-      } else {
-        response = await ticketAPI.getTicketsByStatus(filterStatus, page, 10)
-      }
+      const response = await ticketAPI.getUserTickets(page, 10)
       setTickets(response.content || [])
       setTotalPages(response.totalPages || 1)
     } catch (error) {
@@ -72,52 +66,25 @@ export default function TicketListPage({ onCreateNew }) {
     <div className="ticket-list-page">
       <div className="ticket-list-header">
         <div>
-          <h1>🎫 Tickets</h1>
-          <p>Manage your maintenance and incident tickets</p>
+          <h1>🎫 My Tickets</h1>
+          <p>Track your maintenance and incident tickets. Assigned tickets will appear on your dashboard.</p>
         </div>
         <button className="btn-create-ticket" onClick={onCreateNew}>
           + New Ticket
         </button>
       </div>
 
-      <div className="ticket-filters">
-        <div className="search-box">
-          <input
-            type="text"
-            placeholder="🔍 Search by title or ID..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
-          />
-        </div>
-
-        <div className="filter-buttons">
-          {['ALL', 'OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'].map(status => (
-            <button
-              key={status}
-              className={`filter-btn ${filterStatus === status ? 'active' : ''}`}
-              onClick={() => {
-                setFilterStatus(status)
-                setPage(0)
-              }}
-            >
-              {status.replace('_', ' ')}
-            </button>
-          ))}
-        </div>
-      </div>
-
       {loading ? (
         <div className="loading">Loading tickets...</div>
-      ) : filteredTickets.length === 0 ? (
+      ) : tickets.length === 0 ? (
         <div className="no-tickets">
-          <p>📭 No tickets found</p>
+          <p>📭 No tickets created yet</p>
           <p className="hint">Create a new ticket to report an issue</p>
         </div>
       ) : (
         <>
           <div className="ticket-grid">
-            {filteredTickets.map(ticket => (
+            {tickets.map(ticket => (
               <div
                 key={ticket.id}
                 className="ticket-card"
