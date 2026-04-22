@@ -16,6 +16,7 @@ export default function DashboardSidebar({
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   const isActive = (page) => currentPage === page ? 'active' : ''
+  const isAdmin = (role || '').toUpperCase() === 'ADMIN'
 
   return (
     <aside className="dashboard-sidebar" aria-hidden={!isSidebarOpen}>
@@ -30,10 +31,19 @@ export default function DashboardSidebar({
         <button
           type="button"
           className={isActive('dashboard')}
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate(isAdmin ? '/admin-dashboard' : '/dashboard')}
         >
           📊 Dashboard
         </button>
+        {isAdmin && (
+          <button
+            type="button"
+            className={isActive('user-management')}
+            onClick={() => navigate('/admin/user-management')}
+          >
+            👥 User Management
+          </button>
+        )}
         <button
           type="button"
           className={isActive('profile')}
