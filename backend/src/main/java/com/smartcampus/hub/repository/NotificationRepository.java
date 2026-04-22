@@ -17,4 +17,6 @@ public interface NotificationRepository extends MongoRepository<Notification, St
     List<Notification> findByUserIdAndTypeOrderByCreatedAtDesc(String userId, String type);
 
     List<Notification> findByUserIdAndReferenceTypeOrderByCreatedAtDesc(String userId, String referenceType);
+
+    void deleteByUserId(String userId);
 }

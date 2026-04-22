@@ -92,4 +92,10 @@ public class NotificationController {
         notificationService.deleteNotification(id);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/user/{userId}/all")
+    public ResponseEntity<Void> deleteAllNotifications(@PathVariable String userId) {
+        notificationService.deleteAllNotifications(userId);
+        return ResponseEntity.noContent().build();
+    }
 }

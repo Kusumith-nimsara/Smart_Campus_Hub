@@ -208,4 +208,9 @@ public class NotificationService {
         }
         notificationRepository.deleteById(safeId);
     }
+
+    public void deleteAllNotifications(String userId) {
+        String safeUserId = Objects.requireNonNull(userId, "User id cannot be null");
+        notificationRepository.deleteByUserId(safeUserId);
+    }
 }

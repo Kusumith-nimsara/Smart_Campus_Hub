@@ -188,9 +188,9 @@ export default function NotificationsPage() {
   async function handleDeleteNotification(id, e) {
     e.stopPropagation()
     const confirmed = await confirmAction({
-      title: 'Delete Notification?',
+      title: 'Clear Notification?',
       text: 'This notification will be permanently removed.',
-      confirmText: 'Delete',
+      confirmText: 'Clear',
     })
     if (!confirmed) return
 
@@ -205,6 +205,30 @@ export default function NotificationsPage() {
       }
     } catch {
       // Delete failure is non-blocking
+    }
+  }
+
+  async function handleClearAll() {
+    if (!userId) return
+    const confirmed = await confirmAction({
+      title: 'Clear All Notifications?',
+      text: 'This will permanently delete all your notifications.',
+      confirmText: 'Clear All',
+    })
+    if (!confirmed) return
+
+    try {
+      const res = await fetch(`${backendBaseUrl}/notifications/user/${userId}/all`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        setNotifications([])
+        setUnreadCount(0)
+        showSuccess('Cleared', 'All notifications have been removed')
+      }
+    } catch {
+      // Clear all failure is non-blocking
     }
   }
 
@@ -303,6 +327,11 @@ export default function NotificationsPage() {
             <button type="button" className="notif-action-btn" onClick={fetchNotifications}>
               ↻ Refresh
             </button>
+            {notifications.length > 0 && (
+              <button type="button" className="notif-action-btn danger" style={{ color: 'red' }} onClick={handleClearAll}>
+                🗑 Clear All
+              </button>
+            )}
           </div>
         </div>
 
@@ -374,10 +403,10 @@ export default function NotificationsPage() {
                     <button
                       type="button"
                       className="notif-dismiss-btn"
-                      title="Delete notification"
+                      title="Clear notification"
                       onClick={(e) => handleDeleteNotification(notif.id, e)}
                     >
-                      ✕
+                      Clear
                     </button>
                   </div>
                 </article>
