@@ -32,9 +32,7 @@ export default function AdminDashboardPage() {
   const accountMenuRef = useRef(null)
   const [unreadNotifCount, setUnreadNotifCount] = useState(0)
   const [currentAdminId, setCurrentAdminId] = useState('')
-  const googleAvatarCandidate =
-    googleAvatarUrl ||
-    (googleEmail ? `https://www.google.com/s2/photos/profile/${encodeURIComponent(googleEmail)}?sz=128` : '')
+  const googleAvatarCandidate = googleAvatarUrl || ''
 
   useEffect(() => {
     function handleOutsideClick(event) {

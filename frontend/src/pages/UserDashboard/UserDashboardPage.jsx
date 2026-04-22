@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState, useCallback } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { showLogoutAlert } from '../../utils/alerts'
+import DashboardSidebar from '../../components/common/DashboardSidebar'
 import './UserDashboardPage.css'
 
 export default function UserDashboardPage() {
@@ -13,7 +14,6 @@ export default function UserDashboardPage() {
   const googleEmail = localStorage.getItem('authEmail') || ''
 
   const [loading, setLoading] = useState(true)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const [profile, setProfile] = useState({
@@ -29,6 +29,8 @@ export default function UserDashboardPage() {
   })
   const [unreadCount, setUnreadCount] = useState(0)
   const [currentUserId, setCurrentUserId] = useState('')
+  const [recentNotifications, setRecentNotifications] = useState([])
+  const [ticketStats, setTicketStats] = useState({ total: 0, open: 0, resolved: 0, pending: 0 })
 
   useEffect(() => {
     async function loadProfile() {
@@ -99,6 +101,53 @@ export default function UserDashboardPage() {
     return () => clearInterval(interval)
   }, [backendBaseUrl, token, currentUserId])
 
+  // Fetch recent notifications
+  useEffect(() => {
+    async function fetchRecentNotifications() {
+      if (!currentUserId || !token) return
+      try {
+        const res = await fetch(`${backendBaseUrl}/notifications/user/${currentUserId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setRecentNotifications(Array.isArray(data) ? data.slice(0, 5) : [])
+        }
+      } catch {
+        // Non-blocking
+      }
+    }
+    fetchRecentNotifications()
+  }, [backendBaseUrl, token, currentUserId])
+
+  // Fetch ticket stats
+  useEffect(() => {
+    async function fetchTickets() {
+      if (!token) return
+      try {
+        const res = await fetch(`${backendBaseUrl}/tickets`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (res.ok) {
+          const data = await res.json()
+          const tickets = Array.isArray(data) ? data : []
+          const myTickets = currentUserId
+            ? tickets.filter(t => t.createdBy === currentUserId || t.assignedTo === currentUserId)
+            : tickets
+          setTicketStats({
+            total: myTickets.length,
+            open: myTickets.filter(t => t.status === 'OPEN' || t.status === 'IN_PROGRESS').length,
+            resolved: myTickets.filter(t => t.status === 'RESOLVED' || t.status === 'CLOSED').length,
+            pending: myTickets.filter(t => t.status === 'PENDING' || t.status === 'SUBMITTED').length,
+          })
+        }
+      } catch {
+        // Non-blocking
+      }
+    }
+    fetchTickets()
+  }, [backendBaseUrl, token, currentUserId])
+
   function handleLogout() {
     clearAuthState()
     setIsAccountMenuOpen(false)
@@ -109,93 +158,91 @@ export default function UserDashboardPage() {
   const first = profile.firstName || profile.username || 'User'
   const fullName = `${profile.firstName} ${profile.lastName}`.trim() || profile.username || 'Campus User'
   const displayRole = profile.role || localStorage.getItem('authRole') || 'USER'
-  const googleAvatarCandidate =
-    googleAvatarUrl ||
-    (googleEmail ? `https://www.google.com/s2/photos/profile/${encodeURIComponent(googleEmail)}?sz=128` : '')
+  const googleAvatarCandidate = googleAvatarUrl || ''
   const displayUserType = profile.userType || 'STUDENT'
   const accountStatus = profile.suspended ? 'SUSPENDED' : 'ACTIVE'
   const today = new Date().toLocaleDateString(undefined, {
+    weekday: 'long',
     year: 'numeric',
-    month: 'short',
+    month: 'long',
     day: 'numeric',
   })
 
+  function getGreeting() {
+    const hour = new Date().getHours()
+    if (hour < 12) return 'Good Morning'
+    if (hour < 17) return 'Good Afternoon'
+    return 'Good Evening'
+  }
+
+  function formatTimeAgo(dateStr) {
+    if (!dateStr) return ''
+    const date = new Date(dateStr)
+    const now = new Date()
+    const diffSec = Math.floor((now - date) / 1000)
+    const diffMin = Math.floor(diffSec / 60)
+    const diffHr = Math.floor(diffMin / 60)
+    const diffDay = Math.floor(diffHr / 24)
+    if (diffSec < 60) return 'Just now'
+    if (diffMin < 60) return `${diffMin}m ago`
+    if (diffHr < 24) return `${diffHr}h ago`
+    if (diffDay < 7) return `${diffDay}d ago`
+    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+  }
+
+  function getNotifIcon(type) {
+    switch (type) {
+      case 'TICKET_CREATED': return '🎫'
+      case 'TICKET_UPDATED': return '🔄'
+      case 'TICKET_ASSIGNED': return '👤'
+      case 'TICKET_RESOLVED': return '✅'
+      case 'TICKET_COMMENT': return '💬'
+      case 'TICKET_REJECTED': return '❌'
+      case 'MAINTENANCE_SCHEDULED': return '🔧'
+      case 'INCIDENT_REPORTED': return '🚨'
+      case 'INCIDENT_UPDATED': return '📝'
+      default: return '🔔'
+    }
+  }
+
   return (
-    <main className={`user-dashboard-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
-      <aside className="user-sidebar" aria-hidden={!isSidebarOpen}>
-        <div className="brand-mark">SC</div>
-        <h2>Smart Campus</h2>
+    <div className="ud-wrapper">
+      <DashboardSidebar
+        fullName={fullName}
+        role={displayRole}
+        unreadCount={unreadCount}
+        currentPage="dashboard"
+        onLogout={handleLogout}
+        isGoogleLogin={isGoogleLogin}
+        googleAvatarUrl={googleAvatarUrl}
+        googleEmail={googleEmail}
+      />
 
-        <p className="sidebar-user-label">Logged in as</p>
-        <p className="sidebar-user-name">{fullName}</p>
-        <p className="sidebar-user-role">{displayRole}</p>
-
-        <nav className="sidebar-menu" aria-label="Dashboard Menu">
-          <button type="button" className="active" onClick={() => navigate('/dashboard')}>📊 Dashboard</button>
-          <button type="button" onClick={() => navigate('/profile')}>👤 Profile</button>
-          <button type="button" onClick={() => navigate('/notifications')} style={{ position: 'relative' }}>
-            🔔 Notifications
-            {unreadCount > 0 && (
-              <span style={{
-                position: 'absolute',
-                top: '6px',
-                right: '10px',
-                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-                color: '#fff',
-                borderRadius: '10px',
-                padding: '1px 7px',
-                fontSize: '11px',
-                fontWeight: '700',
-                lineHeight: '16px',
-                minWidth: '18px',
-                textAlign: 'center',
-                boxShadow: '0 2px 6px rgba(239,68,68,0.4)',
-              }}>{unreadCount > 99 ? '99+' : unreadCount}</span>
-            )}
-          </button>
-          <button type="button" onClick={() => navigate('/catalogue')}>📚 Catalogue</button>
-          <button type="button" onClick={() => navigate('/tickets')}>🎫 Tickets</button>
-          <button type="button" onClick={() => navigate('/bookings')}>📅 Bookings</button>
-        </nav>
-
-        <button type="button" className="sidebar-logout" onClick={handleLogout}>
-          ↪ Logout
-        </button>
-      </aside>
-
-      <section className="user-content">
-        <header className="user-topbar">
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <button 
-              type="button" 
-              className="sidebar-toggle-btn" 
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              aria-label="Toggle Sidebar"
-            >
-              ☰
-            </button>
-            <div>
-              <h1>Welcome back, {first}! 👋</h1>
-              <p>{today}</p>
+      <main className="ud-main">
+        {/* Hero Banner */}
+        <section className="ud-hero">
+          <div className="ud-hero-content">
+            <div className="ud-hero-text">
+              <p className="ud-hero-greeting">{getGreeting()}</p>
+              <h1 className="ud-hero-name">{first} 👋</h1>
+              <p className="ud-hero-date">{today}</p>
             </div>
-          </div>
-          <div className="topbar-right">
-            <div className="user-account-menu">
+            <div className="ud-account-area">
               <button
                 type="button"
-                className="user-account-trigger"
+                className="ud-account-trigger"
                 onClick={() => setIsAccountMenuOpen((prev) => !prev)}
                 aria-haspopup="menu"
                 aria-expanded={isAccountMenuOpen}
                 aria-label="Open account menu"
               >
-                <div className="user-topbar-user">
-                  <span>
+                <div className="ud-topbar-user">
+                  <span className="ud-topbar-avatar">
                     {isGoogleLogin && googleAvatarCandidate && !avatarLoadFailed ? (
                       <img
                         src={googleAvatarCandidate}
                         alt={fullName}
-                        className="user-topbar-avatar-image"
+                        className="ud-topbar-avatar-image"
                         onError={() => setAvatarLoadFailed(true)}
                         referrerPolicy="no-referrer"
                       />
@@ -203,12 +250,12 @@ export default function UserDashboardPage() {
                       (fullName || first).charAt(0).toUpperCase()
                     )}
                   </span>
-                  <div>
-                    <p className="user-topbar-uname">{fullName}</p>
-                    <p className="user-topbar-urole">
+                  <div className="ud-topbar-info">
+                    <p className="ud-topbar-uname">{fullName}</p>
+                    <p className="ud-topbar-urole">
                       {displayRole}
                       {isGoogleLogin && (
-                        <span className="user-login-provider" aria-label="Signed in with Google">
+                        <span className="ud-google-badge" aria-label="Signed in with Google">
                           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                             <path fill="#EA4335" d="M12 10.2v3.9h5.4c-.2 1.3-1.5 3.9-5.4 3.9-3.2 0-5.9-2.7-5.9-6s2.7-6 5.9-6c1.8 0 3.1.8 3.8 1.4l2.6-2.5C16.8 3.4 14.6 2.5 12 2.5 6.8 2.5 2.6 6.8 2.6 12s4.2 9.5 9.4 9.5c5.4 0 8.9-3.8 8.9-9.1 0-.6-.1-1-.1-1.4H12z"/>
                             <path fill="#34A853" d="M3.7 7.6l3.2 2.3c.9-1.8 2.8-3 5.1-3 1.8 0 3.1.8 3.8 1.4l2.6-2.5C16.8 3.4 14.6 2.5 12 2.5 8.4 2.5 5.3 4.6 3.7 7.6z"/>
@@ -223,7 +270,7 @@ export default function UserDashboardPage() {
               </button>
 
               {isAccountMenuOpen && (
-                <div className="user-account-dropdown" role="menu" aria-label="Account actions">
+                <div className="ud-account-dropdown" role="menu" aria-label="Account actions">
                   <button type="button" onClick={handleLogout} role="menuitem">
                     Sign out
                   </button>
@@ -231,62 +278,155 @@ export default function UserDashboardPage() {
               )}
             </div>
           </div>
-        </header>
+          <div className="ud-hero-decoration">
+            <div className="ud-hero-circle c1" />
+            <div className="ud-hero-circle c2" />
+            <div className="ud-hero-circle c3" />
+          </div>
+        </section>
 
-        <div className="stats-grid">
-          <article className="stat-card">
-            <h3>Account Status</h3>
-            <p>{accountStatus}</p>
+        {/* Stats Row */}
+        <section className="ud-stats">
+          <article className="ud-stat-card ud-simple-stat" style={{ '--accent': '#3b82f6' }}>
+            <div className="ud-stat-info">
+              <p className="ud-stat-label">Account Status</p>
+              <p className="ud-stat-value">{accountStatus}</p>
+            </div>
           </article>
-          <article className="stat-card">
-            <h3>User Type</h3>
-            <p>{displayUserType}</p>
+          <article className="ud-stat-card ud-simple-stat" style={{ '--accent': '#22c55e' }}>
+            <div className="ud-stat-info">
+              <p className="ud-stat-label">User Type</p>
+              <p className="ud-stat-value">{displayUserType}</p>
+            </div>
           </article>
-          <article className="stat-card">
-            <h3>Role</h3>
-            <p>{displayRole}</p>
+          <article className="ud-stat-card ud-simple-stat" style={{ '--accent': '#a855f7' }}>
+            <div className="ud-stat-info">
+              <p className="ud-stat-label">Role</p>
+              <p className="ud-stat-value">{displayRole}</p>
+            </div>
           </article>
-          <article className="stat-card">
-            <h3>Last Updated</h3>
-            <p>{today}</p>
+          <article className="ud-stat-card ud-simple-stat" style={{ '--accent': '#f97316' }}>
+            <div className="ud-stat-info">
+              <p className="ud-stat-label">Last Updated</p>
+              <p className="ud-stat-value">{new Date().toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: 'numeric' })}</p>
+            </div>
           </article>
-        </div>
+        </section>
 
-        <div className="dashboard-widgets">
-          <article className="widget profile-summary">
-            <h2>📋 Your Profile</h2>
+        {/* Main Grid */}
+        <section className="ud-grid">
+          {/* Profile Card */}
+          <article className="ud-card ud-profile-card">
+            <div className="ud-card-header">
+              <h2>👤 Profile Overview</h2>
+              <button type="button" className="ud-card-action" onClick={() => navigate('/profile')}>
+                Edit →
+              </button>
+            </div>
             {loading ? (
-              <p className="widget-note">Loading...</p>
+              <div className="ud-loading-shimmer">
+                <div className="shimmer-line" />
+                <div className="shimmer-line short" />
+                <div className="shimmer-line" />
+                <div className="shimmer-line short" />
+              </div>
             ) : (
-              <div className="summary-grid">
-                <p><span>Email</span>{profile.email || '-'}</p>
-                <p><span>Full Name</span>{fullName}</p>
-                <p><span>Registration No</span>{profile.registrationNumber || '-'}</p>
-                <p><span>Mobile</span>{profile.mobileNumber || '-'}</p>
+              <div className="ud-profile-details">
+                <div className="ud-profile-row">
+                  <span className="ud-profile-label">Full Name</span>
+                  <span className="ud-profile-value">{fullName}</span>
+                </div>
+                <div className="ud-profile-row">
+                  <span className="ud-profile-label">Email</span>
+                  <span className="ud-profile-value">{profile.email || '—'}</span>
+                </div>
+                <div className="ud-profile-row">
+                  <span className="ud-profile-label">Registration No.</span>
+                  <span className="ud-profile-value">{profile.registrationNumber || '—'}</span>
+                </div>
+                <div className="ud-profile-row">
+                  <span className="ud-profile-label">Mobile</span>
+                  <span className="ud-profile-value">{profile.mobileNumber || '—'}</span>
+                </div>
+                <div className="ud-profile-tags">
+                  <span className="ud-tag role">{displayRole}</span>
+                  <span className="ud-tag type">{displayUserType}</span>
+                  <span className={`ud-tag status ${accountStatus.toLowerCase()}`}>{accountStatus}</span>
+                </div>
               </div>
             )}
-            <button type="button" className="link-btn" onClick={() => navigate('/profile')}>
-              Edit Profile →
-            </button>
           </article>
 
-          <article className="widget notifications">
-            <h2>🔔 Notifications</h2>
-            <p className="widget-note">
-              {unreadCount > 0
-                ? `You have ${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}`
-                : 'No new notifications'}
-            </p>
-            <button type="button" className="link-btn" onClick={() => navigate('/notifications')}>View All →</button>
+          {/* Recent Notifications */}
+          <article className="ud-card ud-notif-card">
+            <div className="ud-card-header">
+              <h2>🔔 Recent Notifications</h2>
+              <button type="button" className="ud-card-action" onClick={() => navigate('/notifications')}>
+                View All →
+              </button>
+            </div>
+            {recentNotifications.length === 0 ? (
+              <div className="ud-empty-state">
+                <div className="ud-empty-icon">🎉</div>
+                <p>You're all caught up!</p>
+                <span>No new notifications</span>
+              </div>
+            ) : (
+              <ul className="ud-notif-list">
+                {recentNotifications.map((n) => (
+                  <li key={n.id} className={`ud-notif-item ${!n.isRead && !n.read ? 'unread' : ''}`}>
+                    <span className="ud-notif-icon">{getNotifIcon(n.type)}</span>
+                    <div className="ud-notif-body">
+                      <p className="ud-notif-msg">{n.message}</p>
+                      <span className="ud-notif-time">{formatTimeAgo(n.createdAt)}</span>
+                    </div>
+                    {(!n.isRead && !n.read) && <span className="ud-notif-dot" />}
+                  </li>
+                ))}
+              </ul>
+            )}
           </article>
 
-          <article className="widget quick-links">
-            <h2>⚡ Quick Links</h2>
-            <button type="button" onClick={() => navigate('/profile')}>👤 Edit Profile</button>
-            <button type="button" onClick={() => navigate('/')}>🏠 Landing Page</button>
+          {/* Quick Actions */}
+          <article className="ud-card ud-actions-card">
+            <div className="ud-card-header">
+              <h2>⚡ Quick Actions</h2>
+            </div>
+            <div className="ud-actions-grid">
+              <button type="button" className="ud-action-btn" onClick={() => navigate('/tickets')}>
+                <span className="ud-action-icon">🎫</span>
+                <span className="ud-action-text">My Tickets</span>
+                <span className="ud-action-arrow">→</span>
+              </button>
+              <button type="button" className="ud-action-btn" onClick={() => navigate('/bookings')}>
+                <span className="ud-action-icon">📅</span>
+                <span className="ud-action-text">Bookings</span>
+                <span className="ud-action-arrow">→</span>
+              </button>
+              <button type="button" className="ud-action-btn" onClick={() => navigate('/catalogue')}>
+                <span className="ud-action-icon">📚</span>
+                <span className="ud-action-text">Catalogue</span>
+                <span className="ud-action-arrow">→</span>
+              </button>
+              <button type="button" className="ud-action-btn" onClick={() => navigate('/profile')}>
+                <span className="ud-action-icon">👤</span>
+                <span className="ud-action-text">Profile</span>
+                <span className="ud-action-arrow">→</span>
+              </button>
+              <button type="button" className="ud-action-btn" onClick={() => navigate('/notifications')}>
+                <span className="ud-action-icon">🔔</span>
+                <span className="ud-action-text">Notifications</span>
+                <span className="ud-action-arrow">→</span>
+              </button>
+              <button type="button" className="ud-action-btn" onClick={() => navigate('/')}>
+                <span className="ud-action-icon">🏠</span>
+                <span className="ud-action-text">Home Page</span>
+                <span className="ud-action-arrow">→</span>
+              </button>
+            </div>
           </article>
-        </div>
-      </section>
-    </main>
+        </section>
+      </main>
+    </div>
   )
 }
