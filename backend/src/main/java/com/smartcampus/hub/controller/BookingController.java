@@ -3,13 +3,21 @@ package com.smartcampus.hub.controller;
 import com.smartcampus.hub.dto.BookingFilterDTO;
 import com.smartcampus.hub.dto.BookingRequestDTO;
 import com.smartcampus.hub.dto.BookingResponseDTO;
+import com.smartcampus.hub.model.Booking;
 import com.smartcampus.hub.service.BookingService;
+import com.smartcampus.hub.service.ConflictCheckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * REST Controller for booking management.
@@ -22,6 +30,9 @@ public class BookingController {
 
     @Autowired
     private BookingService bookingService;
+
+    @Autowired
+    private ConflictCheckService conflictCheckService;
 
     /**
      * Create a new booking request.
@@ -278,6 +289,95 @@ public class BookingController {
         
         BookingResponseDTO booking = bookingService.cancelBooking(id, userId, isAdmin);
         return ResponseEntity.ok(booking);
+    }
+
+    /**
+     * Check if a time slot is available for a resource (conflict checking).
+     * 
+     * HTTP: GET /api/bookings/conflicts
+     * Auth: Required (any authenticated user)
+     * 
+     * Query Parameters (all required):
+     * - resourceId: the resource ID to check
+     * - startTime: the start time (ISO format: 2026-04-25T10:00:00)
+     * - endTime: the end time (ISO format: 2026-04-25T11:00:00)
+     * 
+     * Examples:
+     * GET /api/bookings/conflicts?resourceId=123&startTime=2026-04-25T10:00:00&endTime=2026-04-25T11:00:00
+     * 
+     * Response: 200 OK
+     * {
+     *   "hasConflict": true,
+     *   "conflictCount": 2,
+     *   "conflicts": [
+     *     {
+     *       "id": "...",
+     *       "userId": 1,
+     *       "startTime": "2026-04-25T09:00:00",
+     *       "endTime": "2026-04-25T10:30:00",
+     *       "status": "APPROVED",
+     *       ...
+     *     },
+     *     {...}
+     *   ]
+     * }
+     * 
+     * Response (no conflicts): 200 OK
+     * {
+     *   "hasConflict": false,
+     *   "conflictCount": 0,
+     *   "conflicts": []
+     * }
+     * 
+     * @param resourceId the resource ID to check
+     * @param startTime the start time (ISO format)
+     * @param endTime the end time (ISO format)
+     * @param authentication the authenticated user
+     * @return conflict check response with status 200
+     */
+    @GetMapping("/conflicts")
+    public ResponseEntity<Map<String, Object>> checkConflicts(
+            @RequestParam Long resourceId,
+            @RequestParam String startTime,
+            @RequestParam String endTime,
+            Authentication authentication) {
+        
+        try {
+            // Parse the time strings to LocalDateTime
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+            LocalDateTime start = LocalDateTime.parse(startTime, formatter);
+            LocalDateTime end = LocalDateTime.parse(endTime, formatter);
+            
+            // Check for conflicts
+            boolean hasConflict = conflictCheckService.isConflicting(resourceId, start, end);
+            List<Booking> conflicts = conflictCheckService.getConflictingBookings(resourceId, start, end);
+            
+            // Build response
+            Map<String, Object> response = new HashMap<>();
+            response.put("hasConflict", hasConflict);
+            response.put("conflictCount", conflicts.size());
+            response.put("conflicts", conflicts.stream()
+                .map(booking -> new HashMap<String, Object>() {{
+                    put("id", booking.getId());
+                    put("userId", booking.getUserId());
+                    put("resourceId", booking.getResourceId());
+                    put("startTime", booking.getStartTime());
+                    put("endTime", booking.getEndTime());
+                    put("status", booking.getStatus());
+                    put("purpose", booking.getPurpose());
+                    put("attendees", booking.getAttendees());
+                }})
+                .toList());
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            // Return error response
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Invalid time format. Use ISO format: 2026-04-25T10:00:00");
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
     }
 
     /**
