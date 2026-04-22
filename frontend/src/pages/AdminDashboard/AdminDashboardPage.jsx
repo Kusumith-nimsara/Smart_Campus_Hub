@@ -230,18 +230,18 @@ export default function AdminDashboardPage() {
 
       <section className="admin-content">
         <header className="admin-topbar">
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div className="topbar-left">
             <button 
               type="button" 
               className="sidebar-toggle-btn" 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               aria-label="Toggle Sidebar"
             >
-              ☰
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
-            <div>
-              <h1>Welcome to Smart Campus 👋</h1>
-              <p>{today}</p>
+            <div className="topbar-search">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" placeholder="Search resources, users, or tickets..." />
             </div>
           </div>
           <div className="topbar-right">
@@ -298,6 +298,18 @@ export default function AdminDashboardPage() {
           </div>
         </header>
 
+        <section className="admin-hero">
+          <div className="admin-hero-content">
+            <span className="hero-badge">Administrator Console</span>
+            <h1 className="hero-title">Welcome back, {accountName.split(' ')[0]} 👋</h1>
+            <p className="hero-subtitle">You have {pendingUsers.length} pending user approvals and {unreadNotifCount} unread notifications today.</p>
+          </div>
+          <div className="admin-hero-decoration">
+             <div className="hero-shape shape-1" />
+             <div className="hero-shape shape-2" />
+          </div>
+        </section>
+
         <section className="admin-stats-grid">
           <article className="stat-card account">
             <div className="stat-card-icon account-icon">
@@ -343,23 +355,45 @@ export default function AdminDashboardPage() {
         </section>
 
         <section className="admin-panel features">
-          <h2>⚡ Features Overview</h2>
+          <div className="panel-header">
+            <h2>⚡ Campus Management Focus</h2>
+          </div>
           <div className="feature-grid">
-            <article className="feature-item resources">
-              <h4>📁 Resources</h4>
-              <p>Manage campus resources and labs</p>
+            <article className="feature-item resources" onClick={() => navigate('/catalogue')}>
+              <div className="fi-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+              </div>
+              <div className="fi-text">
+                <h4>Resources</h4>
+                <p>Manage campus resources and labs</p>
+              </div>
             </article>
-            <article className="feature-item bookings">
-              <h4>📅 Bookings</h4>
-              <p>Schedule facilities and approvals</p>
+            <article className="feature-item bookings" onClick={() => navigate('/bookings')}>
+              <div className="fi-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div className="fi-text">
+                <h4>Bookings</h4>
+                <p>Schedule facilities and approvals</p>
+              </div>
             </article>
-            <article className="feature-item tickets">
-              <h4>🎫 Tickets</h4>
-              <p>Track support and maintenance issues</p>
+            <article className="feature-item tickets" onClick={() => navigate('/tickets')}>
+              <div className="fi-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5.88 14 10l5.12.12c1 .02 1.63 1.05 1.15 1.93l-4.5 8.35c-.6 1.11-2.27.79-2.42-.45L12 14l-5.12-.12c-1-.02-1.63-1.05-1.15-1.93l4.5-8.35c.6-1.11 2.27-.79 2.42.45Z" /></svg>
+              </div>
+              <div className="fi-text">
+                <h4>Tickets</h4>
+                <p>Track support and maintenance issues</p>
+              </div>
             </article>
-            <article className="feature-item notifications">
-              <h4>🔔 Notifications{unreadNotifCount > 0 ? ` (${unreadNotifCount})` : ''}</h4>
-              <p>Broadcast updates to campus users</p>
+            <article className="feature-item notifications" onClick={() => navigate('/notifications')}>
+              <div className="fi-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </div>
+              <div className="fi-text">
+                <h4>Notifications {unreadNotifCount > 0 && <span className="notif-badge">{unreadNotifCount}</span>}</h4>
+                <p>Broadcast updates to campus users</p>
+              </div>
             </article>
           </div>
         </section>
@@ -368,10 +402,22 @@ export default function AdminDashboardPage() {
           <article className="admin-panel quick-actions">
             <h2>🚀 Quick Actions</h2>
             <div className="action-grid">
-              <button type="button" onClick={() => navigate('/profile')}>Manage Profile</button>
-              <button type="button">View Resources</button>
-              <button type="button">Create Booking</button>
-              <button type="button">Open Tickets</button>
+              <button type="button" onClick={() => navigate('/profile')}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Manage Profile
+              </button>
+              <button type="button" onClick={() => navigate('/catalogue')}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                View Resources
+              </button>
+              <button type="button" onClick={() => navigate('/bookings')}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Create Booking
+              </button>
+              <button type="button" onClick={() => navigate('/tickets')}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Open Tickets
+              </button>
             </div>
           </article>
 
@@ -385,9 +431,14 @@ export default function AdminDashboardPage() {
               <div className="pending-list">
                 {pendingUsers.map((user) => (
                   <div key={user.id} className="pending-item">
-                    <div>
-                      <p className="pending-name">{user.firstName || user.username || 'User'}</p>
-                      <p className="pending-email">{user.email || 'No email'}</p>
+                    <div className="pending-item-left">
+                      <div className="pending-avatar">
+                        {(user.firstName || user.username || 'U').charAt(0).toUpperCase()}
+                      </div>
+                      <div className="pending-info">
+                        <p className="pending-name">{user.firstName || user.username || 'User'}</p>
+                        <p className="pending-email">{user.email || 'No email'}</p>
+                      </div>
                     </div>
                     <button
                       type="button"
