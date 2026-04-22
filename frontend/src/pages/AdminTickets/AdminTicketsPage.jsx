@@ -284,7 +284,7 @@ export default function AdminTicketsPage() {
         <span className={`status-badge ${ticket.status.toLowerCase()}`}>{ticket.status}</span>
       </div>
       <p className="ticket-id">ID: {ticket.id}</p>
-      <p className="ticket-location">📍 {ticket.location || 'No location'}</p>
+      <p className="ticket-location">📍 {ticket.resourceLocation || 'No location'}</p>
       <p className="ticket-category">🏷️ {ticket.category || 'General'}</p>
       <div className="ticket-meta">
         <span className={`priority ${ticket.priority?.toLowerCase()}`}>{ticket.priority || 'MEDIUM'}</span>

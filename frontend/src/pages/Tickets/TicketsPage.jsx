@@ -374,7 +374,7 @@ export default function TicketsPage() {
         }}>{ticket.status}</span>
       </div>
       <p style={{ margin: 0, fontSize: '12px', color: '#6b7280', fontFamily: 'monospace' }}>ID: {ticket.id}</p>
-      <p style={{ margin: '6px 0', fontSize: '13px', color: '#4b5563' }}>📍 {ticket.location || 'No location'}</p>
+      <p style={{ margin: '6px 0', fontSize: '13px', color: '#4b5563' }}>📍 {ticket.resourceLocation || 'No location'}</p>
       <p style={{ margin: '6px 0', fontSize: '13px', color: '#4b5563' }}>🏷️ {ticket.category || 'General'}</p>
       <div style={{ display: 'flex', gap: '12px', margin: '12px 0', flexWrap: 'wrap' }}>
         <span style={{

@@ -1,7 +1,6 @@
 package com.smartcampus.hub.dto;
 
 import com.smartcampus.hub.model.Ticket;
-import com.smartcampus.hub.model.TicketComment;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
