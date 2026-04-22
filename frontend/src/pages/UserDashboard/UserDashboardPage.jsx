@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { showLogoutAlert } from '../../utils/alerts'
-import DashboardSidebar from '../../components/common/DashboardSidebar'
 import './UserDashboardPage.css'
 
 export default function UserDashboardPage() {
@@ -29,8 +28,6 @@ export default function UserDashboardPage() {
   })
   const [unreadCount, setUnreadCount] = useState(0)
   const [currentUserId, setCurrentUserId] = useState('')
-  const [recentNotifications, setRecentNotifications] = useState([])
-  const [ticketStats, setTicketStats] = useState({ total: 0, open: 0, resolved: 0, pending: 0 })
 
   useEffect(() => {
     async function loadProfile() {
@@ -99,53 +96,6 @@ export default function UserDashboardPage() {
     fetchUnreadCount()
     const interval = setInterval(fetchUnreadCount, 30000) // Poll every 30s
     return () => clearInterval(interval)
-  }, [backendBaseUrl, token, currentUserId])
-
-  // Fetch recent notifications
-  useEffect(() => {
-    async function fetchRecentNotifications() {
-      if (!currentUserId || !token) return
-      try {
-        const res = await fetch(`${backendBaseUrl}/notifications/user/${currentUserId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        if (res.ok) {
-          const data = await res.json()
-          setRecentNotifications(Array.isArray(data) ? data.slice(0, 5) : [])
-        }
-      } catch {
-        // Non-blocking
-      }
-    }
-    fetchRecentNotifications()
-  }, [backendBaseUrl, token, currentUserId])
-
-  // Fetch ticket stats
-  useEffect(() => {
-    async function fetchTickets() {
-      if (!token) return
-      try {
-        const res = await fetch(`${backendBaseUrl}/tickets`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        if (res.ok) {
-          const data = await res.json()
-          const tickets = Array.isArray(data) ? data : []
-          const myTickets = currentUserId
-            ? tickets.filter(t => t.createdBy === currentUserId || t.assignedTo === currentUserId)
-            : tickets
-          setTicketStats({
-            total: myTickets.length,
-            open: myTickets.filter(t => t.status === 'OPEN' || t.status === 'IN_PROGRESS').length,
-            resolved: myTickets.filter(t => t.status === 'RESOLVED' || t.status === 'CLOSED').length,
-            pending: myTickets.filter(t => t.status === 'PENDING' || t.status === 'SUBMITTED').length,
-          })
-        }
-      } catch {
-        // Non-blocking
-      }
-    }
-    fetchTickets()
   }, [backendBaseUrl, token, currentUserId])
 
   function handleLogout() {
@@ -449,8 +399,8 @@ export default function UserDashboardPage() {
               </button>
             </div>
           </article>
-        </section>
-      </main>
-    </div>
+        </div>
+      </section>
+    </main>
   )
 }

@@ -7,6 +7,8 @@ import RegisterPage from './pages/Register/RegisterPage'
 import LandingPage from './pages/Landing/LandingPage'
 import ProfilePage from './pages/Profile/ProfilePage'
 import AdminDashboardPage from './pages/AdminDashboard/AdminDashboardPage'
+import AdminTicketsPage from './pages/AdminTickets/AdminTicketsPage'
+import TechnicianDashboardPage from './pages/TechnicianDashboard/TechnicianDashboardPage'
 import UnauthorizedPage from './pages/Unauthorized/UnauthorizedPage'
 import SuspendedPage from './pages/Suspended/SuspendedPage'
 import UserDashboardPage from './pages/UserDashboard/UserDashboardPage'
@@ -31,11 +33,16 @@ function App() {
           path="/dashboard"
           element={
             <PrivateRoute fallback={<Navigate to="/login" replace />}>
-              {(localStorage.getItem('authRole') || localStorage.getItem('role') || '').toUpperCase() === 'ADMIN' ? (
-                <Navigate to="/admin-dashboard" replace />
-              ) : (
-                <UserDashboardPage />
-              )}
+              {(() => {
+                const role = (localStorage.getItem('authRole') || localStorage.getItem('role') || '').toUpperCase()
+                if (role === 'ADMIN') {
+                  return <Navigate to="/admin-dashboard" replace />
+                } else if (role === 'TECHNICIAN' || role === 'MANAGER') {
+                  return <Navigate to="/technician-dashboard" replace />
+                } else {
+                  return <UserDashboardPage />
+                }
+              })()}
             </PrivateRoute>
           }
         />
@@ -60,6 +67,22 @@ function App() {
           element={
             <ProtectedRoute requiredRole="ADMIN">
               <AdminDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-tickets"
+          element={
+            <ProtectedRoute requiredRole="ADMIN">
+              <AdminTicketsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/technician-dashboard"
+          element={
+            <ProtectedRoute requiredRoles={['TECHNICIAN', 'MANAGER']}>
+              <TechnicianDashboardPage />
             </ProtectedRoute>
           }
         />

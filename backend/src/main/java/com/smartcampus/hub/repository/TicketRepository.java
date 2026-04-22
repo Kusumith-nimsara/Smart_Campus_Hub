@@ -34,4 +34,10 @@ public interface TicketRepository extends MongoRepository<Ticket, String> {
     
     // Count assigned unresolved tickets
     long countByAssignedToIdAndStatusNotIn(String assignedToId, List<TicketStatus> statuses);
+    
+    // Find tickets assigned to technician with specific status
+    Page<Ticket> findByAssignedToIdAndStatus(String assignedToId, TicketStatus status, Pageable pageable);
+    
+    // Find all open tickets (unassigned)
+    long countByStatusAndAssignedToIdIsNull(TicketStatus status);
 }
