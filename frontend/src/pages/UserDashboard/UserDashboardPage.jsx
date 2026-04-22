@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { showLogoutAlert } from '../../utils/alerts'
+import DashboardSidebar from '../../components/common/DashboardSidebar'
 import './UserDashboardPage.css'
 
 export default function UserDashboardPage() {
@@ -27,6 +28,7 @@ export default function UserDashboardPage() {
     suspended: false,
   })
   const [unreadCount, setUnreadCount] = useState(0)
+  const [recentNotifications, setRecentNotifications] = useState([])
   const [currentUserId, setCurrentUserId] = useState('')
 
   useEffect(() => {
@@ -96,6 +98,26 @@ export default function UserDashboardPage() {
     fetchUnreadCount()
     const interval = setInterval(fetchUnreadCount, 30000) // Poll every 30s
     return () => clearInterval(interval)
+  }, [backendBaseUrl, token, currentUserId])
+
+  // Fetch recent notifications
+  useEffect(() => {
+    async function fetchRecentNotifs() {
+      if (!currentUserId || !token) return
+      try {
+        const res = await fetch(`${backendBaseUrl}/notifications/user/${currentUserId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (res.ok) {
+          const data = await res.json()
+          const list = Array.isArray(data) ? data : (data?.content || [])
+          setRecentNotifications(list.slice(0, 3))
+        }
+      } catch {
+        // Non-blocking
+      }
+    }
+    fetchRecentNotifs()
   }, [backendBaseUrl, token, currentUserId])
 
   function handleLogout() {
@@ -399,8 +421,8 @@ export default function UserDashboardPage() {
               </button>
             </div>
           </article>
-        </div>
-      </section>
-    </main>
+        </section>
+      </main>
+    </div>
   )
 }
