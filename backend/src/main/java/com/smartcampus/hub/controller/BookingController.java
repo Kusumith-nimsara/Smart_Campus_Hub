@@ -239,6 +239,48 @@ public class BookingController {
     }
 
     /**
+     * Cancel an approved booking (user can cancel own, admin can cancel any).
+     * 
+     * HTTP: DELETE /api/bookings/{id}
+     * Auth: Required (owner or admin)
+     * 
+     * Examples:
+     * DELETE /api/bookings/507f1f77bcf86cd799439011
+     * 
+     * Response: 200 OK with updated BookingResponseDTO
+     * {
+     *   "id": "507f1f77bcf86cd799439011",
+     *   "status": "CANCELLED",
+     *   "updatedAt": "2026-04-22T11:30:00",
+     *   ...other fields...
+     * }
+     * 
+     * Authorization:
+     * - User can only cancel their own approved bookings
+     * - Admin can cancel any approved booking
+     * 
+     * Errors:
+     * - 403 Forbidden: If user is not the owner and not admin
+     * - 400 Bad Request: If booking is not in APPROVED status
+     * - 404 Not Found: If booking doesn't exist
+     * 
+     * @param id the booking ID to cancel
+     * @param authentication the authenticated user
+     * @return the cancelled booking DTO with status 200
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<BookingResponseDTO> cancelBooking(
+            @PathVariable String id,
+            Authentication authentication) {
+        
+        Long userId = extractUserId(authentication);
+        boolean isAdmin = isAdmin(authentication);
+        
+        BookingResponseDTO booking = bookingService.cancelBooking(id, userId, isAdmin);
+        return ResponseEntity.ok(booking);
+    }
+
+    /**
      * Check if user has admin role.
      * 
      * @param authentication the Spring Security authentication object
