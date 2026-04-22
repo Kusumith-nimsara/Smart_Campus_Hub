@@ -318,28 +318,6 @@ export default function AdminDashboardPage() {
           </article>
         </section>
 
-        <section className="admin-panel features">
-          <h2>⚡ Features Overview</h2>
-          <div className="feature-grid">
-            <article className="feature-item resources">
-              <h4>📁 Resources</h4>
-              <p>Manage campus resources and labs</p>
-            </article>
-            <article className="feature-item bookings">
-              <h4>📅 Bookings</h4>
-              <p>Schedule facilities and approvals</p>
-            </article>
-            <article className="feature-item tickets">
-              <h4>🎫 Tickets</h4>
-              <p>Track support and maintenance issues</p>
-            </article>
-            <article className="feature-item notifications">
-              <h4>🔔 Notifications{unreadNotifCount > 0 ? ` (${unreadNotifCount})` : ''}</h4>
-              <p>Broadcast updates to campus users</p>
-            </article>
-          </div>
-        </section>
-
         <section className="admin-bottom-grid">
           <article className="admin-panel quick-actions">
             <h2>🚀 Quick Actions</h2>
@@ -347,7 +325,7 @@ export default function AdminDashboardPage() {
               <button type="button" onClick={() => navigate('/profile')}>Manage Profile</button>
               <button type="button">View Resources</button>
               <button type="button">Create Booking</button>
-              <button type="button">Open Tickets</button>
+              <button type="button" onClick={() => navigate('/tickets')}>Tickets</button>
             </div>
           </article>
 

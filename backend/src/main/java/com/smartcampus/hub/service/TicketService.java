@@ -308,4 +308,182 @@ public class TicketService {
     public long getOpenTicketCount(String userId) {
         return ticketRepository.countByCreatedByIdAndStatus(userId, TicketStatus.OPEN);
     }
+
+    // ==================== TECHNICIAN OPERATIONS ====================
+
+    /**
+     * Technician completes a ticket and marks it as RESOLVED
+     */
+    public TicketResponse technicianCompleteTicket(String ticketId, String userId, String resolutionNotes) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new IllegalArgumentException("Ticket not found"));
+
+        // Verify technician is assigned
+        if (!isTechnicianAssigned(ticket, userId)) {
+            throw new IllegalArgumentException("You are not assigned to this ticket");
+        }
+
+        ticket.setStatus(TicketStatus.RESOLVED);
+        ticket.setResolutionNotes(resolutionNotes);
+        Ticket updatedTicket = ticketRepository.save(ticket);
+
+        // Notify the admin and creator
+        try {
+            List<User> admins = userRepository.findByRole(Role.ADMIN);
+            for (User admin : admins) {
+                notificationService.createNotification(
+                        admin.getId(),
+                        "Ticket Completed",
+                        "Ticket \"" + ticket.getTitle() + "\" completed by " + ticket.getAssignedToUsername(),
+                        "TICKET_RESOLVED",
+                        ticket.getId(),
+                        "TICKET"
+                );
+            }
+            notificationService.notifyTicketResolved(ticket.getCreatedById(), ticket.getId(), ticket.getTitle());
+        } catch (Exception e) {
+            log.warn("Failed to send completion notification: {}", e.getMessage());
+        }
+
+        return new TicketResponse(updatedTicket);
+    }
+
+    /**
+     * Technician rejects a ticket with reason
+     */
+    public TicketResponse technicianRejectTicket(String ticketId, String userId, String rejectionReason) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new IllegalArgumentException("Ticket not found"));
+
+        // Verify technician is assigned
+        if (!isTechnicianAssigned(ticket, userId)) {
+            throw new IllegalArgumentException("You are not assigned to this ticket");
+        }
+
+        ticket.setStatus(TicketStatus.REJECTED);
+        ticket.setRejectionReason(rejectionReason);
+        ticket.setAssignedToId(null);
+        ticket.setAssignedToUsername(null);
+        Ticket updatedTicket = ticketRepository.save(ticket);
+
+        // Notify creator and admins
+        try {
+            notificationService.notifyTicketRejected(
+                    ticket.getCreatedById(), ticket.getId(), ticket.getTitle(), rejectionReason);
+            List<User> admins = userRepository.findByRole(Role.ADMIN);
+            for (User admin : admins) {
+                notificationService.createNotification(
+                        admin.getId(),
+                        "Ticket Rejected",
+                        "Ticket \"" + ticket.getTitle() + "\" rejected",
+                        "TICKET_REJECTED",
+                        ticket.getId(),
+                        "TICKET"
+                );
+            }
+        } catch (Exception e) {
+            log.warn("Failed to send rejection notification: {}", e.getMessage());
+        }
+
+        return new TicketResponse(updatedTicket);
+    }
+
+    // ==================== ADMIN OPERATIONS (APPROVAL) ====================
+
+    /**
+     * Admin approves a completed ticket and marks it as CLOSED
+     */
+    public TicketResponse adminApproveTicket(String ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new IllegalArgumentException("Ticket not found"));
+
+        if (ticket.getStatus() != TicketStatus.RESOLVED) {
+            throw new IllegalArgumentException("Only RESOLVED tickets can be approved");
+        }
+
+        ticket.setStatus(TicketStatus.CLOSED);
+        Ticket updatedTicket = ticketRepository.save(ticket);
+
+        // Notify creator and technician
+        try {
+            notificationService.notifyTicketUpdated(
+                    ticket.getCreatedById(), ticket.getId(), ticket.getTitle(),
+                    "CLOSED (approved by admin)");
+            if (ticket.getAssignedToId() != null) {
+                notificationService.notifyTicketUpdated(
+                        ticket.getAssignedToId(), ticket.getId(), ticket.getTitle(),
+                        "CLOSED (approved)");
+            }
+        } catch (Exception e) {
+            log.warn("Failed to send approval notification: {}", e.getMessage());
+        }
+
+        return new TicketResponse(updatedTicket);
+    }
+
+    /**
+     * Admin rejects a completed ticket, sending it back to IN_PROGRESS
+     */
+    public TicketResponse adminRejectCompletion(String ticketId, String rejectionReason) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new IllegalArgumentException("Ticket not found"));
+
+        if (ticket.getStatus() != TicketStatus.RESOLVED) {
+            throw new IllegalArgumentException("Only RESOLVED tickets can be rejected");
+        }
+
+        ticket.setStatus(TicketStatus.IN_PROGRESS);
+        ticket.setRejectionReason(rejectionReason);
+        Ticket updatedTicket = ticketRepository.save(ticket);
+
+        // Notify technician
+        try {
+            if (ticket.getAssignedToId() != null) {
+                notificationService.createNotification(
+                        ticket.getAssignedToId(),
+                        "Ticket Rejection",
+                        "Your completion for \"" + ticket.getTitle() + "\" was rejected: " + rejectionReason,
+                        "TICKET_NEEDS_REVISION",
+                        ticket.getId(),
+                        "TICKET"
+                );
+            }
+        } catch (Exception e) {
+            log.warn("Failed to send rejection notification: {}", e.getMessage());
+        }
+
+        return new TicketResponse(updatedTicket);
+    }
+
+    /**
+     * Get all open tickets (for admin dashboard)
+     */
+    public Page<TicketResponse> getOpenTickets(Pageable pageable) {
+        return ticketRepository.findByStatus(TicketStatus.OPEN, pageable)
+                .map(TicketResponse::new);
+    }
+
+    /**
+     * Get all in-progress tickets (for admin dashboard)
+     */
+    public Page<TicketResponse> getInProgressTickets(Pageable pageable) {
+        return ticketRepository.findByStatus(TicketStatus.IN_PROGRESS, pageable)
+                .map(TicketResponse::new);
+    }
+
+    /**
+     * Get all resolved tickets (pending admin approval)
+     */
+    public Page<TicketResponse> getResolvedTickets(Pageable pageable) {
+        return ticketRepository.findByStatus(TicketStatus.RESOLVED, pageable)
+                .map(TicketResponse::new);
+    }
+
+    /**
+     * Get all closed tickets (approved and finalized)
+     */
+    public Page<TicketResponse> getClosedTickets(Pageable pageable) {
+        return ticketRepository.findByStatus(TicketStatus.CLOSED, pageable)
+                .map(TicketResponse::new);
+    }
 }

@@ -1,36 +1,49 @@
-import { useEffect, useMemo, useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { clearAuthState } from '../../utils/api'
-import { showError, showLogoutAlert } from '../../utils/alerts'
-import './UserDashboardPage.css'
+import { useState, useEffect, useMemo, useRef } from "react"
+import { useNavigate } from "react-router-dom"
+import { clearAuthState } from "../../utils/api"
+import { showError, showLogoutAlert } from "../../utils/alerts"
+import "./TechnicianDashboardPage.css"
 
-export default function UserDashboardPage() {
+export default function TechnicianDashboardPage() {
   const navigate = useNavigate()
-  const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
-  const token = useMemo(() => localStorage.getItem('authToken') ?? '', [])
-  const isGoogleLogin = localStorage.getItem('authLoginType') === 'google'
-  const googleAvatarUrl = localStorage.getItem('authAvatarUrl') || ''
-  const googleEmail = localStorage.getItem('authEmail') || ''
+  const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080/api"
+  const token = useMemo(() => localStorage.getItem("authToken") ?? "", [])
+  const isGoogleLogin = localStorage.getItem("authLoginType") === "google"
+  const googleAvatarUrl = localStorage.getItem("authAvatarUrl") || ""
+  const googleEmail = localStorage.getItem("authEmail") || ""
 
   const [loading, setLoading] = useState(true)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
+  const accountMenuRef = useRef(null)
   const [profile, setProfile] = useState({
-    username: '',
-    email: '',
-    firstName: '',
-    lastName: '',
-    registrationNumber: '',
-    mobileNumber: '',
-    role: '',
-    userType: '',
+    username: "",
+    email: "",
+    firstName: "",
+    lastName: "",
+    registrationNumber: "",
+    mobileNumber: "",
+    role: "",
+    userType: "",
     suspended: false,
   })
   const [unreadCount, setUnreadCount] = useState(0)
-  const [currentUserId, setCurrentUserId] = useState('')
-  const [userTickets, setUserTickets] = useState([])
+  const [currentUserId, setCurrentUserId] = useState("")
+  const [assignedTickets, setAssignedTickets] = useState([])
   const [ticketsLoading, setTicketsLoading] = useState(false)
+
+  useEffect(() => {
+    function handleOutsideClick(event) {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(event.target)) {
+        setIsAccountMenuOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleOutsideClick)
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick)
+    }
+  }, [])
 
   useEffect(() => {
     async function loadProfile() {
@@ -48,27 +61,27 @@ export default function UserDashboardPage() {
 
         const data = await response.json()
         if (!response.ok) {
-          throw new Error(data?.message ?? 'Failed to load dashboard data.')
+          throw new Error(data?.message ?? "Failed to load dashboard data.")
         }
 
         setProfile({
-          username: data?.username ?? '',
-          email: data?.email ?? '',
-          firstName: data?.firstName ?? '',
-          lastName: data?.lastName ?? '',
-          registrationNumber: data?.registrationNumber ?? '',
-          mobileNumber: data?.mobileNumber ?? '',
-          role: data?.role ?? '',
-          userType: data?.userType ?? '',
+          username: data?.username ?? "",
+          email: data?.email ?? "",
+          firstName: data?.firstName ?? "",
+          lastName: data?.lastName ?? "",
+          registrationNumber: data?.registrationNumber ?? "",
+          mobileNumber: data?.mobileNumber ?? "",
+          role: data?.role ?? "",
+          userType: data?.userType ?? "",
           suspended: data?.suspended ?? false,
         })
         if (data?.id) setCurrentUserId(data.id)
-        if (typeof data?.role === 'string') {
-          localStorage.setItem('role', data.role.toUpperCase())
-          localStorage.setItem('authRole', data.role.toUpperCase())
+        if (typeof data?.role === "string") {
+          localStorage.setItem("role", data.role.toUpperCase())
+          localStorage.setItem("authRole", data.role.toUpperCase())
         }
-        if (typeof data?.approved === 'boolean') {
-          localStorage.setItem('authApproved', String(data.approved))
+        if (typeof data?.approved === "boolean") {
+          localStorage.setItem("authApproved", String(data.approved))
         }
       } catch {
         // Keep dashboard layout available even when profile fetch fails.
@@ -80,7 +93,6 @@ export default function UserDashboardPage() {
     loadProfile()
   }, [backendBaseUrl, token])
 
-  // Fetch unread notification count
   useEffect(() => {
     async function fetchUnreadCount() {
       if (!currentUserId || !token) return
@@ -93,26 +105,25 @@ export default function UserDashboardPage() {
           setUnreadCount(data?.count ?? 0)
         }
       } catch {
-        // Unread count failure is non-blocking
+        // Non-blocking
       }
     }
     fetchUnreadCount()
-    const interval = setInterval(fetchUnreadCount, 30000) // Poll every 30s
+    const interval = setInterval(fetchUnreadCount, 30000)
     return () => clearInterval(interval)
   }, [backendBaseUrl, token, currentUserId])
 
-  // Load user's created tickets
   useEffect(() => {
-    async function loadUserTickets() {
+    async function loadAssignedTickets() {
       if (!token) return
       setTicketsLoading(true)
       try {
-        const response = await fetch(`${backendBaseUrl}/tickets?page=0&size=5`, {
+        const response = await fetch(`${backendBaseUrl}/tickets/technician/assigned?page=0&size=5`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (response.ok) {
           const data = await response.json()
-          setUserTickets(data.content || [])
+          setAssignedTickets(data.content || [])
         }
       } catch {
         // Non-blocking
@@ -120,32 +131,32 @@ export default function UserDashboardPage() {
         setTicketsLoading(false)
       }
     }
-    loadUserTickets()
+    loadAssignedTickets()
   }, [backendBaseUrl, token])
 
   function handleLogout() {
     clearAuthState()
     setIsAccountMenuOpen(false)
     showLogoutAlert()
-    navigate('/', { replace: true })
+    navigate("/", { replace: true })
   }
 
-  const first = profile.firstName || profile.username || 'User'
-  const fullName = `${profile.firstName} ${profile.lastName}`.trim() || profile.username || 'Campus User'
-  const displayRole = profile.role || localStorage.getItem('authRole') || 'USER'
+  const first = profile.firstName || profile.username || "Technician"
+  const fullName = `${profile.firstName} ${profile.lastName}`.trim() || profile.username || "Technician User"
+  const displayRole = profile.role || localStorage.getItem("authRole") || "TECHNICIAN"
   const googleAvatarCandidate =
     googleAvatarUrl ||
-    (googleEmail ? `https://www.google.com/s2/photos/profile/${encodeURIComponent(googleEmail)}?sz=128` : '')
-  const displayUserType = profile.userType || 'STUDENT'
-  const accountStatus = profile.suspended ? 'SUSPENDED' : 'ACTIVE'
+    (googleEmail ? `https://www.google.com/s2/photos/profile/${encodeURIComponent(googleEmail)}?sz=128` : "")
+  const displayUserType = profile.userType || "TECHNICIAN"
+  const accountStatus = profile.suspended ? "SUSPENDED" : "ACTIVE"
   const today = new Date().toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   })
 
   return (
-    <main className={`user-dashboard-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
+    <main className={`user-dashboard-page ${!isSidebarOpen ? "sidebar-collapsed" : ""}`}>
       <aside className="user-sidebar" aria-hidden={!isSidebarOpen}>
         <div className="brand-mark">SC</div>
         <h2>Smart Campus</h2>
@@ -155,51 +166,49 @@ export default function UserDashboardPage() {
         <p className="sidebar-user-role">{displayRole}</p>
 
         <nav className="sidebar-menu" aria-label="Dashboard Menu">
-          <button type="button" className="active" onClick={() => navigate('/dashboard')}>📊 Dashboard</button>
-          <button type="button" onClick={() => navigate('/profile')}>👤 Profile</button>
-          <button type="button" onClick={() => navigate('/notifications')} style={{ position: 'relative' }}>
-            🔔 Notifications
+          <button type="button" className="active" onClick={() => navigate("/dashboard")}>?? Dashboard</button>
+          <button type="button" onClick={() => navigate("/profile")}>?? Profile</button>
+          <button type="button" onClick={() => navigate("/notifications")} style={{ position: "relative" }}>
+            ?? Notifications
             {unreadCount > 0 && (
               <span style={{
-                position: 'absolute',
-                top: '6px',
-                right: '10px',
-                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-                color: '#fff',
-                borderRadius: '10px',
-                padding: '1px 7px',
-                fontSize: '11px',
-                fontWeight: '700',
-                lineHeight: '16px',
-                minWidth: '18px',
-                textAlign: 'center',
-                boxShadow: '0 2px 6px rgba(239,68,68,0.4)',
-              }}>{unreadCount > 99 ? '99+' : unreadCount}</span>
+                position: "absolute",
+                top: "6px",
+                right: "10px",
+                background: "linear-gradient(135deg, #ef4444, #dc2626)",
+                color: "#fff",
+                borderRadius: "10px",
+                padding: "1px 7px",
+                fontSize: "11px",
+                fontWeight: "700",
+                lineHeight: "16px",
+                minWidth: "18px",
+                textAlign: "center",
+                boxShadow: "0 2px 6px rgba(239,68,68,0.4)",
+              }}>{unreadCount > 99 ? "99+" : unreadCount}</span>
             )}
           </button>
-          <button type="button" onClick={() => navigate('/catalogue')}>📚 Catalogue</button>
-          <button type="button" onClick={() => navigate('/tickets')}>🎫 Tickets</button>
-          <button type="button" onClick={() => navigate('/bookings')}>📅 Bookings</button>
+          <button type="button" onClick={() => navigate("/tickets")}>?? Tickets</button>
         </nav>
 
         <button type="button" className="sidebar-logout" onClick={handleLogout}>
-          ↪ Logout
+          ? Logout
         </button>
       </aside>
 
       <section className="user-content">
         <header className="user-topbar">
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: "flex", alignItems: "center" }}>
             <button 
               type="button" 
               className="sidebar-toggle-btn" 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               aria-label="Toggle Sidebar"
             >
-              ☰
+              ?
             </button>
             <div>
-              <h1>Welcome back, {first}! 👋</h1>
+              <h1>Welcome back, {first}! ??</h1>
               <p>{today}</p>
             </div>
           </div>
@@ -278,47 +287,47 @@ export default function UserDashboardPage() {
 
         <div className="dashboard-widgets">
           <article className="widget profile-summary">
-            <h2>📋 Your Profile</h2>
+            <h2>?? Technician Profile</h2>
             {loading ? (
               <p className="widget-note">Loading...</p>
             ) : (
               <div className="summary-grid">
-                <p><span>Email</span>{profile.email || '-'}</p>
+                <p><span>Email</span>{profile.email || "-"}</p>
                 <p><span>Full Name</span>{fullName}</p>
-                <p><span>Registration No</span>{profile.registrationNumber || '-'}</p>
-                <p><span>Mobile</span>{profile.mobileNumber || '-'}</p>
+                <p><span>Registration No</span>{profile.registrationNumber || "-"}</p>
+                <p><span>Mobile</span>{profile.mobileNumber || "-"}</p>
               </div>
             )}
-            <button type="button" className="link-btn" onClick={() => navigate('/profile')}>
-              Edit Profile →
+            <button type="button" className="link-btn" onClick={() => navigate("/profile")}>
+              Edit Profile ?
             </button>
           </article>
 
           <article className="widget notifications">
-            <h2>🔔 Notifications</h2>
+            <h2>?? Notifications</h2>
             <p className="widget-note">
               {unreadCount > 0
-                ? `You have ${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}`
-                : 'No new notifications'}
+                ? `You have ${unreadCount} unread notification${unreadCount !== 1 ? "s" : ""}`
+                : "No new notifications"}
             </p>
-            <button type="button" className="link-btn" onClick={() => navigate('/notifications')}>View All →</button>
+            <button type="button" className="link-btn" onClick={() => navigate("/notifications")}>View All ?</button>
           </article>
 
           <article className="widget quick-links">
-            <h2>⚡ Quick Links</h2>
-            <button type="button" onClick={() => navigate('/profile')}>👤 Edit Profile</button>
-            <button type="button" onClick={() => navigate('/')}>🏠 Landing Page</button>
+            <h2>? Quick Links</h2>
+            <button type="button" onClick={() => navigate("/tickets")}>?? Go to Tickets</button>
+            <button type="button" onClick={() => navigate("/profile")}>?? Edit Profile</button>
           </article>
 
           <article className="widget tickets-summary">
-            <h2>🎫 Your Tickets</h2>
+            <h2>?? Your Assigned Tickets</h2>
             {ticketsLoading ? (
               <p className="widget-note">Loading tickets...</p>
-            ) : userTickets.length === 0 ? (
-              <p className="widget-note">No tickets yet</p>
+            ) : assignedTickets.length === 0 ? (
+              <p className="widget-note">No tickets assigned to you</p>
             ) : (
               <div className="tickets-list">
-                {userTickets.map((ticket) => (
+                {assignedTickets.map((ticket) => (
                   <div key={ticket.id} className="ticket-item">
                     <div className="ticket-info">
                       <p className="ticket-title">{ticket.title}</p>
@@ -329,13 +338,13 @@ export default function UserDashboardPage() {
                       className="ticket-detail-link"
                       onClick={() => navigate(`/ticket-detail/${ticket.id}`)}
                     >
-                      View →
+                      View ?
                     </button>
                   </div>
                 ))}
               </div>
             )}
-            <button type="button" className="link-btn" onClick={() => navigate('/tickets')}>View All Tickets →</button>
+            <button type="button" className="link-btn" onClick={() => navigate("/tickets")}>View All Tickets ?</button>
           </article>
         </div>
       </section>
