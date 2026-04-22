@@ -155,6 +155,124 @@ public class BookingController {
     }
 
     /**
+     * Approve a pending booking (admin only).
+     * 
+     * HTTP: PUT /api/bookings/{id}/approve
+     * Auth: Required (admin only)
+     * 
+     * Query Parameter:
+     * - reason: optional, approval reason
+     * 
+     * Examples:
+     * PUT /api/bookings/507f1f77bcf86cd799439011/approve
+     * PUT /api/bookings/507f1f77bcf86cd799439011/approve?reason=Resource%20is%20available
+     * 
+     * Response: 200 OK with updated BookingResponseDTO
+     * {
+     *   "id": "507f1f77bcf86cd799439011",
+     *   "status": "APPROVED",
+     *   "approvalReason": "Resource is available",
+     *   "approvedBy": 2,
+     *   "updatedAt": "2026-04-22T11:00:00",
+     *   ...other fields...
+     * }
+     * 
+     * @param id the booking ID to approve
+     * @param reason the approval reason (optional)
+     * @param authentication the authenticated user (must be admin)
+     * @return the approved booking DTO with status 200
+     */
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<BookingResponseDTO> approveBooking(
+            @PathVariable String id,
+            @RequestParam(required = false) String reason,
+            Authentication authentication) {
+        
+        // Verify admin access
+        verifyAdminAccess(authentication);
+        
+        Long adminId = extractUserId(authentication);
+        BookingResponseDTO booking = bookingService.approveBooking(id, adminId, reason);
+        return ResponseEntity.ok(booking);
+    }
+
+    /**
+     * Reject a pending booking (admin only).
+     * 
+     * HTTP: PUT /api/bookings/{id}/reject
+     * Auth: Required (admin only)
+     * 
+     * Query Parameter:
+     * - reason: optional, rejection reason
+     * 
+     * Examples:
+     * PUT /api/bookings/507f1f77bcf86cd799439011/reject
+     * PUT /api/bookings/507f1f77bcf86cd799439011/reject?reason=Resource%20is%20unavailable
+     * 
+     * Response: 200 OK with updated BookingResponseDTO
+     * {
+     *   "id": "507f1f77bcf86cd799439011",
+     *   "status": "REJECTED",
+     *   "rejectionReason": "Resource is unavailable",
+     *   "rejectedBy": 2,
+     *   "updatedAt": "2026-04-22T11:00:00",
+     *   ...other fields...
+     * }
+     * 
+     * @param id the booking ID to reject
+     * @param reason the rejection reason (optional)
+     * @param authentication the authenticated user (must be admin)
+     * @return the rejected booking DTO with status 200
+     */
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<BookingResponseDTO> rejectBooking(
+            @PathVariable String id,
+            @RequestParam(required = false) String reason,
+            Authentication authentication) {
+        
+        // Verify admin access
+        verifyAdminAccess(authentication);
+        
+        Long adminId = extractUserId(authentication);
+        BookingResponseDTO booking = bookingService.rejectBooking(id, adminId, reason);
+        return ResponseEntity.ok(booking);
+    }
+
+    /**
+     * Check if user has admin role.
+     * 
+     * @param authentication the Spring Security authentication object
+     * @return true if user has ADMIN or ROLE_ADMIN authority
+     */
+    private boolean isAdmin(Authentication authentication) {
+        if (authentication == null) {
+            return false;
+        }
+        
+        // Check for both ADMIN and ROLE_ADMIN roles
+        try {
+            return authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ADMIN") || 
+                               auth.getAuthority().equals("ROLE_ADMIN"));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Verify that user has admin access.
+     * Throws RuntimeException if user is not admin.
+     * 
+     * @param authentication the Spring Security authentication object
+     * @throws RuntimeException if user is not admin
+     */
+    private void verifyAdminAccess(Authentication authentication) {
+        if (!isAdmin(authentication)) {
+            throw new RuntimeException("Admin access required");
+        }
+    }
+
+    /**
      * Extract user ID from authentication token.
      * 
      * @param authentication the Spring Security authentication object
