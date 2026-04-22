@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
  */
 public class BookingRequestDTO {
     
-    @NotNull(message = "Resource ID is required")
-    private Long resourceId;
+    @NotBlank(message = "Resource ID is required")
+    private String resourceId;
     
     @NotNull(message = "Start time is required")
     private LocalDateTime startTime;
@@ -34,7 +34,7 @@ public class BookingRequestDTO {
     public BookingRequestDTO() {
     }
     
-    public BookingRequestDTO(Long resourceId, LocalDateTime startTime, LocalDateTime endTime,
+    public BookingRequestDTO(String resourceId, LocalDateTime startTime, LocalDateTime endTime,
                             String purpose, Integer attendees, String contactDetails) {
         this.resourceId = resourceId;
         this.startTime = startTime;
@@ -45,11 +45,11 @@ public class BookingRequestDTO {
     }
     
     // ===== Getters and Setters =====
-    public Long getResourceId() {
+    public String getResourceId() {
         return resourceId;
     }
     
-    public void setResourceId(Long resourceId) {
+    public void setResourceId(String resourceId) {
         this.resourceId = resourceId;
     }
     

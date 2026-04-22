@@ -17,11 +17,11 @@ public class Booking {
     @Id
     private String id;
     
-    @NotNull(message = "User ID is required")
-    private Long userId;
+    @NotBlank(message = "User ID is required")
+    private String userId;
     
-    @NotNull(message = "Resource ID is required")
-    private Long resourceId;
+    @NotBlank(message = "Resource ID is required")
+    private String resourceId;
     
     @NotNull(message = "Start time is required")
     @Future(message = "Start time must be in the future")
@@ -55,15 +55,15 @@ public class Booking {
     
     private LocalDateTime updatedAt = LocalDateTime.now();
     
-    private Long approvedBy;  // Admin ID who approved
+    private String approvedBy;  // Admin ID (username) who approved
     
-    private Long rejectedBy;  // Admin ID who rejected
+    private String rejectedBy;  // Admin ID (username) who rejected
     
     // ===== Constructors =====
     public Booking() {
     }
     
-    public Booking(Long userId, Long resourceId, LocalDateTime startTime, 
+    public Booking(String userId, String resourceId, LocalDateTime startTime, 
                    LocalDateTime endTime, String purpose, Integer attendees, String contactDetails) {
         this.userId = userId;
         this.resourceId = resourceId;
@@ -86,19 +86,19 @@ public class Booking {
         this.id = id;
     }
     
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
     
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
     
-    public Long getResourceId() {
+    public String getResourceId() {
         return resourceId;
     }
     
-    public void setResourceId(Long resourceId) {
+    public void setResourceId(String resourceId) {
         this.resourceId = resourceId;
     }
     
@@ -183,19 +183,19 @@ public class Booking {
         this.updatedAt = updatedAt;
     }
     
-    public Long getApprovedBy() {
+    public String getApprovedBy() {
         return approvedBy;
     }
     
-    public void setApprovedBy(Long approvedBy) {
+    public void setApprovedBy(String approvedBy) {
         this.approvedBy = approvedBy;
     }
     
-    public Long getRejectedBy() {
+    public String getRejectedBy() {
         return rejectedBy;
     }
     
-    public void setRejectedBy(Long rejectedBy) {
+    public void setRejectedBy(String rejectedBy) {
         this.rejectedBy = rejectedBy;
     }
     

@@ -10,8 +10,12 @@ import java.time.LocalDateTime;
 public class BookingResponseDTO {
     
     private String id;
-    private Long userId;
-    private Long resourceId;
+    private String userId;
+    private String resourceId;
+    private String resourceName;
+    private String resourceType;
+    private String resourceLocation;
+    private Integer resourceCapacity;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String purpose;
@@ -22,14 +26,14 @@ public class BookingResponseDTO {
     private String rejectionReason;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Long approvedBy;
-    private Long rejectedBy;
+    private String approvedBy;
+    private String rejectedBy;
     
     // ===== Constructors =====
     public BookingResponseDTO() {
     }
     
-    public BookingResponseDTO(String id, Long userId, Long resourceId, LocalDateTime startTime,
+    public BookingResponseDTO(String id, String userId, String resourceId, LocalDateTime startTime,
                              LocalDateTime endTime, String purpose, Integer attendees,
                              String contactDetails, BookingStatus status, LocalDateTime createdAt) {
         this.id = id;
@@ -53,22 +57,54 @@ public class BookingResponseDTO {
         this.id = id;
     }
     
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
     
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
     
-    public Long getResourceId() {
+    public String getResourceId() {
         return resourceId;
     }
     
-    public void setResourceId(Long resourceId) {
+    public void setResourceId(String resourceId) {
         this.resourceId = resourceId;
     }
     
+    public String getResourceName() {
+        return resourceName;
+    }
+    
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
+    }
+    
+    public String getResourceType() {
+        return resourceType;
+    }
+    
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
+    }
+    
+    public String getResourceLocation() {
+        return resourceLocation;
+    }
+    
+    public void setResourceLocation(String resourceLocation) {
+        this.resourceLocation = resourceLocation;
+    }
+    
+    public Integer getResourceCapacity() {
+        return resourceCapacity;
+    }
+    
+    public void setResourceCapacity(Integer resourceCapacity) {
+        this.resourceCapacity = resourceCapacity;
+    }
+
     public LocalDateTime getStartTime() {
         return startTime;
     }
@@ -149,19 +185,19 @@ public class BookingResponseDTO {
         this.updatedAt = updatedAt;
     }
     
-    public Long getApprovedBy() {
+    public String getApprovedBy() {
         return approvedBy;
     }
     
-    public void setApprovedBy(Long approvedBy) {
+    public void setApprovedBy(String approvedBy) {
         this.approvedBy = approvedBy;
     }
     
-    public Long getRejectedBy() {
+    public String getRejectedBy() {
         return rejectedBy;
     }
     
-    public void setRejectedBy(Long rejectedBy) {
+    public void setRejectedBy(String rejectedBy) {
         this.rejectedBy = rejectedBy;
     }
     

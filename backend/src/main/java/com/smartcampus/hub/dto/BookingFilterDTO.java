@@ -12,8 +12,8 @@ public class BookingFilterDTO {
     private BookingStatus status;
     private LocalDateTime fromDate;
     private LocalDateTime toDate;
-    private Long resourceId;
-    private Long userId;
+    private String resourceId;
+    private String userId;
     private Integer page = 0;
     private Integer pageSize = 20;
     
@@ -22,7 +22,7 @@ public class BookingFilterDTO {
     }
     
     public BookingFilterDTO(BookingStatus status, LocalDateTime fromDate, 
-                           LocalDateTime toDate, Long resourceId) {
+                           LocalDateTime toDate, String resourceId) {
         this.status = status;
         this.fromDate = fromDate;
         this.toDate = toDate;
@@ -54,19 +54,19 @@ public class BookingFilterDTO {
         this.toDate = toDate;
     }
     
-    public Long getResourceId() {
+    public String getResourceId() {
         return resourceId;
     }
     
-    public void setResourceId(Long resourceId) {
+    public void setResourceId(String resourceId) {
         this.resourceId = resourceId;
     }
     
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
     
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
     

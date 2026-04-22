@@ -4,7 +4,7 @@
  * clear auth state and redirect to the login page.
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8081/api'
 
 function getAuthHeaders() {
   const token = localStorage.getItem('token') || localStorage.getItem('authToken')

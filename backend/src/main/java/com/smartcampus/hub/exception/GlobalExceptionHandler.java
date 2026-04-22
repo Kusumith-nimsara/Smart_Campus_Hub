@@ -41,6 +41,21 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handle ResourceNotFoundException (404 Not Found).
+     */
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleResourceNotFound(ResourceNotFoundException ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("status", HttpStatus.NOT_FOUND.value());
+        error.put("error", "Resource Not Found");
+        error.put("message", ex.getMessage());
+        error.put("resourceId", ex.getResourceId());
+        error.put("timestamp", LocalDateTime.now());
+        log.warn("Resource not found: {}", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    /**
      * Handle ConflictException (409 Conflict).
      */
     @ExceptionHandler(ConflictException.class)
