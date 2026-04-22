@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * REST Controller for booking management.
@@ -38,7 +39,7 @@ public class BookingController {
      * Create a new booking request.
      * 
      * HTTP: POST /api/bookings
-     * Auth: Required (any authenticated user)
+     * Auth: Required (USER role)
      * 
      * Request Body:
      * {
@@ -65,6 +66,7 @@ public class BookingController {
      * @return the created booking DTO with status 201
      */
     @PostMapping
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BookingResponseDTO> createBooking(
             @RequestBody BookingRequestDTO request,
             Authentication authentication) {
@@ -78,7 +80,7 @@ public class BookingController {
      * Get a specific booking by ID.
      * 
      * HTTP: GET /api/bookings/{id}
-     * Auth: Required (any authenticated user - can view any booking)
+     * Auth: Required (USER role)
      * 
      * Example:
      * GET /api/bookings/507f1f77bcf86cd799439011
@@ -102,6 +104,7 @@ public class BookingController {
      * @return the booking DTO with status 200
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BookingResponseDTO> getBooking(@PathVariable String id) {
         BookingResponseDTO booking = bookingService.getBooking(id);
         return ResponseEntity.ok(booking);
@@ -111,7 +114,7 @@ public class BookingController {
      * Get all bookings for the current authenticated user with optional filters.
      * 
      * HTTP: GET /api/bookings/user/me?status=PENDING&page=0&pageSize=10
-     * Auth: Required (any authenticated user)
+     * Auth: Required (USER role)
      * 
      * Query Parameters:
      * - status: optional, filter by booking status (PENDING, APPROVED, REJECTED, CANCELLED)
@@ -147,6 +150,7 @@ public class BookingController {
      * @return paginated list of user's bookings with status 200
      */
     @GetMapping("/user/me")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Page<BookingResponseDTO>> getUserBookings(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Integer page,
@@ -169,7 +173,7 @@ public class BookingController {
      * Approve a pending booking (admin only).
      * 
      * HTTP: PUT /api/bookings/{id}/approve
-     * Auth: Required (admin only)
+     * Auth: Required (ADMIN role)
      * 
      * Query Parameter:
      * - reason: optional, approval reason
@@ -194,6 +198,7 @@ public class BookingController {
      * @return the approved booking DTO with status 200
      */
     @PutMapping("/{id}/approve")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BookingResponseDTO> approveBooking(
             @PathVariable String id,
             @RequestParam(required = false) String reason,
@@ -211,7 +216,7 @@ public class BookingController {
      * Reject a pending booking (admin only).
      * 
      * HTTP: PUT /api/bookings/{id}/reject
-     * Auth: Required (admin only)
+     * Auth: Required (ADMIN role)
      * 
      * Query Parameter:
      * - reason: optional, rejection reason
@@ -236,6 +241,7 @@ public class BookingController {
      * @return the rejected booking DTO with status 200
      */
     @PutMapping("/{id}/reject")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BookingResponseDTO> rejectBooking(
             @PathVariable String id,
             @RequestParam(required = false) String reason,
@@ -253,7 +259,7 @@ public class BookingController {
      * Cancel an approved booking (user can cancel own, admin can cancel any).
      * 
      * HTTP: DELETE /api/bookings/{id}
-     * Auth: Required (owner or admin)
+     * Auth: Required (USER role for own, ADMIN for any)
      * 
      * Examples:
      * DELETE /api/bookings/507f1f77bcf86cd799439011
@@ -280,6 +286,7 @@ public class BookingController {
      * @return the cancelled booking DTO with status 200
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<BookingResponseDTO> cancelBooking(
             @PathVariable String id,
             Authentication authentication) {
@@ -295,7 +302,7 @@ public class BookingController {
      * Check if a time slot is available for a resource (conflict checking).
      * 
      * HTTP: GET /api/bookings/conflicts
-     * Auth: Required (any authenticated user)
+     * Auth: Required (USER role)
      * 
      * Query Parameters (all required):
      * - resourceId: the resource ID to check
@@ -336,6 +343,7 @@ public class BookingController {
      * @return conflict check response with status 200
      */
     @GetMapping("/conflicts")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Map<String, Object>> checkConflicts(
             @RequestParam Long resourceId,
             @RequestParam String startTime,
