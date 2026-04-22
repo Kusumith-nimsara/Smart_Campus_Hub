@@ -321,21 +321,77 @@
 }
 
 .stat-card {
+  position: relative;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  padding: 24px;
+  padding: 24px 24px 24px 28px;
   background: #ffffff;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  overflow: hidden;
 }
 
 .stat-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.1);
+}
+
+/* Left accent bar */
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+}
+
+.stat-card.account::before { background: #4f46e5; }
+.stat-card.role-card::before { background: #8b5cf6; }
+.stat-card.status::before { background: #10b981; }
+
+/* Icon container */
+.stat-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover .stat-card-icon {
+  transform: scale(1.08);
+}
+
+.stat-card-icon.account-icon {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.stat-card-icon.role-icon {
+  background: #f5f3ff;
+  color: #8b5cf6;
+}
+
+.stat-card-icon.status-icon {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+/* Card body */
+.stat-card-body {
+  flex: 1;
+  min-width: 0;
 }
 
 .stat-card h3 {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   color: #64748b;
   font-size: 12px;
   text-transform: uppercase;
@@ -346,20 +402,51 @@
 .stat-card .primary {
   margin: 0 0 4px;
   color: #0f172a;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .stat-card .secondary {
   margin: 0;
   color: #64748b;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.account { border-top: 4px solid #4f46e5; }
-.role-card { border-top: 4px solid #8b5cf6; }
-.status { border-top: 4px solid #10b981; }
+/* Decorative ring */
+.stat-card-ring {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.stat-card.account .stat-card-ring {
+  border: 2px solid rgba(79, 70, 229, 0.08);
+}
+
+.stat-card.role-card .stat-card-ring {
+  border: 2px solid rgba(139, 92, 246, 0.08);
+}
+
+.stat-card.status .stat-card-ring {
+  border: 2px solid rgba(16, 185, 129, 0.08);
+}
+
+/* Remove old top border approach */
+.account { border-top: none; }
+.role-card { border-top: none; }
+.status { border-top: none; }
 
 /* ── Panels ── */
 .admin-panel {

@@ -300,19 +300,45 @@ export default function AdminDashboardPage() {
 
         <section className="admin-stats-grid">
           <article className="stat-card account">
-            <h3>Your Account</h3>
-            <p className="primary">{accountName}</p>
-            <p className="secondary">{accountEmail}</p>
+            <div className="stat-card-icon account-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <div className="stat-card-body">
+              <h3>Your Account</h3>
+              <p className="primary">{accountName}</p>
+              <p className="secondary">{accountEmail}</p>
+            </div>
+            <div className="stat-card-ring" />
           </article>
           <article className="stat-card role-card">
-            <h3>Your Role</h3>
-            <p className="primary">{accountRole}</p>
-            <p className="secondary">{userType}</p>
+            <div className="stat-card-icon role-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+            </div>
+            <div className="stat-card-body">
+              <h3>Your Role</h3>
+              <p className="primary">{accountRole}</p>
+              <p className="secondary">{userType}</p>
+            </div>
+            <div className="stat-card-ring" />
           </article>
           <article className="stat-card status">
-            <h3>Status</h3>
-            <p className="primary">{accountActive ? 'Active' : 'Suspended'}</p>
-            <p className="secondary">{accountActive ? 'Secure Session' : 'Access Limited'}</p>
+            <div className="stat-card-icon status-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+            </div>
+            <div className="stat-card-body">
+              <h3>Status</h3>
+              <p className="primary">{accountActive ? 'Active' : 'Suspended'}</p>
+              <p className="secondary">{accountActive ? 'Secure Session' : 'Access Limited'}</p>
+            </div>
+            <div className="stat-card-ring" />
           </article>
         </section>
 
