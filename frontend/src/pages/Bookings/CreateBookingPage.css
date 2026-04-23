@@ -1,0 +1,67 @@
+/* ═══════════════════════════════════════════════════════
+   CREATE BOOKING PAGE
+   ═══════════════════════════════════════════════════════ */
+
+.create-booking-page {
+  padding: 32px;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.create-booking-container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.create-booking-header {
+  margin-bottom: 28px;
+}
+
+.create-booking-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
+}
+
+.create-booking-back:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.create-booking-header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.create-booking-subtitle {
+  margin: 0;
+  font-size: 15px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.create-booking-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .create-booking-page { padding: 16px; }
+  .create-booking-card { padding: 20px; border-radius: 16px; }
+}
