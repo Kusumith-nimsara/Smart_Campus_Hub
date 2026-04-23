@@ -55,7 +55,7 @@ public class ResourceService {
     }
 
     public ResourceResponse getResourceById(String id) {
-        Resource resource = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+        Resource resource = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id: " + id));
         return mapToResponse(resource);
     }
 
@@ -87,7 +87,7 @@ public class ResourceService {
     }
 
     public ResourceResponse updateResource(String id, ResourceRequest request) {
-        Resource existing = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+        Resource existing = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id: " + id));
 
         // if name or location changed, check duplicate
         if (!existing.getName().equals(request.getName()) || !existing.getLocation().equals(request.getLocation())) {
@@ -119,14 +119,14 @@ public class ResourceService {
     }
 
     public ResourceResponse patchResourceStatus(String id, ResourceStatus newStatus) {
-        Resource existing = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+        Resource existing = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id: " + id));
         existing.setStatus(newStatus);
         Resource saved = repository.save(existing);
         return mapToResponse(saved);
     }
 
     public void deleteResource(String id) {
-        Resource existing = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+        Resource existing = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Resource not found with id: " + id));
         repository.delete(existing);
     }
 

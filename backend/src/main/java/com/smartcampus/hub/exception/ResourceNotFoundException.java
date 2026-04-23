@@ -17,11 +17,6 @@ public class ResourceNotFoundException extends RuntimeException {
         super(message, cause);
     }
 
-    // Compatibility constructor used by ResourceService(id)
-    public ResourceNotFoundException(String id) {
-        super("Resource not found with id: " + id);
-    }
-
     public Long getResourceId() {
         return resourceId;
     }
