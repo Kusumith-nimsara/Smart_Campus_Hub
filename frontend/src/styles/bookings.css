@@ -1,0 +1,214 @@
+/* ═══════════════════════════════════════════════════════
+   BOOKINGS — GLOBAL STYLES & SHARED TOKENS
+   Imported by components that need shared booking styling
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Status Badge Colors (shared across all booking views) ── */
+.booking-status-pending {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.booking-status-approved {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.booking-status-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.booking-status-cancelled {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+/* ── Inline Status Dot ── */
+.booking-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.booking-status-dot.dot-pending { background: #f59e0b; }
+.booking-status-dot.dot-approved { background: #10b981; }
+.booking-status-dot.dot-rejected { background: #ef4444; }
+.booking-status-dot.dot-cancelled { background: #94a3b8; }
+
+/* ── Toast-like notification overlay ── */
+.booking-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2000;
+  padding: 14px 22px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  animation: toast-slide-in 0.3s ease, toast-fade-out 0.3s ease 2.7s forwards;
+  max-width: 400px;
+}
+
+.booking-toast.toast-success {
+  background: linear-gradient(135deg, #10b981, #34d399);
+}
+
+.booking-toast.toast-error {
+  background: linear-gradient(135deg, #ef4444, #f97316);
+}
+
+.booking-toast.toast-info {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; transform: translateY(-10px); }
+}
+
+/* ── Section Dividers ── */
+.booking-section-divider {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 24px 0;
+}
+
+/* ── Shared card hover effect ── */
+.booking-hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.booking-hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Shared button styles ── */
+.booking-btn-primary {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.booking-btn-primary:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+  transform: translateY(-1px);
+}
+
+.booking-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.booking-btn-secondary {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.booking-btn-secondary:hover:not(:disabled) {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.booking-btn-danger {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  background: #ef4444;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.booking-btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.booking-btn-success {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #10b981, #34d399);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.booking-btn-success:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669, #10b981);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* ── Skeleton Loading ── */
+.booking-skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.booking-skeleton-card {
+  height: 200px;
+  border-radius: 16px;
+}
+
+.booking-skeleton-line {
+  height: 14px;
+  margin-bottom: 8px;
+}
+
+.booking-skeleton-line.short { width: 60%; }
+.booking-skeleton-line.medium { width: 80%; }
+.booking-skeleton-line.full { width: 100%; }
+
+/* ── Responsive Utilities ── */
+@media (max-width: 768px) {
+  .booking-hide-mobile { display: none !important; }
+}
+
+@media (min-width: 769px) {
+  .booking-hide-desktop { display: none !important; }
+}
