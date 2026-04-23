@@ -84,37 +84,103 @@ export default function ResourceFormModal({ open, onClose, initialData = null, o
 		<div className="modal-overlay">
 			<div className="modal-box">
 				<div className="modal-header">
-					<h3>{initialData ? 'Edit Resource' : 'Create Resource'}</h3>
-					<button onClick={onClose}>✕</button>
+					<div className="modal-header-content">
+						<h3 className="modal-title">{initialData ? 'Edit Resource' : 'Create Resource'}</h3>
+					</div>
+					<button className="modal-close-btn" onClick={onClose} type="button" aria-label="Close modal">
+						✕
+					</button>
 				</div>
-				<form className="modal-body" onSubmit={handleSubmit}>
+				<form className="modal-body modal-form" onSubmit={handleSubmit}>
 					{error && <div className="form-error">{error}</div>}
 
-					<div style={{ display: 'grid', gap: '0.5rem' }}>
-						<input placeholder="Name" value={form.name} onChange={(e) => update('name', e.target.value)} />
-						<select value={form.type} onChange={(e) => update('type', e.target.value)}>
-							<option value="LECTURE_HALL">Lecture Hall</option>
-							<option value="LAB">Lab</option>
-							<option value="MEETING_ROOM">Meeting Room</option>
-							<option value="EQUIPMENT">Equipment</option>
-						</select>
-						<input placeholder="Capacity" type="number" value={form.capacity} onChange={(e) => update('capacity', e.target.value)} />
-						<input placeholder="Location" value={form.location} onChange={(e) => update('location', e.target.value)} />
-						<input placeholder="Image URL" value={form.imageUrl} onChange={(e) => update('imageUrl', e.target.value)} />
-						<textarea placeholder="Description" value={form.description} onChange={(e) => update('description', e.target.value)} />
+					{/* Name - Full Width */}
+					<div className="form-group form-group-full">
+						<label htmlFor="name">Name *</label>
+						<input 
+							id="name"
+							type="text"
+							placeholder="Enter resource name"
+							value={form.name} 
+							onChange={(e) => update('name', e.target.value)} 
+						/>
+					</div>
 
-						<select value={form.status} onChange={(e) => update('status', e.target.value)}>
-							<option value="ACTIVE">Active</option>
-							<option value="OUT_OF_SERVICE">Out Of Service</option>
-							<option value="UNDER_MAINTENANCE">Under Maintenance</option>
-						</select>
+					{/* Type & Status - 2 Columns */}
+					<div className="form-row">
+						<div className="form-group">
+							<label htmlFor="type">Type *</label>
+							<select id="type" value={form.type} onChange={(e) => update('type', e.target.value)}>
+								<option value="LECTURE_HALL">Lecture Hall</option>
+								<option value="LAB">Lab</option>
+								<option value="MEETING_ROOM">Meeting Room</option>
+								<option value="EQUIPMENT">Equipment</option>
+							</select>
+						</div>
+						<div className="form-group">
+							<label htmlFor="status">Status *</label>
+							<select id="status" value={form.status} onChange={(e) => update('status', e.target.value)}>
+								<option value="ACTIVE">Active</option>
+								<option value="OUT_OF_SERVICE">Out of Service</option>
+								<option value="UNDER_MAINTENANCE">Under Maintenance</option>
+							</select>
+						</div>
+					</div>
+
+					{/* Capacity & Location - 2 Columns */}
+					<div className="form-row">
+						<div className="form-group">
+							<label htmlFor="capacity">Capacity</label>
+							<input 
+								id="capacity"
+								type="number"
+								placeholder="Enter capacity"
+								min="0"
+								value={form.capacity} 
+								onChange={(e) => update('capacity', e.target.value)} 
+							/>
+						</div>
+						<div className="form-group">
+							<label htmlFor="location">Location *</label>
+							<input 
+								id="location"
+								type="text"
+								placeholder="Enter location"
+								value={form.location} 
+								onChange={(e) => update('location', e.target.value)} 
+							/>
+						</div>
+					</div>
+
+					{/* Image URL - Full Width */}
+					<div className="form-group form-group-full">
+						<label htmlFor="imageUrl">Image URL</label>
+						<input 
+							id="imageUrl"
+							type="url"
+							placeholder="https://example.com/image.jpg"
+							value={form.imageUrl} 
+							onChange={(e) => update('imageUrl', e.target.value)} 
+						/>
+					</div>
+
+					{/* Description - Full Width */}
+					<div className="form-group form-group-full">
+						<label htmlFor="description">Description</label>
+						<textarea 
+							id="description"
+							placeholder="Enter resource description"
+							rows="4"
+							value={form.description} 
+							onChange={(e) => update('description', e.target.value)} 
+						/>
 					</div>
 
 					<div className="modal-footer">
-						<button type="button" onClick={onClose} disabled={saving}>
+						<button type="button" className="btn-cancel" onClick={onClose} disabled={saving}>
 							Cancel
 						</button>
-						<button type="submit" disabled={saving} className="btn-primary">
+						<button type="submit" className="btn-save" disabled={saving}>
 							{saving ? 'Saving...' : 'Save'}
 						</button>
 					</div>
