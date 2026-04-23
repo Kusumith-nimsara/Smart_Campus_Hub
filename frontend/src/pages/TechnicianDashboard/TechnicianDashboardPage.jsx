@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { clearAuthState } from "../../utils/api"
 import { showError, showLogoutAlert } from "../../utils/alerts"
+import { useSidebar } from "../../contexts/SidebarContext"
 import "./TechnicianDashboardPage.css"
 
 export default function TechnicianDashboardPage() {
@@ -13,7 +14,7 @@ export default function TechnicianDashboardPage() {
   const googleEmail = localStorage.getItem("authEmail") || ""
 
   const [loading, setLoading] = useState(true)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const { isOpen, toggle } = useSidebar()
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const accountMenuRef = useRef(null)
@@ -156,53 +157,13 @@ export default function TechnicianDashboardPage() {
   })
 
   return (
-    <main className={`user-dashboard-page ${!isSidebarOpen ? "sidebar-collapsed" : ""}`}>
-      <aside className="user-sidebar" aria-hidden={!isSidebarOpen}>
-        <div className="brand-mark">SC</div>
-        <h2>Smart Campus</h2>
-
-        <p className="sidebar-user-label">Logged in as</p>
-        <p className="sidebar-user-name">{fullName}</p>
-        <p className="sidebar-user-role">{displayRole}</p>
-
-        <nav className="sidebar-menu" aria-label="Dashboard Menu">
-          <button type="button" className="active" onClick={() => navigate("/dashboard")}>?? Dashboard</button>
-          <button type="button" onClick={() => navigate("/profile")}>?? Profile</button>
-          <button type="button" onClick={() => navigate("/notifications")} style={{ position: "relative" }}>
-            ?? Notifications
-            {unreadCount > 0 && (
-              <span style={{
-                position: "absolute",
-                top: "6px",
-                right: "10px",
-                background: "linear-gradient(135deg, #ef4444, #dc2626)",
-                color: "#fff",
-                borderRadius: "10px",
-                padding: "1px 7px",
-                fontSize: "11px",
-                fontWeight: "700",
-                lineHeight: "16px",
-                minWidth: "18px",
-                textAlign: "center",
-                boxShadow: "0 2px 6px rgba(239,68,68,0.4)",
-              }}>{unreadCount > 99 ? "99+" : unreadCount}</span>
-            )}
-          </button>
-          <button type="button" onClick={() => navigate("/tickets")}>?? Tickets</button>
-        </nav>
-
-        <button type="button" className="sidebar-logout" onClick={handleLogout}>
-          ? Logout
-        </button>
-      </aside>
-
-      <section className="user-content">
+    <section className="user-content">
         <header className="user-topbar">
           <div style={{ display: "flex", alignItems: "center" }}>
             <button 
               type="button" 
               className="sidebar-toggle-btn" 
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              onClick={toggle}
               aria-label="Toggle Sidebar"
             >
               ?
@@ -347,7 +308,6 @@ export default function TechnicianDashboardPage() {
             <button type="button" className="link-btn" onClick={() => navigate("/tickets")}>View All Tickets ?</button>
           </article>
         </div>
-      </section>
-    </main>
+    </section>
   )
 }

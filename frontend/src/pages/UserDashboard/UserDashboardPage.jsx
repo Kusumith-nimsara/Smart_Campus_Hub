@@ -2,9 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { showLogoutAlert } from '../../utils/alerts'
-import DashboardSidebar from '../../components/common/DashboardSidebar'
 import './UserDashboardPage.css'
-import { useSidebar } from '../../contexts/SidebarContext'
 
 export default function UserDashboardPage() {
   const navigate = useNavigate()
@@ -15,7 +13,7 @@ export default function UserDashboardPage() {
   const googleEmail = localStorage.getItem('authEmail') || ''
 
   const [loading, setLoading] = useState(true)
-  const { isOpen, toggle } = useSidebar()
+
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const [profile, setProfile] = useState({
@@ -180,19 +178,7 @@ export default function UserDashboardPage() {
   }
 
   return (
-    <div className="ud-wrapper">
-      <DashboardSidebar
-        fullName={fullName}
-        role={displayRole}
-        unreadCount={unreadCount}
-        currentPage="dashboard"
-        onLogout={handleLogout}
-        isGoogleLogin={isGoogleLogin}
-        googleAvatarUrl={googleAvatarUrl}
-        googleEmail={googleEmail}
-      />
-
-      <main className="ud-main">
+    <main className="ud-main">
         {/* Hero Banner */}
         <section className="ud-hero">
           <div className="ud-hero-content">
@@ -401,11 +387,7 @@ export default function UserDashboardPage() {
                 <span className="ud-action-text">Bookings</span>
                 <span className="ud-action-arrow">→</span>
               </button>
-              <button type="button" className="ud-action-btn" onClick={() => navigate('/catalogue')}>
-                <span className="ud-action-icon">📚</span>
-                <span className="ud-action-text">Catalogue</span>
-                <span className="ud-action-arrow">→</span>
-              </button>
+
               <button type="button" className="ud-action-btn" onClick={() => navigate('/resources')}>
                 <span className="ud-action-icon">📁</span>
                 <span className="ud-action-text">Resources</span>
@@ -429,7 +411,6 @@ export default function UserDashboardPage() {
             </div>
           </article>
         </section>
-      </main>
-    </div>
+    </main>
   )
 }

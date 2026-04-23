@@ -12,8 +12,6 @@
 }
 
 .ud-main {
-  flex: 1;
-  margin-left: 250px;
   padding: 28px;
   overflow-y: auto;
   display: flex;

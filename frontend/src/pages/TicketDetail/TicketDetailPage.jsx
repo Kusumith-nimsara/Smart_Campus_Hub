@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ticketAPI } from '../../services/ticketAPI'
-import DashboardSidebar from '../../components/common/DashboardSidebar'
+
 import { clearAuthState } from '../../utils/api'
 import { showError, showSuccess, showLogoutAlert } from '../../utils/alerts'
 import './TicketDetailPage.css'
@@ -130,18 +130,7 @@ export default function TicketDetailPage() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', marginLeft: '250px', backgroundColor: '#f8fafc' }}>
-      <DashboardSidebar
-        fullName={displayName}
-        role={role}
-        currentPage="tickets"
-        isGoogleLogin={isGoogleLogin}
-        googleAvatarUrl={googleAvatarUrl}
-        googleEmail={googleEmail}
-        onLogout={handleLogout}
-      />
-
-      <main style={{ flex: 1, padding: '32px', overflowY: 'auto' }}>
+    <main style={{ flex: 1, padding: '32px', overflowY: 'auto' }}>
         <div className="ticket-detail-page">
           <div className="detail-header">
             <button className="back-btn" onClick={() => navigate('/tickets')}>
@@ -317,7 +306,6 @@ export default function TicketDetailPage() {
         </div>
       )}
         </div>
-      </main>
-    </div>
+    </main>
   )
 }

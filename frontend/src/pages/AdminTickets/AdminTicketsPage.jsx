@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { showError, showLogoutAlert, showSuccess } from '../../utils/alerts'
+import { useSidebar } from '../../contexts/SidebarContext'
 import './AdminTicketsPage.css'
 
 export default function AdminTicketsPage() {
@@ -19,7 +20,7 @@ export default function AdminTicketsPage() {
   })
 
   const [activeTab, setActiveTab] = useState('open')
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const { isOpen, toggle } = useSidebar()
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const accountMenuRef = useRef(null)
@@ -325,111 +326,12 @@ export default function AdminTicketsPage() {
   )
 
   return (
-    <main className={`admin-tickets-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
-      <aside className="admin-sidebar" aria-hidden={!isSidebarOpen}>
-        <div className="admin-brand">
-          <div className="admin-logo">SC</div>
-          <h2>Smart Campus</h2>
-        </div>
-
-        <div className="admin-identity">
-          <p className="label">Logged in as</p>
-          <p className="name">{adminName}</p>
-          <p className="role">ADMIN</p>
-        </div>
-
-        <nav className="admin-nav" aria-label="Admin Dashboard Navigation">
-          <button type="button" onClick={() => navigate('/admin-dashboard')}>
-            <span className="nav-icon">📊</span> Dashboard
-          </button>
-          <button type="button" className="active" onClick={() => navigate('/admin-tickets')}>
-            <span className="nav-icon">🎫</span> Tickets
-          </button>
-          <button type="button" onClick={() => navigate('/admin/user-management')}>
-            <span className="nav-icon">👥</span> User Management
-          </button>
-          <button type="button" onClick={() => navigate('/profile')}>
-            <span className="nav-icon">👤</span> Profile
-          </button>
-          <button type="button" onClick={() => navigate('/notifications')} style={{ position: 'relative' }}>
-            <span className="nav-icon">🔔</span> Notifications
-            {unreadNotifCount > 0 && (
-              <span style={{
-                position: 'absolute',
-                top: '6px',
-                right: '10px',
-                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-                color: '#fff',
-                borderRadius: '10px',
-                padding: '1px 7px',
-                fontSize: '11px',
-                fontWeight: '700',
-                lineHeight: '16px',
-                minWidth: '18px',
-                textAlign: 'center',
-                boxShadow: '0 2px 6px rgba(239,68,68,0.4)',
-              }}>{unreadNotifCount > 99 ? '99+' : unreadNotifCount}</span>
-            )}
-          </button>
-        </nav>
-
-        <button type="button" className="admin-logout" onClick={handleLogout}>↪ Logout</button>
-      </aside>
-
+    <>
       <section className="admin-content">
         <header className="admin-topbar">
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <button
-              type="button"
-              className="sidebar-toggle-btn"
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              aria-label="Toggle Sidebar"
-            >
-              ☰
-            </button>
-            <div>
-              <h1>Ticket Workflow Management 🎫</h1>
-              <p>{today}</p>
-            </div>
-          </div>
-          <div className="topbar-right">
-            <div className="admin-account-menu" ref={accountMenuRef}>
-              <button
-                type="button"
-                className="admin-account-trigger"
-                onClick={() => setIsAccountMenuOpen((prev) => !prev)}
-                aria-haspopup="menu"
-                aria-expanded={isAccountMenuOpen}
-              >
-                <div className="admin-topbar-user">
-                  <span>
-                    {isGoogleLogin && googleAvatarCandidate && !avatarLoadFailed ? (
-                      <img
-                        src={googleAvatarCandidate}
-                        alt={adminName}
-                        className="admin-topbar-avatar-image"
-                        onError={() => setAvatarLoadFailed(true)}
-                        referrerPolicy="no-referrer"
-                      />
-                    ) : (
-                      adminName.charAt(0).toUpperCase()
-                    )}
-                  </span>
-                  <div>
-                    <p className="admin-topbar-uname">{adminName}</p>
-                    <p className="admin-topbar-urole">ADMIN</p>
-                  </div>
-                </div>
-              </button>
-
-              {isAccountMenuOpen && (
-                <div className="admin-account-dropdown" role="menu">
-                  <button type="button" onClick={handleLogout} role="menuitem">
-                    Sign out
-                  </button>
-                </div>
-              )}
-            </div>
+          <div>
+            <h1>Ticket Workflow Management 🎫</h1>
+            <p>{today}</p>
           </div>
         </header>
 
@@ -504,7 +406,6 @@ export default function AdminTicketsPage() {
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h2>Assign Ticket to Technician</h2>
             <p className="modal-subtitle">{selectedTicket?.title}</p>
-
             <div className="form-group">
               <label>Select Technician:</label>
               <select value={selectedTechnician} onChange={(e) => setSelectedTechnician(e.target.value)}>
@@ -516,17 +417,9 @@ export default function AdminTicketsPage() {
                 ))}
               </select>
             </div>
-
             <div className="modal-actions">
-              <button type="button" className="btn-cancel" onClick={() => setShowAssignModal(false)}>
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="btn-submit"
-                onClick={submitAssign}
-                disabled={assignSubmitting || !selectedTechnician}
-              >
+              <button type="button" className="btn-cancel" onClick={() => setShowAssignModal(false)}>Cancel</button>
+              <button type="button" className="btn-submit" onClick={submitAssign} disabled={assignSubmitting || !selectedTechnician}>
                 {assignSubmitting ? 'Assigning...' : 'Assign'}
               </button>
             </div>
@@ -541,17 +434,9 @@ export default function AdminTicketsPage() {
             <h2>Approve Ticket Completion</h2>
             <p className="modal-subtitle">{selectedTicket?.title}</p>
             <p className="modal-text">Are you sure you want to approve this ticket and mark it as closed?</p>
-
             <div className="modal-actions">
-              <button type="button" className="btn-cancel" onClick={() => setShowApproveModal(false)}>
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="btn-approve"
-                onClick={submitApprove}
-                disabled={approveSubmitting}
-              >
+              <button type="button" className="btn-cancel" onClick={() => setShowApproveModal(false)}>Cancel</button>
+              <button type="button" className="btn-approve" onClick={submitApprove} disabled={approveSubmitting}>
                 {approveSubmitting ? 'Approving...' : 'Approve & Close'}
               </button>
             </div>
@@ -565,7 +450,6 @@ export default function AdminTicketsPage() {
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h2>Send Ticket Back for Revision</h2>
             <p className="modal-subtitle">{selectedTicket?.title}</p>
-
             <div className="form-group">
               <label>Rejection Reason:</label>
               <textarea
@@ -575,23 +459,15 @@ export default function AdminTicketsPage() {
                 rows={4}
               />
             </div>
-
             <div className="modal-actions">
-              <button type="button" className="btn-cancel" onClick={() => setShowRejectModal(false)}>
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="btn-reject"
-                onClick={submitReject}
-                disabled={rejectSubmitting || !rejectionReason.trim()}
-              >
+              <button type="button" className="btn-cancel" onClick={() => setShowRejectModal(false)}>Cancel</button>
+              <button type="button" className="btn-reject" onClick={submitReject} disabled={rejectSubmitting || !rejectionReason.trim()}>
                 {rejectSubmitting ? 'Sending...' : 'Send Back'}
               </button>
             </div>
           </div>
         </div>
       )}
-    </main>
+    </>
   )
 }

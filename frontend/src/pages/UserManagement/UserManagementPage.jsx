@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { confirmAction, showError, showLogoutAlert, showSuccess } from '../../utils/alerts'
-import DashboardSidebar from '../../components/common/DashboardSidebar'
+
 import './UserManagementPage.css'
 import { useSidebar } from '../../contexts/SidebarContext'
 

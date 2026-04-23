@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CreateTicketModal from '../../components/tickets/CreateTicketModal'
 import TicketListPage from '../../components/tickets/TicketListPage'
-import DashboardSidebar from '../../components/common/DashboardSidebar'
+
 import { clearAuthState } from '../../utils/api'
 import { showLogoutAlert, showError, showSuccess } from '../../utils/alerts'
 
@@ -491,18 +491,8 @@ export default function TicketsPage() {
   // Render based on role
   if (role === 'ADMIN') {
     return (
-      <div style={{ display: 'flex', minHeight: '100vh', marginLeft: '250px', backgroundColor: '#f8fafc' }}>
-        <DashboardSidebar
-          fullName={displayName}
-          role={role}
-          currentPage="tickets"
-          isGoogleLogin={isGoogleLogin}
-          googleAvatarUrl={googleAvatarUrl}
-          googleEmail={googleEmail}
-          onLogout={handleLogout}
-        />
-
-        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <>
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: '100vh' }}>
           <div style={{ padding: '32px', borderBottom: '1px solid #e5e7eb' }}>
             <h1 style={{ margin: '0 0 8px 0', fontSize: '28px', color: '#1f2937' }}>🎫 Ticket Workflow Management</h1>
             <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>Manage the complete ticket lifecycle</p>
@@ -661,22 +651,12 @@ export default function TicketsPage() {
             </div>
           </div>
         )}
-      </div>
+      </>
     )
   } else if (role === 'TECHNICIAN' || role === 'MANAGER') {
     return (
-      <div style={{ display: 'flex', minHeight: '100vh', marginLeft: '250px', backgroundColor: '#f8fafc' }}>
-        <DashboardSidebar
-          fullName={displayName}
-          role={role}
-          currentPage="tickets"
-          isGoogleLogin={isGoogleLogin}
-          googleAvatarUrl={googleAvatarUrl}
-          googleEmail={googleEmail}
-          onLogout={handleLogout}
-        />
-
-        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <>
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: '100vh' }}>
           <div style={{ padding: '32px', borderBottom: '1px solid #e5e7eb' }}>
             <h1 style={{ margin: '0 0 8px 0', fontSize: '28px', color: '#1f2937' }}>🎫 My Assigned Tickets</h1>
             <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>View and complete your assigned tickets</p>
@@ -744,23 +724,13 @@ export default function TicketsPage() {
             </div>
           </div>
         )}
-      </div>
+      </>
     )
   } else {
     // USER role - show their created tickets
     return (
-      <div style={{ display: 'flex', minHeight: '100vh', marginLeft: '250px', backgroundColor: '#f8fafc' }}>
-        <DashboardSidebar
-          fullName={displayName}
-          role={role}
-          currentPage="tickets"
-          isGoogleLogin={isGoogleLogin}
-          googleAvatarUrl={googleAvatarUrl}
-          googleEmail={googleEmail}
-          onLogout={handleLogout}
-        />
-
-        <main style={{ flex: 1, padding: '32px', overflowY: 'auto' }}>
+      <>
+        <main style={{ flex: 1, padding: '32px', overflowY: 'auto', minHeight: '100vh' }}>
           <TicketListPage key={refreshKey} onCreateNew={() => setIsModalOpen(true)} />
           <CreateTicketModal
             isOpen={isModalOpen}
@@ -768,7 +738,7 @@ export default function TicketsPage() {
             onTicketCreated={handleTicketCreated}
           />
         </main>
-      </div>
+      </>
     )
   }
 }

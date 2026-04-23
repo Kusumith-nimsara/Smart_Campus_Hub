@@ -44,7 +44,7 @@ function App() {
                 } else if (role === 'TECHNICIAN' || role === 'MANAGER') {
                   return <Navigate to="/technician-dashboard" replace />
                 } else {
-                  return <UserDashboardPage />
+                  return <MainLayout pageClass="ud-page"><UserDashboardPage /></MainLayout>
                 }
               })()}
             </PrivateRoute>
@@ -54,7 +54,9 @@ function App() {
           path="/user-dashboard"
           element={
             <PrivateRoute fallback={<Navigate to="/login" replace />}>
-              <UserDashboardPage />
+              <MainLayout pageClass="ud-page">
+                <UserDashboardPage />
+              </MainLayout>
             </PrivateRoute>
           }
         />
@@ -82,7 +84,9 @@ function App() {
           path="/admin-tickets"
           element={
             <ProtectedRoute requiredRole="ADMIN">
-              <AdminTicketsPage />
+              <MainLayout pageClass="admin-tickets-layout">
+                <AdminTicketsPage />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -90,7 +94,9 @@ function App() {
           path="/technician-dashboard"
           element={
             <ProtectedRoute requiredRoles={['TECHNICIAN', 'MANAGER']}>
-              <TechnicianDashboardPage />
+              <MainLayout pageClass="technician-layout">
+                <TechnicianDashboardPage />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -109,7 +115,9 @@ function App() {
           path="/catalogue"
           element={
             <PrivateRoute fallback={<Navigate to="/login" replace />}>
-              <CataloguePage />
+              <MainLayout pageClass="catalogue-layout">
+                <CataloguePage />
+              </MainLayout>
             </PrivateRoute>
           }
         />
@@ -117,7 +125,9 @@ function App() {
           path="/tickets"
           element={
             <PrivateRoute fallback={<Navigate to="/login" replace />}>
-              <TicketsPage />
+              <MainLayout pageClass="tickets-layout">
+                <TicketsPage />
+              </MainLayout>
             </PrivateRoute>
           }
         />
@@ -125,7 +135,9 @@ function App() {
           path="/ticket-detail/:ticketId"
           element={
             <PrivateRoute fallback={<Navigate to="/login" replace />}>
-              <TicketDetailPage />
+              <MainLayout pageClass="ticket-detail-layout">
+                <TicketDetailPage />
+              </MainLayout>
             </PrivateRoute>
           }
         />
@@ -133,7 +145,9 @@ function App() {
           path="/bookings"
           element={
             <PrivateRoute fallback={<Navigate to="/login" replace />}>
-              <BookingsPage />
+              <MainLayout pageClass="bookings-layout">
+                <BookingsPage />
+              </MainLayout>
             </PrivateRoute>
           }
         />
@@ -141,7 +155,9 @@ function App() {
           path="/notifications"
           element={
             <PrivateRoute fallback={<Navigate to="/login" replace />}>
-              <NotificationsPage />
+              <MainLayout pageClass="notif-layout">
+                <NotificationsPage />
+              </MainLayout>
             </PrivateRoute>
           }
         />

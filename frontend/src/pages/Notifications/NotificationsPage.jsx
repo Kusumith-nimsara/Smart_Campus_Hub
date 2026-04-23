@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { showLogoutAlert, showSuccess, confirmAction } from '../../utils/alerts'
-import DashboardSidebar from '../../components/common/DashboardSidebar'
 import './NotificationsPage.css'
 
 const FILTER_OPTIONS = [
@@ -81,7 +80,7 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState('ALL')
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+
   const [unreadCount, setUnreadCount] = useState(0)
 
   // Load user profile to get user ID
@@ -247,31 +246,12 @@ export default function NotificationsPage() {
   const dashboardRoute = isAdmin ? '/admin-dashboard' : '/dashboard'
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
-      <DashboardSidebar
-        fullName={userName}
-        role={userRole}
-        unreadCount={unreadCount}
-        currentPage="notifications"
-        onLogout={handleLogout}
-      />
-
-      <section className="notif-content" style={{ flex: 1, marginLeft: '250px' }}>
+    <section className="notif-content">
 
         <header className="notif-topbar">
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <button
-              type="button"
-              className="notif-sidebar-toggle"
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              aria-label="Toggle Sidebar"
-            >
-              ☰
-            </button>
-            <div>
-              <h1>🔔 Notifications</h1>
-              <p>Stay updated with your tickets, maintenance, and incidents</p>
-            </div>
+          <div>
+            <h1>🔔 Notifications</h1>
+            <p>Stay updated with your tickets, maintenance, and incidents</p>
           </div>
         </header>
 
@@ -415,6 +395,5 @@ export default function NotificationsPage() {
           </div>
         )}
       </section>
-    </div>
   )
 }
