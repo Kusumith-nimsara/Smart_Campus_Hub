@@ -83,62 +83,73 @@ export default function ResourcesPage() {
   }
 
   return (
-    <div className="resources-content" style={{ padding: '1rem' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button
-            type="button"
-            aria-label={isOpen ? 'Collapse sidebar' : 'Open sidebar'}
-            className="sidebar-toggle-btn"
-            onClick={toggle}
-          >
-            ☰
-          </button>
-          <h1>Resources</h1>
-        </div>
-            {isAdmin && (
-              <button onClick={openCreate} className="btn-primary">
-                +   New Resource
-              </button>
-            )}
-          </header>
-
-          <div className="resources-toolbar" style={{ marginTop: '0.75rem' }}>
-            <ResourcesSidebar initialFilters={filters} onApply={handleApplyFilters} onClear={handleClearFilters} />
+    <div className="resources-page-wrapper">
+      <div className="resources-content">
+        <header className="resources-header">
+          <div className="header-top">
+            <button
+              type="button"
+              aria-label={isOpen ? 'Collapse sidebar' : 'Open sidebar'}
+              className="sidebar-toggle-btn"
+              onClick={toggle}
+            >
+              ☰
+            </button>
+            <div className="header-title-section">
+              <h1 className="page-title">Resources</h1>
+              <p className="page-subtitle">Browse and filter campus facilities</p>
+            </div>
+            <div className="header-right">
+              {!loading && !error && (
+                <div className="resource-count-badge">
+                  {resources.length} Resource{resources.length !== 1 ? 's' : ''} Found
+                </div>
+              )}
+              {isAdmin && (
+                <button onClick={openCreate} className="btn-new-resource">
+                  + New Resource
+                </button>
+              )}
+            </div>
           </div>
+        </header>
 
-          <section style={{ marginTop: '0.75rem' }}>
-            {loading && <div>Loading resources…</div>}
-            {error && <div style={{ color: 'crimson' }}>Error: {error}</div>}
+        <div className="resources-toolbar">
+          <ResourcesSidebar initialFilters={filters} onApply={handleApplyFilters} onClear={handleClearFilters} />
+        </div>
 
-            {!loading && !error && resources.length === 0 && (
-              <div className="empty-state">No resources found.</div>
-            )}
+        <section className="resources-section">
+          {loading && <div className="loading-state">Loading resources…</div>}
+          {error && <div className="error-state">Error: {error}</div>}
 
-            {!loading && !error && resources.length > 0 && (
-              <div className="resources-grid">
-                {resources.map((r) => (
-                  <ResourceCard key={r.id} resource={r} isAdmin={isAdmin} onEdit={handleEdit} onDelete={handleDelete} />
-                ))}
-              </div>
-            )}
-          </section>
+          {!loading && !error && resources.length === 0 && (
+            <div className="empty-state">No resources found.</div>
+          )}
 
-      <ResourceFormModal
-        open={showForm}
-        onClose={() => setShowForm(false)}
-        initialData={editing}
-        onSaved={afterSaved}
-      />
+          {!loading && !error && resources.length > 0 && (
+            <div className="resources-grid">
+              {resources.map((r) => (
+                <ResourceCard key={r.id} resource={r} isAdmin={isAdmin} onEdit={handleEdit} onDelete={handleDelete} />
+              ))}
+            </div>
+          )}
+        </section>
 
-      <DeleteConfirmModal
-        open={showDelete}
-        onClose={() => setShowDelete(false)}
-        resourceName={deleting?.name}
-        resourceId={deleting?.id}
-        onDeleted={afterDeleted}
-      />
+        <ResourceFormModal
+          open={showForm}
+          onClose={() => setShowForm(false)}
+          initialData={editing}
+          onSaved={afterSaved}
+        />
 
+        <DeleteConfirmModal
+          open={showDelete}
+          onClose={() => setShowDelete(false)}
+          resourceName={deleting?.name}
+          resourceId={deleting?.id}
+          onDeleted={afterDeleted}
+        />
+      </div>
     </div>
   )
 }

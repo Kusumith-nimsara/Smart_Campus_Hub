@@ -47,8 +47,7 @@ export default function ResourcesSidebar({ initialFilters = {}, onApply = () => 
 
   return (
     <div className="resources-sidebar">
-      <h3 style={{ marginTop: 0 }}>Filters</h3>
-      <form onSubmit={apply}>
+      <form onSubmit={apply} className="filter-form">
         <div className="filter-field">
           <label>Type</label>
           <select value={type} onChange={(e) => setType(e.target.value)}>
@@ -82,9 +81,9 @@ export default function ResourcesSidebar({ initialFilters = {}, onApply = () => 
           <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Name or description" />
         </div>
 
-        <div className="sidebar-actions" style={{ marginTop: '0.75rem' }}>
-          <button type="submit" className="btn-primary">Apply</button>
-          <button type="button" className="btn-primary btn-primary-white" onClick={clearAll}>Clear</button>
+        <div className="sidebar-actions">
+          <button type="submit" className="btn-apply">Apply</button>
+          <button type="button" className="btn-clear" onClick={clearAll}>Clear</button>
         </div>
       </form>
     </div>
