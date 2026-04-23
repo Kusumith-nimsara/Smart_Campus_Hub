@@ -4,6 +4,43 @@
  * Provides formatting, validation, and duration helpers
  * for date/time operations across booking components.
  */
+const COLOMBO_OFFSET_MINUTES = 5 * 60 + 30
+
+function parseDateTimeLocalParts(value) {
+  if (!value || typeof value !== 'string') return null
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/)
+  if (!match) return null
+  return {
+    year: Number(match[1]),
+    month: Number(match[2]),
+    day: Number(match[3]),
+    hour: Number(match[4]),
+    minute: Number(match[5]),
+  }
+}
+
+export function getColomboNowTimestamp() {
+  return Date.now()
+}
+
+export function parseColomboDateTimeToUtcMs(value) {
+  const parts = parseDateTimeLocalParts(value)
+  if (!parts) return NaN
+  return Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute) - COLOMBO_OFFSET_MINUTES * 60 * 1000
+}
+
+export function getColomboHourMinute(value) {
+  const parts = parseDateTimeLocalParts(value)
+  if (!parts) return null
+  return { hour: parts.hour, minute: parts.minute }
+}
+
+function toDateTimeLocalFromUtcMsAsColombo(utcMs) {
+  const colomboMs = utcMs + COLOMBO_OFFSET_MINUTES * 60 * 1000
+  const d = new Date(colomboMs)
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`
+}
 
 /**
  * Format a date-time string or Date object to a human-readable format.
@@ -73,9 +110,9 @@ export function formatTimeRange(startTime, endTime) {
  */
 export function isValidTimeRange(start, end) {
   if (!start || !end) return false
-  const s = typeof start === 'string' ? new Date(start) : start
-  const e = typeof end === 'string' ? new Date(end) : end
-  if (isNaN(s.getTime()) || isNaN(e.getTime())) return false
+  const s = typeof start === 'string' ? parseColomboDateTimeToUtcMs(start) : NaN
+  const e = typeof end === 'string' ? parseColomboDateTimeToUtcMs(end) : NaN
+  if (Number.isNaN(s) || Number.isNaN(e)) return false
   return s < e
 }
 
@@ -87,9 +124,9 @@ export function isValidTimeRange(start, end) {
  */
 export function isPastDate(date) {
   if (!date) return false
-  const d = typeof date === 'string' ? new Date(date) : date
-  if (isNaN(d.getTime())) return false
-  return d < new Date()
+  const ts = typeof date === 'string' ? parseColomboDateTimeToUtcMs(date) : NaN
+  if (Number.isNaN(ts)) return false
+  return ts < getColomboNowTimestamp()
 }
 
 /**
@@ -101,11 +138,10 @@ export function isPastDate(date) {
  */
 export function getDurationHours(start, end) {
   if (!start || !end) return 0
-  const s = typeof start === 'string' ? new Date(start) : start
-  const e = typeof end === 'string' ? new Date(end) : end
-  if (isNaN(s.getTime()) || isNaN(e.getTime())) return 0
-
-  const diffMs = e.getTime() - s.getTime()
+  const s = typeof start === 'string' ? parseColomboDateTimeToUtcMs(start) : NaN
+  const e = typeof end === 'string' ? parseColomboDateTimeToUtcMs(end) : NaN
+  if (Number.isNaN(s) || Number.isNaN(e)) return 0
+  const diffMs = e - s
   return Math.round((diffMs / (1000 * 60 * 60)) * 10) / 10
 }
 
@@ -118,11 +154,10 @@ export function getDurationHours(start, end) {
  */
 export function getDurationMinutes(start, end) {
   if (!start || !end) return 0
-  const s = typeof start === 'string' ? new Date(start) : start
-  const e = typeof end === 'string' ? new Date(end) : end
-  if (isNaN(s.getTime()) || isNaN(e.getTime())) return 0
-
-  return Math.round((e.getTime() - s.getTime()) / (1000 * 60))
+  const s = typeof start === 'string' ? parseColomboDateTimeToUtcMs(start) : NaN
+  const e = typeof end === 'string' ? parseColomboDateTimeToUtcMs(end) : NaN
+  if (Number.isNaN(s) || Number.isNaN(e)) return 0
+  return Math.round((e - s) / (1000 * 60))
 }
 
 /**
@@ -147,10 +182,42 @@ export function toDateTimeLocal(date) {
  * @returns {string} datetime-local compatible string
  */
 export function getDefaultStartTime() {
-  const now = new Date()
-  now.setMinutes(now.getMinutes() + 30 - (now.getMinutes() % 30))
-  now.setSeconds(0, 0)
-  return toDateTimeLocal(now)
+  const nowUtcMs = Date.now()
+  let nextColombo = toDateTimeLocalFromUtcMsAsColombo(nowUtcMs)
+  const parsed = parseDateTimeLocalParts(nextColombo)
+  if (!parsed) return ''
+
+  let minute = parsed.minute
+  let hour = parsed.hour
+  let day = parsed.day
+  let month = parsed.month
+  let year = parsed.year
+
+  const minuteRemainder = minute % 30
+  if (minuteRemainder !== 0) {
+    minute += 30 - minuteRemainder
+    if (minute >= 60) {
+      minute -= 60
+      hour += 1
+    }
+  }
+
+  if (hour < 8) {
+    hour = 8
+    minute = 0
+  } else if (hour >= 22) {
+    const nextDayUtcMs = parseColomboDateTimeToUtcMs(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:00`) + 60 * 60 * 1000
+    const nextDay = toDateTimeLocalFromUtcMsAsColombo(nextDayUtcMs)
+    const nextParsed = parseDateTimeLocalParts(nextDay)
+    if (!nextParsed) return ''
+    year = nextParsed.year
+    month = nextParsed.month
+    day = nextParsed.day
+    hour = 8
+    minute = 0
+  }
+
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
 }
 
 /**
@@ -161,14 +228,21 @@ export function getDefaultStartTime() {
  */
 export function getDefaultEndTime(startTime) {
   if (!startTime) {
-    const now = new Date()
-    now.setMinutes(now.getMinutes() + 90 - (now.getMinutes() % 30))
-    now.setSeconds(0, 0)
-    return toDateTimeLocal(now)
+    const start = getDefaultStartTime()
+    const startMs = parseColomboDateTimeToUtcMs(start)
+    return toDateTimeLocalFromUtcMsAsColombo(startMs + 60 * 60 * 1000)
   }
-  const d = new Date(startTime)
-  d.setHours(d.getHours() + 1)
-  return toDateTimeLocal(d)
+  const startMs = parseColomboDateTimeToUtcMs(startTime)
+  if (Number.isNaN(startMs)) return ''
+  const plusHour = toDateTimeLocalFromUtcMsAsColombo(startMs + 60 * 60 * 1000)
+  const hm = getColomboHourMinute(plusHour)
+  if (!hm) return plusHour
+  if (hm.hour > 22 || (hm.hour === 22 && hm.minute > 0)) {
+    const parts = parseDateTimeLocalParts(plusHour)
+    if (!parts) return plusHour
+    return `${parts.year}-${String(parts.month).padStart(2, '0')}-${String(parts.day).padStart(2, '0')}T22:00`
+  }
+  return plusHour
 }
 
 /**

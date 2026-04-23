@@ -18,7 +18,7 @@ const USER_TYPES = ['STUDENT', 'LECTURER', 'STAFF', 'OTHER']
 
 export default function UserManagementPage() {
   const navigate = useNavigate()
-  const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8081/api'
+  const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8082/api'
   const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
   const adminName = localStorage.getItem('username') || 'Admin'
   const isGoogleLogin = localStorage.getItem('authLoginType') === 'google'

@@ -31,7 +31,7 @@ import java.util.Map;
  * Authentication: JWT Bearer token required
  */
 @RestController
-@RequestMapping("/api/bookings")
+@RequestMapping("/bookings")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class BookingController {
 

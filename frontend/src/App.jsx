@@ -157,7 +157,9 @@ function App() {
           path="/bookings/create"
           element={
             <PrivateRoute fallback={<Navigate to="/login" replace />}>
-              <CreateBookingPage />
+              <MainLayout pageClass="create-booking-layout">
+                <CreateBookingPage />
+              </MainLayout>
             </PrivateRoute>
           }
         />
@@ -165,7 +167,9 @@ function App() {
           path="/bookings/admin/review"
           element={
             <ProtectedRoute requiredRole="ADMIN">
-              <AdminBookingReviewPage />
+              <MainLayout pageClass="admin-review-layout">
+                <AdminBookingReviewPage />
+              </MainLayout>
             </ProtectedRoute>
           }
         />

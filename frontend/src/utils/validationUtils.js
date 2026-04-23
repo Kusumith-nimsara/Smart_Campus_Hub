@@ -5,7 +5,7 @@
  * for the booking creation form.
  */
 
-import { isValidTimeRange, isPastDate } from './dateUtils'
+import { getColomboHourMinute, getColomboNowTimestamp, getDurationMinutes, isValidTimeRange, parseColomboDateTimeToUtcMs } from './dateUtils'
 
 /**
  * Validate a complete booking form and return all errors.
@@ -22,27 +22,45 @@ import { isValidTimeRange, isPastDate } from './dateUtils'
 export function validateBookingForm(formData) {
   const errors = {}
 
+  // Resource Type
+  if (!formData.resourceType || !formData.resourceType.trim()) {
+    errors.resourceType = 'Please select a resource type'
+  }
+
+  // Resource Location
+  if (!formData.resourceLocation || !formData.resourceLocation.trim()) {
+    errors.resourceLocation = 'Please select a location'
+  }
+
   // Resource ID
   if (!formData.resourceId || !formData.resourceId.trim()) {
-    errors.resourceId = 'Please select a resource'
+    errors.resourceId = 'Please select a resource name'
   }
 
   // Start Time
   if (!formData.startTime) {
     errors.startTime = 'Start time is required'
-  } else if (isPastDate(formData.startTime)) {
+  } else if (isStrictlyPast(formData.startTime)) {
     errors.startTime = 'Start time cannot be in the past'
+  } else if (!isWithinBookingHours(formData.startTime)) {
+    errors.startTime = 'Start time must be between 8:00 AM and 10:00 PM'
   }
 
   // End Time
   if (!formData.endTime) {
     errors.endTime = 'End time is required'
+  } else if (!isWithinBookingHours(formData.endTime, true)) {
+    errors.endTime = 'End time must be between 8:00 AM and 10:00 PM'
   }
 
   // Time range
   const timeRangeError = validateTimeRange(formData.startTime, formData.endTime)
   if (timeRangeError) {
-    errors.endTime = timeRangeError
+    if (!errors.startTime && timeRangeError.toLowerCase().includes('start')) {
+      errors.startTime = timeRangeError
+    } else {
+      errors.endTime = timeRangeError
+    }
   }
 
   // Purpose
@@ -80,21 +98,50 @@ export function validateTimeRange(start, end) {
     return 'End time must be after start time'
   }
 
-  // Check minimum duration (15 minutes)
-  const s = new Date(start)
-  const e = new Date(end)
-  const diffMinutes = (e.getTime() - s.getTime()) / (1000 * 60)
-  if (diffMinutes < 15) {
-    return 'Booking must be at least 15 minutes'
+  // Check minimum duration (30 minutes)
+  const diffMinutes = getDurationMinutes(start, end)
+  if (diffMinutes < 30) {
+    return 'Booking must be at least 30 minutes'
   }
 
-  // Check maximum duration (24 hours)
-  const diffHours = diffMinutes / 60
-  if (diffHours > 24) {
-    return 'Booking cannot exceed 24 hours'
+  // Check maximum duration (3 hours)
+  if (diffMinutes > 180) {
+    return 'Booking cannot exceed 3 hours'
+  }
+
+  if (!isWithinBookingHours(start)) {
+    return 'Start time must be between 8:00 AM and 10:00 PM'
+  }
+
+  if (!isWithinBookingHours(end, true)) {
+    return 'End time must be between 8:00 AM and 10:00 PM'
   }
 
   return null
+}
+
+function isStrictlyPast(dateValue) {
+  if (!dateValue) return false
+  const ts = parseColomboDateTimeToUtcMs(dateValue)
+  if (Number.isNaN(ts)) return false
+  // Allow current minute in Sri Lanka time.
+  return ts < getColomboNowTimestamp() - 60 * 1000
+}
+
+function isWithinBookingHours(dateValue, isEnd = false) {
+  if (!dateValue) return false
+  const hm = getColomboHourMinute(dateValue)
+  if (!hm) return false
+  const { hour, minute } = hm
+
+  if (hour < 8) return false
+  if (isEnd) {
+    if (hour > 22) return false
+    if (hour === 22 && minute > 0) return false
+    return true
+  }
+  // Start time cannot be 10:00 PM or later because booking needs positive duration.
+  return hour < 22
 }
 
 /**
@@ -153,7 +200,7 @@ export function validateEmail(email) {
  */
 export function validatePurpose(purpose) {
   if (!purpose || !purpose.trim()) {
-    return 'Purpose is required'
+    return null
   }
 
   const trimmed = purpose.trim()

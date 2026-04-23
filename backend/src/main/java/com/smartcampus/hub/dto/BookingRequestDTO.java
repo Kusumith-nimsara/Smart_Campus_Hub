@@ -18,8 +18,7 @@ public class BookingRequestDTO {
     @NotNull(message = "End time is required")
     private LocalDateTime endTime;
     
-    @NotBlank(message = "Purpose cannot be blank")
-    @Size(min = 5, max = 500, message = "Purpose must be between 5 and 500 characters")
+    @Size(max = 500, message = "Purpose cannot exceed 500 characters")
     private String purpose;
     
     @Min(value = 1, message = "At least 1 attendee required")

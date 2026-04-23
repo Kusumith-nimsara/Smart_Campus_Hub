@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getUserBookings, getAllBookings, cancelBooking, approveBooking, rejectBooking } from '../../utils/bookingAPI'
 import { clearAuthState } from '../../utils/api'
@@ -6,6 +6,7 @@ import { showSuccess, showError, showLogoutAlert, confirmAction } from '../../ut
 import BookingCard from '../../components/bookings/BookingCard'
 import FilterPanel from '../../components/bookings/FilterPanel'
 import ApprovalModal from '../../components/bookings/ApprovalModal'
+import { useSidebar } from '../../contexts/SidebarContext'
 import './BookingsPage.css'
 
 /**
@@ -14,6 +15,7 @@ import './BookingsPage.css'
  */
 export default function BookingsPage() {
   const navigate = useNavigate()
+  const { isOpen: isSidebarOpen, toggle } = useSidebar()
   const role = (localStorage.getItem('authRole') || localStorage.getItem('role') || 'USER').toUpperCase()
   const isAdmin = role === 'ADMIN'
   const username = localStorage.getItem('username') || 'User'
@@ -30,13 +32,20 @@ export default function BookingsPage() {
   const [currentPage, setCurrentPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [totalElements, setTotalElements] = useState(0)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
+  const accountMenuRef = useRef(null)
 
   // Approval modal state
   const [selectedBooking, setSelectedBooking] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const userStatusFilters = [
+    { label: 'All', value: '' },
+    { label: 'Pending', value: 'PENDING' },
+    { label: 'Approved', value: 'APPROVED' },
+    { label: 'Rejected', value: 'REJECTED' },
+    { label: 'Cancelled', value: 'CANCELLED' },
+  ]
 
   const loadBookings = useCallback(async (page = 0) => {
     setLoading(true)
@@ -61,8 +70,35 @@ export default function BookingsPage() {
     loadBookings(0)
   }, [loadBookings])
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (!isAccountMenuOpen) return
+      if (accountMenuRef.current && !accountMenuRef.current.contains(event.target)) {
+        setIsAccountMenuOpen(false)
+      }
+    }
+
+    function handleEscape(event) {
+      if (event.key === 'Escape') {
+        setIsAccountMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [isAccountMenuOpen])
+
   function handleFilter(newFilters) {
     setFilters(newFilters)
+    setCurrentPage(0)
+  }
+
+  function handleUserStatusFilter(statusValue) {
+    setFilters(statusValue ? { status: statusValue } : {})
     setCurrentPage(0)
   }
 
@@ -133,66 +169,14 @@ export default function BookingsPage() {
     navigate('/', { replace: true })
   }
 
-  const sidebarNav = isAdmin
-    ? [
-        { icon: '📊', label: 'Dashboard', path: '/admin-dashboard' },
-        { icon: '👥', label: 'User Management', path: '/admin/user-management' },
-        { icon: '👤', label: 'Profile', path: '/profile' },
-        { icon: '🔔', label: 'Notifications', path: '/notifications' },
-        { icon: '📚', label: 'Catalogue', path: '/catalogue' },
-        { icon: '🎫', label: 'Tickets', path: '/tickets' },
-        { icon: '📅', label: 'Bookings', path: '/bookings', active: true },
-      ]
-    : [
-        { icon: '📊', label: 'Dashboard', path: '/dashboard' },
-        { icon: '👤', label: 'Profile', path: '/profile' },
-        { icon: '🔔', label: 'Notifications', path: '/notifications' },
-        { icon: '📚', label: 'Catalogue', path: '/catalogue' },
-        { icon: '🎫', label: 'Tickets', path: '/tickets' },
-        { icon: '📅', label: 'Bookings', path: '/bookings', active: true },
-      ]
-
   return (
-    <main className={`bookings-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
-      {/* ═══ SIDEBAR ═══ */}
-      <aside className="bookings-sidebar" aria-hidden={!isSidebarOpen}>
-        <div className="bookings-brand">
-          <div className="bookings-logo">SC</div>
-          <h2>Smart Campus</h2>
-        </div>
-
-        <div className="bookings-identity">
-          <p className="label">Logged in as</p>
-          <p className="name">{username}</p>
-          <p className="role">{role}</p>
-        </div>
-
-        <nav className="bookings-nav" aria-label="Bookings Navigation">
-          {sidebarNav.map((item) => (
-            <button
-              key={item.path}
-              type="button"
-              className={item.active ? 'active' : ''}
-              onClick={() => navigate(item.path)}
-            >
-              <span className="nav-icon">{item.icon}</span> {item.label}
-            </button>
-          ))}
-        </nav>
-
-        <button type="button" className="bookings-logout" onClick={handleLogout}>
-          ↪ Logout
-        </button>
-      </aside>
-
-      {/* ═══ CONTENT ═══ */}
-      <section className="bookings-content">
+    <section className="bookings-content">
         <header className="bookings-topbar">
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <button
               type="button"
               className="sidebar-toggle-btn"
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              onClick={toggle}
               aria-label="Toggle Sidebar"
             >
               ☰
@@ -221,7 +205,7 @@ export default function BookingsPage() {
                 ⏳ Review Pending
               </button>
             )}
-            <div className="bookings-account-menu">
+            <div className="bookings-account-menu" ref={accountMenuRef}>
               <button
                 type="button"
                 className="bookings-account-trigger"
@@ -263,7 +247,25 @@ export default function BookingsPage() {
         </header>
 
         {/* Filters */}
-        <FilterPanel onFilter={handleFilter} isAdmin={isAdmin} onClear={handleClearFilters} />
+        {isAdmin ? (
+          <FilterPanel onFilter={handleFilter} isAdmin={isAdmin} onClear={handleClearFilters} />
+        ) : (
+          <div className="bookings-status-tabs" role="tablist" aria-label="Booking status filters">
+            {userStatusFilters.map((tab) => {
+              const isActive = (filters.status || '') === tab.value
+              return (
+                <button
+                  key={tab.label}
+                  type="button"
+                  className={`bookings-status-tab ${isActive ? 'active' : ''}`}
+                  onClick={() => handleUserStatusFilter(tab.value)}
+                >
+                  {tab.label}
+                </button>
+              )
+            })}
+          </div>
+        )}
 
         {/* Bookings List */}
         {loading ? (
@@ -333,18 +335,17 @@ export default function BookingsPage() {
             )}
           </>
         )}
-      </section>
 
-      {/* Approval Modal */}
-      {selectedBooking && (
-        <ApprovalModal
-          booking={selectedBooking}
-          onApprove={handleApproveSubmit}
-          onReject={handleRejectSubmit}
-          onClose={() => setSelectedBooking(null)}
-          isSubmitting={isSubmitting}
-        />
-      )}
-    </main>
+        {/* Approval Modal */}
+        {selectedBooking && (
+          <ApprovalModal
+            booking={selectedBooking}
+            onApprove={handleApproveSubmit}
+            onReject={handleRejectSubmit}
+            onClose={() => setSelectedBooking(null)}
+            isSubmitting={isSubmitting}
+          />
+        )}
+    </section>
   )
 }

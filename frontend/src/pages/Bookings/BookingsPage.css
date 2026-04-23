@@ -332,6 +332,38 @@
   background: #fee2e2;
 }
 
+/* ── User Status Tabs ── */
+.bookings-status-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.bookings-status-tab {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  padding: 9px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bookings-status-tab:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.bookings-status-tab.active {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+}
+
 /* ══════════ BOOKINGS GRID ══════════ */
 .bookings-grid {
   display: grid;
@@ -503,6 +535,8 @@
   .topbar-right { width: 100%; justify-content: space-between; gap: 8px; }
   .bookings-create-btn { padding: 8px 16px; font-size: 13px; }
   .bookings-review-btn { padding: 8px 16px; font-size: 13px; }
+  .bookings-status-tabs { gap: 8px; }
+  .bookings-status-tab { padding: 8px 14px; font-size: 12px; }
 }
 
 /* Mobile (480px - 768px) */
@@ -567,6 +601,15 @@
   .bookings-grid { 
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+  .bookings-status-tabs {
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .bookings-status-tab {
+    flex: 1;
+    min-width: 100px;
+    text-align: center;
   }
   .bookings-pagination { 
     flex-wrap: wrap;

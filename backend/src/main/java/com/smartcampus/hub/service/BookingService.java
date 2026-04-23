@@ -164,14 +164,8 @@ public class BookingService {
             throw new InvalidBookingException("Attendees cannot exceed 500", "attendees");
         }
 
-        // Validate purpose
-        if (request.getPurpose() == null || request.getPurpose().trim().isEmpty()) {
-            throw new InvalidBookingException("Purpose cannot be blank", "purpose");
-        }
-        if (request.getPurpose().length() < 5) {
-            throw new InvalidBookingException("Purpose must be at least 5 characters", "purpose");
-        }
-        if (request.getPurpose().length() > 500) {
+        // Purpose is optional. Validate length only when provided.
+        if (request.getPurpose() != null && request.getPurpose().length() > 500) {
             throw new InvalidBookingException("Purpose cannot exceed 500 characters", "purpose");
         }
 

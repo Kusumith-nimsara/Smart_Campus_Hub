@@ -4,7 +4,7 @@
  * clear auth state and redirect to the login page.
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8081/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8082/api'
 
 function getAuthHeaders() {
   const token = localStorage.getItem('token') || localStorage.getItem('authToken')
@@ -63,10 +63,23 @@ export async function apiFetch(path, options = {}) {
     },
   })
 
-  if (response.status === 401 || response.status === 403) {
+  if (response.status === 401) {
     clearAuthState()
     window.location.href = '/login?expired=true'
-    throw new Error('Session expired or access denied. Please log in again.')
+    throw new Error('Session expired. Please log in again.')
+  }
+
+  if (response.status === 403) {
+    let serverMessage = 'Access denied.'
+    try {
+      const data = await response.clone().json()
+      if (typeof data?.message === 'string' && data.message.trim()) {
+        serverMessage = data.message.trim()
+      }
+    } catch {
+      // Keep fallback message when response is not JSON.
+    }
+    throw new Error(serverMessage)
   }
 
   return response

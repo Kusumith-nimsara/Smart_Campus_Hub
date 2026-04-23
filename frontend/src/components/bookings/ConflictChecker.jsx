@@ -12,30 +12,53 @@ import './ConflictChecker.css'
  * @param {string}   props.endTime    - End datetime-local string
  * @param {Function} props.onConflictChange - Callback with conflict status (boolean)
  */
-export default function ConflictChecker({ resourceId, startTime, endTime, onConflictChange }) {
+export default function ConflictChecker({ enabled = true, resourceId, startTime, endTime, onConflictChange }) {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
 
+  function toApiLocalDateTime(value) {
+    if (!value || typeof value !== 'string') return ''
+    return value.length === 16 ? `${value}:00` : value
+  }
+
+  function rangesOverlap(rangeStart, rangeEnd, slotStart, slotEnd) {
+    const aStart = new Date(rangeStart).getTime()
+    const aEnd = new Date(rangeEnd).getTime()
+    const bStart = new Date(slotStart).getTime()
+    const bEnd = new Date(slotEnd).getTime()
+    if ([aStart, aEnd, bStart, bEnd].some((value) => Number.isNaN(value))) return false
+    return aStart < bEnd && bStart < aEnd
+  }
+
   const doCheck = useCallback(async () => {
-    if (!resourceId || !startTime || !endTime) {
+    if (!enabled || !resourceId || !startTime || !endTime) {
       setResult(null)
       setError('')
+      if (onConflictChange) {
+        onConflictChange(false)
+      }
       return
     }
 
-    // Convert datetime-local to ISO format
-    const isoStart = new Date(startTime).toISOString().replace('Z', '').split('.')[0]
-    const isoEnd = new Date(endTime).toISOString().replace('Z', '').split('.')[0]
+    const apiStart = toApiLocalDateTime(startTime)
+    const apiEnd = toApiLocalDateTime(endTime)
 
     setLoading(true)
     setError('')
 
     try {
-      const data = await checkConflicts(resourceId, isoStart, isoEnd)
-      setResult(data)
+      const data = await checkConflicts(resourceId, apiStart, apiEnd)
+      const localOverlap = Array.isArray(data?.conflicts)
+        ? data.conflicts.some((conflict) => rangesOverlap(conflict?.startTime, conflict?.endTime, apiStart, apiEnd))
+        : false
+      const normalizedResult = {
+        ...data,
+        hasConflict: Boolean(data?.hasConflict || localOverlap),
+      }
+      setResult(normalizedResult)
       if (onConflictChange) {
-        onConflictChange(data.hasConflict)
+        onConflictChange(normalizedResult.hasConflict)
       }
     } catch (err) {
       setError(err.message || 'Failed to check availability')
@@ -43,21 +66,25 @@ export default function ConflictChecker({ resourceId, startTime, endTime, onConf
     } finally {
       setLoading(false)
     }
-  }, [resourceId, startTime, endTime, onConflictChange])
+  }, [enabled, resourceId, startTime, endTime, onConflictChange])
 
   // Debounce the check when inputs change
   useEffect(() => {
-    if (!resourceId || !startTime || !endTime) {
+    if (!enabled || !resourceId || !startTime || !endTime) {
       setResult(null)
+      setError('')
+      if (onConflictChange) {
+        onConflictChange(false)
+      }
       return
     }
 
     const timer = setTimeout(doCheck, 600)
     return () => clearTimeout(timer)
-  }, [resourceId, startTime, endTime, doCheck])
+  }, [enabled, resourceId, startTime, endTime, doCheck, onConflictChange])
 
   // Don't render anything if inputs are missing
-  if (!resourceId || !startTime || !endTime) return null
+  if (!enabled || !resourceId || !startTime || !endTime) return null
 
   return (
     <div className="conflict-checker">

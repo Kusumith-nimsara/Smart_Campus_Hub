@@ -61,6 +61,12 @@
   gap: 16px;
 }
 
+.booking-form-row-single-center {
+  grid-template-columns: minmax(280px, 1fr);
+  justify-content: center;
+  max-width: 50%;
+}
+
 /* ── Error messages ── */
 .booking-field-error {
   margin: 0;
@@ -133,6 +139,10 @@
   .booking-form-row {
     grid-template-columns: 1fr;
     gap: 14px;
+  }
+
+  .booking-form-row-single-center {
+    max-width: 100%;
   }
 
   .booking-form-group label {

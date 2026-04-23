@@ -6,6 +6,8 @@ import com.smartcampus.hub.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -14,6 +16,7 @@ import java.util.List;
  */
 @Service
 public class ConflictCheckService {
+    private static final ZoneId SRI_LANKA_ZONE = ZoneId.of("Asia/Colombo");
 
     @Autowired
     private BookingRepository bookingRepository;
@@ -69,11 +72,11 @@ public class ConflictCheckService {
             throw new InvalidBookingException("End time cannot be null", "endTime");
         }
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(SRI_LANKA_ZONE).truncatedTo(ChronoUnit.MINUTES);
 
         if (startTime.isBefore(now)) {
             throw new InvalidBookingException(
-                    "Start time must be in the future. Requested: " + startTime + ", Current: " + now,
+                    "Start time must be now or in the future. Requested: " + startTime + ", Current: " + now,
                     "startTime"
             );
         }
@@ -92,20 +95,28 @@ public class ConflictCheckService {
             );
         }
 
-        long hours = java.time.temporal.ChronoUnit.HOURS.between(startTime, endTime);
-        long maxHours = 7 * 24;
-        if (hours > maxHours) {
+        long minutes = java.time.temporal.ChronoUnit.MINUTES.between(startTime, endTime);
+        long maxMinutes = 3 * 60;
+        if (minutes > maxMinutes) {
             throw new InvalidBookingException(
-                    "Booking duration cannot exceed " + maxHours + " hours (7 days). Requested: " + hours + " hours",
+                    "Booking duration cannot exceed 3 hours. Requested: " + minutes + " minutes",
                     "endTime"
             );
         }
-
-        long minutes = java.time.temporal.ChronoUnit.MINUTES.between(startTime, endTime);
         if (minutes < 30) {
             throw new InvalidBookingException(
                     "Booking duration must be at least 30 minutes. Requested: " + minutes + " minutes",
                     "endTime"
+            );
+        }
+
+        int startHour = startTime.getHour();
+        int endHour = endTime.getHour();
+        int endMinute = endTime.getMinute();
+        if (startHour < 8 || startHour >= 22 || endHour > 22 || (endHour == 22 && endMinute > 0)) {
+            throw new InvalidBookingException(
+                    "Booking time must be between 8:00 AM and 10:00 PM",
+                    "startTime"
             );
         }
     }

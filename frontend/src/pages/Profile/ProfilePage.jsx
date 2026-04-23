@@ -15,7 +15,7 @@ import { useSidebar } from '../../contexts/SidebarContext'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
-  const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8081/api'
+  const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8082/api'
   const token = useMemo(() => localStorage.getItem('authToken') ?? '', [])
   const isGoogleLogin = localStorage.getItem('authLoginType') === 'google'
   const googleAvatarUrl = localStorage.getItem('authAvatarUrl') || ''

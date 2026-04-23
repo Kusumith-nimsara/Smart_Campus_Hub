@@ -1,10 +1,10 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAllBookings, approveBooking, rejectBooking } from '../../utils/bookingAPI'
-import { clearAuthState } from '../../utils/api'
-import { showSuccess, showError, showLogoutAlert } from '../../utils/alerts'
+import { showSuccess, showError } from '../../utils/alerts'
 import BookingCard from '../../components/bookings/BookingCard'
 import ApprovalModal from '../../components/bookings/ApprovalModal'
+import { useSidebar } from '../../contexts/SidebarContext'
 import './AdminBookingReviewPage.css'
 
 /**
@@ -12,13 +12,12 @@ import './AdminBookingReviewPage.css'
  */
 export default function AdminBookingReviewPage() {
   const navigate = useNavigate()
-  const username = localStorage.getItem('username') || 'Admin'
+  const { toggle } = useSidebar()
 
   const [bookings, setBookings] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedBooking, setSelectedBooking] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [statusFilter, setStatusFilter] = useState('PENDING')
 
   const loadBookings = useCallback(async () => {
@@ -67,64 +66,16 @@ export default function AdminBookingReviewPage() {
     }
   }
 
-  function handleLogout() {
-    clearAuthState()
-    showLogoutAlert()
-    navigate('/', { replace: true })
-  }
-
   const pendingCount = bookings.filter(b => b.status === 'PENDING').length
 
-  const sidebarNav = [
-    { icon: '📊', label: 'Dashboard', path: '/admin-dashboard' },
-    { icon: '👥', label: 'User Management', path: '/admin/user-management' },
-    { icon: '👤', label: 'Profile', path: '/profile' },
-    { icon: '🔔', label: 'Notifications', path: '/notifications' },
-    { icon: '📚', label: 'Catalogue', path: '/catalogue' },
-    { icon: '🎫', label: 'Tickets', path: '/tickets' },
-    { icon: '📅', label: 'Bookings', path: '/bookings' },
-  ]
-
   return (
-    <main className={`admin-review-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
-      {/* ═══ SIDEBAR ═══ */}
-      <aside className="admin-review-sidebar" aria-hidden={!isSidebarOpen}>
-        <div className="admin-review-brand">
-          <div className="admin-review-logo">SC</div>
-          <h2>Smart Campus</h2>
-        </div>
-
-        <div className="admin-review-identity">
-          <p className="label">Logged in as</p>
-          <p className="name">{username}</p>
-          <p className="role">ADMIN</p>
-        </div>
-
-        <nav className="admin-review-nav" aria-label="Admin Review Navigation">
-          {sidebarNav.map((item) => (
-            <button
-              key={item.path}
-              type="button"
-              onClick={() => navigate(item.path)}
-            >
-              <span className="nav-icon">{item.icon}</span> {item.label}
-            </button>
-          ))}
-        </nav>
-
-        <button type="button" className="admin-review-logout" onClick={handleLogout}>
-          ↪ Logout
-        </button>
-      </aside>
-
-      {/* ═══ CONTENT ═══ */}
-      <section className="admin-review-content">
+    <section className="admin-review-content">
         <header className="admin-review-topbar">
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <button
               type="button"
               className="sidebar-toggle-btn"
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              onClick={toggle}
               aria-label="Toggle Sidebar"
             >
               ☰
@@ -196,18 +147,17 @@ export default function AdminBookingReviewPage() {
             ))}
           </div>
         )}
-      </section>
 
-      {/* Approval Modal */}
-      {selectedBooking && (
-        <ApprovalModal
-          booking={selectedBooking}
-          onApprove={handleApprove}
-          onReject={handleReject}
-          onClose={() => setSelectedBooking(null)}
-          isSubmitting={isSubmitting}
-        />
-      )}
-    </main>
+        {/* Approval Modal */}
+        {selectedBooking && (
+          <ApprovalModal
+            booking={selectedBooking}
+            onApprove={handleApprove}
+            onReject={handleReject}
+            onClose={() => setSelectedBooking(null)}
+            isSubmitting={isSubmitting}
+          />
+        )}
+    </section>
   )
 }

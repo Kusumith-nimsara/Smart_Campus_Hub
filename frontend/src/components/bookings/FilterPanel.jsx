@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { resourceAPI } from '../../utils/api'
+import { showError } from '../../utils/alerts'
 import './FilterPanel.css'
 
 /**
@@ -13,10 +15,64 @@ export default function FilterPanel({ onFilter, isAdmin, onClear }) {
   const [status, setStatus] = useState('')
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
+  const [resourceType, setResourceType] = useState('')
   const [resourceId, setResourceId] = useState('')
+  const [resourceLocation, setResourceLocation] = useState('')
   const [userId, setUserId] = useState('')
+  const [activeResources, setActiveResources] = useState([])
+
+  useEffect(() => {
+    let mounted = true
+
+    async function loadActiveResources() {
+      try {
+        const response = await resourceAPI.getAll({ status: 'ACTIVE' })
+        if (!response.ok) {
+          throw new Error('Failed to load resources')
+        }
+        const data = await response.json()
+        if (mounted) {
+          setActiveResources(Array.isArray(data) ? data : [])
+        }
+      } catch {
+        if (mounted) {
+          setActiveResources([])
+        }
+      }
+    }
+
+    loadActiveResources()
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  const resourceTypes = ['LECTURE_HALL', 'LAB', 'MEETING_ROOM', 'EQUIPMENT']
+
+  const resourcesForSelectedType = useMemo(() => {
+    if (!resourceType) return []
+    return activeResources.filter((resource) => String(resource?.type || '') === resourceType)
+  }, [activeResources, resourceType])
 
   function handleApply() {
+    const hasAnyInput =
+      Boolean(status) ||
+      Boolean(fromDate) ||
+      Boolean(toDate) ||
+      Boolean(resourceType) ||
+      Boolean(resourceId) ||
+      (isAdmin && Boolean(userId))
+
+    if (!hasAnyInput) {
+      showError('Invalid inputs', 'Select at least one filter value before applying.')
+      return
+    }
+
+    if (resourceType && !resourceId) {
+      showError('Invalid inputs', 'Select a valid resource name for the selected type.')
+      return
+    }
+
     const filters = {}
     if (status) filters.status = status
     if (fromDate) filters.fromDate = fromDate
@@ -30,7 +86,9 @@ export default function FilterPanel({ onFilter, isAdmin, onClear }) {
     setStatus('')
     setFromDate('')
     setToDate('')
+    setResourceType('')
     setResourceId('')
+    setResourceLocation('')
     setUserId('')
     if (onClear) onClear()
   }
@@ -80,14 +138,55 @@ export default function FilterPanel({ onFilter, isAdmin, onClear }) {
         </div>
 
         <div className="filter-group">
-          <label htmlFor="filter-resource">Resource ID</label>
-          <input
-            id="filter-resource"
-            type="text"
-            placeholder="Resource ID"
+          <label htmlFor="filter-resource-type">Type</label>
+          <select
+            id="filter-resource-type"
+            value={resourceType}
+            onChange={(e) => {
+              setResourceType(e.target.value)
+              setResourceId('')
+              setResourceLocation('')
+            }}
+          >
+            <option value="">All Types</option>
+            {resourceTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="filter-group">
+          <label htmlFor="filter-resource-name">Resource Name</label>
+          <select
+            id="filter-resource-name"
             value={resourceId}
-            onChange={(e) => setResourceId(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onChange={(e) => {
+              const selectedId = e.target.value
+              setResourceId(selectedId)
+              const selectedResource = resourcesForSelectedType.find((resource) => String(resource?.id) === String(selectedId))
+              setResourceLocation(selectedResource?.location || '')
+            }}
+            disabled={!resourceType}
+          >
+            <option value="">{resourceType ? 'Select resource name' : 'Select type first'}</option>
+            {resourcesForSelectedType.map((resource) => (
+              <option key={resource.id} value={resource.id}>
+                {resource.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="filter-group">
+          <label htmlFor="filter-resource-location">Location</label>
+          <input
+            id="filter-resource-location"
+            type="text"
+            value={resourceLocation}
+            placeholder="Auto from selected name"
+            readOnly
           />
         </div>
 
