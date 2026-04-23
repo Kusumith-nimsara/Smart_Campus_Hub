@@ -61,7 +61,55 @@
 }
 
 /* ── Responsive ── */
-@media (max-width: 600px) {
+
+/* Tablets (768px - 1024px) */
+@media (max-width: 1024px) {
+  .create-booking-page { padding: 24px; }
+  .create-booking-container { max-width: 650px; }
+  .create-booking-card { padding: 28px; }
+  .create-booking-header h1 { font-size: 28px; }
+}
+
+/* Mobile (480px - 768px) */
+@media (max-width: 768px) {
   .create-booking-page { padding: 16px; }
-  .create-booking-card { padding: 20px; border-radius: 16px; }
+  .create-booking-container { max-width: 100%; }
+  .create-booking-header { margin-bottom: 24px; }
+  .create-booking-back {
+    padding: 8px 14px;
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+  .create-booking-header h1 {
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+  .create-booking-subtitle { font-size: 14px; }
+  .create-booking-card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+}
+
+/* Small Mobile (< 480px) */
+@media (max-width: 480px) {
+  .create-booking-page { padding: 12px; }
+  .create-booking-header { margin-bottom: 20px; }
+  .create-booking-back {
+    padding: 6px 12px;
+    font-size: 11px;
+    margin-bottom: 12px;
+  }
+  .create-booking-header h1 {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  .create-booking-subtitle { 
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .create-booking-card {
+    padding: 16px;
+    border-radius: 12px;
+  }
 }

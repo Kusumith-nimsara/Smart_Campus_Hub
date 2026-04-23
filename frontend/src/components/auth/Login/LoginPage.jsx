@@ -31,7 +31,7 @@ export default function LoginPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
+  const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8081/api'
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? ''
   // Debug: print runtime Vite env value for Google client id
   // Remove this in production — it's for local debugging only.

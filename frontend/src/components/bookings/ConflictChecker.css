@@ -131,3 +131,70 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE DESIGN
+   ═══════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .conflict-checker {
+    margin-top: 2px;
+  }
+
+  .conflict-loading,
+  .conflict-error,
+  .conflict-available {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .conflict-found {
+    padding: 12px 14px;
+  }
+
+  .conflict-header {
+    margin-bottom: 8px;
+    gap: 6px;
+  }
+
+  .conflict-title {
+    font-size: 12px;
+  }
+
+  .conflict-list {
+    gap: 4px;
+  }
+
+  .conflict-item {
+    padding: 6px 10px;
+    font-size: 11px;
+    gap: 8px;
+  }
+
+  .conflict-item-status {
+    padding: 2px 6px;
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  .conflict-loading,
+  .conflict-error,
+  .conflict-available {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  .conflict-found {
+    padding: 10px 12px;
+  }
+
+  .conflict-item {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .conflict-item-purpose {
+    width: 100%;
+  }
+}

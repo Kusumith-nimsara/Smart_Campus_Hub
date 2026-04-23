@@ -454,26 +454,166 @@
 }
 
 /* ══════════ RESPONSIVE ══════════ */
-@media (max-width: 1200px) {
-  .bookings-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+
+/* Large Tablets (> 1200px) */
+@media (max-width: 1400px) {
+  .bookings-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+  .bookings-content { padding: 28px; }
 }
 
-@media (max-width: 900px) {
+/* Tablets (1024px - 1200px) */
+@media (max-width: 1200px) {
+  .bookings-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  .bookings-content { padding: 24px; }
+  .bookings-topbar { padding: 20px 24px; }
+  .bookings-topbar h1 { font-size: 24px; }
+}
+
+/* Small Tablets/Large Mobile (768px - 1024px) */
+@media (max-width: 1024px) {
   .bookings-page { grid-template-columns: 1fr; }
   .bookings-sidebar {
     border-right: none;
-    border-bottom: 1px solid #e2e8f0;
-    padding: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 16px;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
   }
-  .bookings-brand { margin-bottom: 20px; }
+  .bookings-brand { margin-bottom: 0; }
   .bookings-identity { display: none; }
-  .bookings-nav { flex-direction: row; flex-wrap: wrap; }
-  .bookings-logout { margin-top: 16px; }
+  .bookings-nav { 
+    flex-direction: row; 
+    flex-wrap: wrap; 
+    gap: 8px;
+    flex: 1;
+  }
+  .bookings-nav button {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+  .bookings-logout { 
+    margin-top: 0;
+    margin-left: auto;
+  }
   .bookings-content { padding: 16px; }
+  .bookings-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .bookings-topbar { flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px 20px; }
+  .topbar-right { width: 100%; justify-content: space-between; gap: 8px; }
+  .bookings-create-btn { padding: 8px 16px; font-size: 13px; }
+  .bookings-review-btn { padding: 8px 16px; font-size: 13px; }
 }
 
-@media (max-width: 600px) {
-  .bookings-topbar { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px; }
-  .topbar-right { width: 100%; justify-content: space-between; }
-  .bookings-grid { grid-template-columns: 1fr; }
+/* Mobile (480px - 768px) */
+@media (max-width: 768px) {
+  .bookings-page { grid-template-columns: 1fr; }
+  .bookings-sidebar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .bookings-brand { 
+    width: 100%;
+    margin-bottom: 0;
+  }
+  .bookings-brand h2 { display: none; }
+  .bookings-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 6px;
+  }
+  .bookings-nav button {
+    flex: 1;
+    min-width: 100px;
+    padding: 8px 10px;
+    font-size: 11px;
+    gap: 4px;
+  }
+  .nav-icon { font-size: 14px; }
+  .bookings-logout {
+    width: 100%;
+    margin-top: 0;
+    margin-left: 0;
+  }
+  .bookings-content { padding: 12px; }
+  .bookings-topbar {
+    padding: 12px 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    border-radius: 12px;
+  }
+  .bookings-topbar h1 { font-size: 18px; }
+  .topbar-right {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .bookings-create-btn { 
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+  .bookings-review-btn { 
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+  .sidebar-toggle-btn { display: none; }
+  .bookings-grid { 
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .bookings-pagination { 
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pagination-btn {
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+  .pagination-info {
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+  }
+}
+
+/* Small Mobile (< 480px) */
+@media (max-width: 480px) {
+  .bookings-sidebar {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .bookings-logo {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+  .bookings-brand h2 { font-size: 16px; }
+  .bookings-nav button {
+    min-width: 80px;
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+  .bookings-content { padding: 8px; }
+  .bookings-topbar {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  .bookings-topbar h1 { 
+    font-size: 16px;
+    margin-bottom: 0;
+  }
+  .bookings-topbar p { display: none; }
+  .bookings-grid { 
+    gap: 10px;
+  }
+  .bookings-empty-icon { font-size: 40px; }
+  .bookings-empty h3 { font-size: 16px; }
+  .bookings-empty p { font-size: 13px; }
 }
