@@ -1,0 +1,222 @@
+/* ═══════════════════════════════════════════════════════
+   APPROVAL MODAL COMPONENT
+   ═══════════════════════════════════════════════════════ */
+
+.approval-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fade-in 0.2s ease;
+}
+
+.approval-modal {
+  background: #ffffff;
+  border-radius: 20px;
+  width: min(520px, 95vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: rise-in 0.3s ease;
+}
+
+/* ── Header ── */
+.approval-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 28px 0;
+}
+
+.approval-modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.approval-modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 16px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  margin: 0;
+  transition: all 0.2s ease;
+}
+
+.approval-modal-close:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+/* ── Body ── */
+.approval-modal-body {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.approval-booking-info {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.approval-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.approval-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-width: 90px;
+  flex-shrink: 0;
+}
+
+.approval-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  text-align: right;
+  word-break: break-word;
+}
+
+/* ── Reason ── */
+.approval-reason-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.approval-reason-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.approval-reason-input {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #1e293b;
+  background: #f8fafc;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+}
+
+.approval-reason-input:focus {
+  outline: none;
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+  background: #ffffff;
+}
+
+.approval-reason-input.input-error {
+  border-color: #ef4444;
+}
+
+.approval-field-error {
+  margin: 0;
+  font-size: 12px;
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.approval-char-count {
+  font-size: 11px;
+  color: #94a3b8;
+  text-align: right;
+}
+
+/* ── Footer ── */
+.approval-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 28px 24px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.approval-modal-footer button {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  margin: 0;
+}
+
+.approval-btn-cancel {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.approval-btn-cancel:hover {
+  background: #e2e8f0;
+}
+
+.approval-btn-reject {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.approval-btn-reject:hover:not(:disabled) {
+  background: #dc2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.approval-btn-approve {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: #ffffff;
+}
+
+.approval-btn-approve:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669, #10b981);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.approval-modal-footer button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* ── Responsive ── */
+@media (max-width: 500px) {
+  .approval-modal-body { padding: 18px 20px; }
+  .approval-modal-header { padding: 20px 20px 0; }
+  .approval-modal-footer { padding: 14px 20px 20px; flex-direction: column; }
+  .approval-info-row { flex-direction: column; gap: 4px; }
+  .approval-value { text-align: left; }
+}
