@@ -3,6 +3,8 @@ import LoginPage from './components/auth/Login/LoginPage'
 import PrivateRoute from './components/auth/PrivateRoute'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import ErrorBoundary from './components/common/ErrorBoundary'
+import { SidebarProvider } from './contexts/SidebarContext'
+import MainLayout from './components/layout/MainLayout'
 import RegisterPage from './pages/Register/RegisterPage'
 import LandingPage from './pages/Landing/LandingPage'
 import ProfilePage from './pages/Profile/ProfilePage'
@@ -18,11 +20,13 @@ import TicketsPage from './pages/Tickets/TicketsPage'
 import TicketDetailPage from './pages/TicketDetail/TicketDetailPage'
 import BookingsPage from './pages/Bookings/BookingsPage'
 import NotificationsPage from './pages/Notifications/NotificationsPage'
+import ResourcesPage from './pages/Resources/ResourcesPage'
 
 function App() {
   return (
     <ErrorBoundary>
-      <Routes>
+      <SidebarProvider>
+        <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -58,7 +62,9 @@ function App() {
           path="/profile"
           element={
             <PrivateRoute fallback={<Navigate to="/login" replace />}>
-              <ProfilePage />
+              <MainLayout pageClass="profile-page">
+                <ProfilePage />
+              </MainLayout>
             </PrivateRoute>
           }
         />
@@ -66,7 +72,9 @@ function App() {
           path="/admin-dashboard"
           element={
             <ProtectedRoute requiredRole="ADMIN">
-              <AdminDashboardPage />
+              <MainLayout pageClass="admin-dashboard-page">
+                <AdminDashboardPage />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -91,7 +99,9 @@ function App() {
           path="/admin/user-management"
           element={
             <ProtectedRoute requiredRole="ADMIN">
-              <UserManagementPage />
+              <MainLayout pageClass="um-page">
+                <UserManagementPage />
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -135,9 +145,19 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route path="/user-dashboard" element={<Navigate to="/dashboard" replace />} />
+        <Route
+          path="/resources"
+          element={
+            <PrivateRoute fallback={<Navigate to="/login" replace />}>
+              <MainLayout pageClass="resources-layout">
+                <ResourcesPage />
+              </MainLayout>
+            </PrivateRoute>
+          }
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+        </Routes>
+      </SidebarProvider>
     </ErrorBoundary>
   )
 }

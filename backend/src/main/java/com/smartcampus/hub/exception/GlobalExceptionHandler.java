@@ -1,14 +1,12 @@
 package com.smartcampus.hub.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -20,13 +18,23 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
+        return build(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicate(DuplicateResourceException ex) {
+        return build(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex) {
+    @ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleBadCredentials(org.springframework.security.authentication.BadCredentialsException ex) {
         return build(HttpStatus.UNAUTHORIZED, "Invalid username or password");
     }
 

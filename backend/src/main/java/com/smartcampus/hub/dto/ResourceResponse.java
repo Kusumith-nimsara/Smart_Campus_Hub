@@ -1,49 +1,26 @@
-package com.smartcampus.hub.model;
+package com.smartcampus.hub.dto;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.Document;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import com.smartcampus.hub.model.ResourceStatus;
+import com.smartcampus.hub.model.ResourceType;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Document(collection = "resources")
-public class Resource {
-
-    @Id
+public class ResourceResponse {
     private String id;
-
-    @NotBlank
     private String name;
-
-    @NotNull
     private ResourceType type;
-
     private Integer capacity;
-
-    @NotBlank
     private String location;
-
     private String description;
-
-    private List<AvailabilityWindow> availabilityWindows;
-
-    @NotNull
+    private List<AvailabilityWindowDto> availabilityWindows;
     private ResourceStatus status;
-
     private String imageUrl;
-
     private String createdBy;
-
-    @CreatedDate
     private LocalDateTime createdAt;
-
-    @LastModifiedDate
     private LocalDateTime updatedAt;
+    private boolean availableNow;
 
-    public Resource() {}
+    public ResourceResponse() {}
 
     public String getId() {
         return id;
@@ -93,11 +70,11 @@ public class Resource {
         this.description = description;
     }
 
-    public List<AvailabilityWindow> getAvailabilityWindows() {
+    public List<AvailabilityWindowDto> getAvailabilityWindows() {
         return availabilityWindows;
     }
 
-    public void setAvailabilityWindows(List<AvailabilityWindow> availabilityWindows) {
+    public void setAvailabilityWindows(List<AvailabilityWindowDto> availabilityWindows) {
         this.availabilityWindows = availabilityWindows;
     }
 
@@ -139,5 +116,13 @@ public class Resource {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public boolean isAvailableNow() {
+        return availableNow;
+    }
+
+    public void setAvailableNow(boolean availableNow) {
+        this.availableNow = availableNow;
     }
 }

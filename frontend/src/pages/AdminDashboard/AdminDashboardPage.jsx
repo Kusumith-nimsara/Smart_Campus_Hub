@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { showError, showLogoutAlert, showSuccess } from '../../utils/alerts'
 import './AdminDashboardPage.css'
+import { useSidebar } from '../../contexts/SidebarContext'
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate()
@@ -26,7 +27,7 @@ export default function AdminDashboardPage() {
   const [accountActive, setAccountActive] = useState(true)
   const [loadingUsers, setLoadingUsers] = useState(true)
   const [processingUserId, setProcessingUserId] = useState('')
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const { isOpen, toggle } = useSidebar()
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const accountMenuRef = useRef(null)
@@ -171,71 +172,14 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <main className={`admin-dashboard-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
-      <aside className="admin-sidebar" aria-hidden={!isSidebarOpen}>
-        <div className="admin-brand">
-          <div className="admin-logo">SC</div>
-          <h2>Smart Campus</h2>
-        </div>
-
-        <div className="admin-identity">
-          <p className="label">Logged in as</p>
-          <p className="name">{adminName}</p>
-          <p className="role">ADMIN</p>
-        </div>
-
-        <nav className="admin-nav" aria-label="Admin Dashboard Navigation">
-          <button type="button" className="active" onClick={() => navigate('/admin-dashboard')}>
-            <span className="nav-icon">📊</span> Dashboard
-          </button>
-          <button type="button" onClick={() => navigate('/admin/user-management')}>
-            <span className="nav-icon">👥</span> User Management
-          </button>
-          <button type="button" onClick={() => navigate('/profile')}>
-            <span className="nav-icon">👤</span> Profile
-          </button>
-          <button type="button" onClick={() => navigate('/notifications')} style={{ position: 'relative' }}>
-            <span className="nav-icon">🔔</span> Notifications
-            {unreadNotifCount > 0 && (
-              <span style={{
-                position: 'absolute',
-                top: '6px',
-                right: '10px',
-                background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-                color: '#fff',
-                borderRadius: '10px',
-                padding: '1px 7px',
-                fontSize: '11px',
-                fontWeight: '700',
-                lineHeight: '16px',
-                minWidth: '18px',
-                textAlign: 'center',
-                boxShadow: '0 2px 6px rgba(239,68,68,0.4)',
-              }}>{unreadNotifCount > 99 ? '99+' : unreadNotifCount}</span>
-            )}
-          </button>
-          <button type="button" onClick={() => navigate('/catalogue')}>
-            <span className="nav-icon">📚</span> Catalogue
-          </button>
-          <button type="button" onClick={() => navigate('/tickets')}>
-            <span className="nav-icon">🎫</span> Tickets
-          </button>
-          <button type="button" onClick={() => navigate('/bookings')}>
-            <span className="nav-icon">📅</span> Bookings
-          </button>
-        </nav>
-
-        <button type="button" className="admin-logout" onClick={handleLogout}>↪ Logout</button>
-      </aside>
-
-      <section className="admin-content">
+    <section className="admin-content">
         <header className="admin-topbar">
           <div className="topbar-left">
             <button 
               type="button" 
               className="sidebar-toggle-btn" 
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              aria-label="Toggle Sidebar"
+              onClick={toggle}
+              aria-label={isOpen ? 'Collapse sidebar' : 'Open sidebar'}
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
@@ -358,19 +302,19 @@ export default function AdminDashboardPage() {
         <section className="admin-panel features">
           <h2>⚡ Features Overview</h2>
           <div className="feature-grid">
-            <article className="feature-item resources">
+            <article className="feature-item resources" onClick={() => navigate('/resources')} style={{ cursor: 'pointer' }}>
               <h4>📁 Resources</h4>
               <p>Manage campus resources and labs</p>
             </article>
-            <article className="feature-item bookings">
+            <article className="feature-item bookings" onClick={() => navigate('/bookings')} style={{ cursor: 'pointer' }}>
               <h4>📅 Bookings</h4>
               <p>Schedule facilities and approvals</p>
             </article>
-            <article className="feature-item tickets">
+            <article className="feature-item tickets" onClick={() => navigate('/tickets')} style={{ cursor: 'pointer' }}>
               <h4>🎫 Tickets</h4>
               <p>Track support and maintenance issues</p>
             </article>
-            <article className="feature-item notifications">
+            <article className="feature-item notifications" onClick={() => navigate('/notifications')} style={{ cursor: 'pointer' }}>
               <h4>🔔 Notifications{unreadNotifCount > 0 ? ` (${unreadNotifCount})` : ''}</h4>
               <p>Broadcast updates to campus users</p>
             </article>
@@ -380,11 +324,11 @@ export default function AdminDashboardPage() {
         <section className="admin-bottom-grid">
           <article className="admin-panel quick-actions">
             <h2>🚀 Quick Actions</h2>
-            <div className="action-grid">
+              <div className="action-grid">
               <button type="button" onClick={() => navigate('/profile')}>Manage Profile</button>
-              <button type="button">View Resources</button>
-              <button type="button">Create Booking</button>
-              <button type="button">Open Tickets</button>
+              <button type="button" onClick={() => navigate('/resources')}>View Resources</button>
+              <button type="button" onClick={() => navigate('/bookings')}>Create Booking</button>
+              <button type="button" onClick={() => navigate('/tickets')}>Open Tickets</button>
             </div>
           </article>
 
@@ -422,6 +366,5 @@ export default function AdminDashboardPage() {
         </section>
 
       </section>
-    </main>
   )
 }

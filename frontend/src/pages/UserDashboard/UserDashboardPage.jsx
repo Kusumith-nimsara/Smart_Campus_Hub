@@ -4,6 +4,7 @@ import { clearAuthState } from '../../utils/api'
 import { showLogoutAlert } from '../../utils/alerts'
 import DashboardSidebar from '../../components/common/DashboardSidebar'
 import './UserDashboardPage.css'
+import { useSidebar } from '../../contexts/SidebarContext'
 
 export default function UserDashboardPage() {
   const navigate = useNavigate()
@@ -14,6 +15,7 @@ export default function UserDashboardPage() {
   const googleEmail = localStorage.getItem('authEmail') || ''
 
   const [loading, setLoading] = useState(true)
+  const { isOpen, toggle } = useSidebar()
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const [profile, setProfile] = useState({
@@ -402,6 +404,11 @@ export default function UserDashboardPage() {
               <button type="button" className="ud-action-btn" onClick={() => navigate('/catalogue')}>
                 <span className="ud-action-icon">📚</span>
                 <span className="ud-action-text">Catalogue</span>
+                <span className="ud-action-arrow">→</span>
+              </button>
+              <button type="button" className="ud-action-btn" onClick={() => navigate('/resources')}>
+                <span className="ud-action-icon">📁</span>
+                <span className="ud-action-text">Resources</span>
                 <span className="ud-action-arrow">→</span>
               </button>
               <button type="button" className="ud-action-btn" onClick={() => navigate('/profile')}>

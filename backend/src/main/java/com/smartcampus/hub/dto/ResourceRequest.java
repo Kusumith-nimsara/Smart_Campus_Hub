@@ -1,19 +1,13 @@
-package com.smartcampus.hub.model;
+package com.smartcampus.hub.dto;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.Document;
+import com.smartcampus.hub.model.ResourceStatus;
+import com.smartcampus.hub.model.ResourceType;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Document(collection = "resources")
-public class Resource {
-
-    @Id
-    private String id;
+public class ResourceRequest {
 
     @NotBlank
     private String name;
@@ -21,6 +15,7 @@ public class Resource {
     @NotNull
     private ResourceType type;
 
+    @Min(1)
     private Integer capacity;
 
     @NotBlank
@@ -28,30 +23,14 @@ public class Resource {
 
     private String description;
 
-    private List<AvailabilityWindow> availabilityWindows;
+    private List<AvailabilityWindowDto> availabilityWindows;
 
     @NotNull
     private ResourceStatus status;
 
     private String imageUrl;
 
-    private String createdBy;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
-    public Resource() {}
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+    public ResourceRequest() {}
 
     public String getName() {
         return name;
@@ -93,11 +72,11 @@ public class Resource {
         this.description = description;
     }
 
-    public List<AvailabilityWindow> getAvailabilityWindows() {
+    public List<AvailabilityWindowDto> getAvailabilityWindows() {
         return availabilityWindows;
     }
 
-    public void setAvailabilityWindows(List<AvailabilityWindow> availabilityWindows) {
+    public void setAvailabilityWindows(List<AvailabilityWindowDto> availabilityWindows) {
         this.availabilityWindows = availabilityWindows;
     }
 
@@ -115,29 +94,5 @@ public class Resource {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

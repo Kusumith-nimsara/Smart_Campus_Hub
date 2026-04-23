@@ -4,6 +4,7 @@ import { clearAuthState } from '../../utils/api'
 import { confirmAction, showError, showLogoutAlert, showSuccess } from '../../utils/alerts'
 import DashboardSidebar from '../../components/common/DashboardSidebar'
 import './UserManagementPage.css'
+import { useSidebar } from '../../contexts/SidebarContext'
 
 const TABS = [
   { key: 'all', label: 'All Users' },
@@ -37,7 +38,7 @@ export default function UserManagementPage() {
   const [editRole, setEditRole] = useState('')
   const [processingId, setProcessingId] = useState(null)
   const [actionMessage, setActionMessage] = useState('')
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const { isOpen, toggle } = useSidebar()
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const googleAvatarCandidate =
@@ -306,33 +307,22 @@ export default function UserManagementPage() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
-      <DashboardSidebar
-        fullName={adminName}
-        role="ADMIN"
-        currentPage="user-management"
-        onLogout={handleLogout}
-        isGoogleLogin={isGoogleLogin}
-        googleAvatarUrl={googleAvatarUrl}
-        googleEmail={googleEmail}
-      />
-
-      <section className="um-content" style={{ flex: 1, marginLeft: '250px' }}>
-        <header className="um-topbar">
-          <div className="topbar-left">
-            <button 
-              type="button" 
-              className="sidebar-toggle-btn" 
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              aria-label="Toggle Sidebar"
-            >
-              ☰
-            </button>
-            <div>
-              <h1 className="um-topbar-name">{adminName}</h1>
-              <p className="um-topbar-date">{today}</p>
-            </div>
+    <section className="um-content">
+      <header className="um-topbar">
+        <div className="topbar-left">
+          <button 
+            type="button" 
+            className="sidebar-toggle-btn" 
+            onClick={toggle}
+            aria-label={isOpen ? 'Collapse sidebar' : 'Open sidebar'}
+          >
+            ☰
+          </button>
+          <div>
+            <h1 className="um-topbar-name">{adminName}</h1>
+            <p className="um-topbar-date">{today}</p>
           </div>
+        </div>
           <div className="um-account-menu">
             <button
               type="button"
@@ -555,6 +545,5 @@ export default function UserManagementPage() {
           </div>
         </section>
       </section>
-    </div>
   )
 }
