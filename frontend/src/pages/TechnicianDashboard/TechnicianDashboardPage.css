@@ -1,0 +1,279 @@
+/* Technician Dashboard Styles */
+.tech-dashboard-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.tech-dashboard-header {
+  padding: 32px;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+}
+
+.tech-dashboard-header h1 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.tech-dashboard-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 16px;
+}
+
+.tech-tickets-filter {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 0 32px;
+}
+
+.tech-filter-btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.tech-filter-btn.active {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.tech-filter-btn:not(.active) {
+  background: white;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.tech-tickets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  padding: 0 32px;
+}
+
+.tech-ticket-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.tech-ticket-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.tech-ticket-title {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.tech-ticket-badges {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tech-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tech-badge-status {
+  background: #f0f4f8;
+  color: #4f46e5;
+}
+
+.tech-badge-priority {
+  color: white;
+}
+
+.tech-badge-critical {
+  background: #ef4444;
+}
+
+.tech-badge-high {
+  background: #f59e0b;
+}
+
+.tech-badge-medium {
+  background: #eab308;
+}
+
+.tech-badge-low {
+  background: #10b981;
+}
+
+.tech-ticket-description {
+  color: #64748b;
+  font-size: 14px;
+  margin: 8px 0;
+  min-height: 40px;
+  line-height: 1.5;
+}
+
+.tech-ticket-location {
+  color: #94a3b8;
+  font-size: 12px;
+  margin: 8px 0;
+}
+
+.tech-ticket-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tech-action-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.tech-btn-primary {
+  background: #4f46e5;
+  color: white;
+}
+
+.tech-btn-primary:hover {
+  background: #4338ca;
+}
+
+.tech-btn-success {
+  background: #10b981;
+  color: white;
+}
+
+.tech-btn-success:hover {
+  background: #059669;
+}
+
+.tech-btn-danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.tech-btn-danger:hover {
+  background: #fecaca;
+}
+
+/* Modal Styles */
+.tech-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.tech-modal {
+  background: white;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+.tech-modal h2 {
+  margin: 0 0 16px 0;
+  color: #1e293b;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.tech-modal p {
+  color: #64748b;
+  margin-bottom: 16px;
+}
+
+.tech-modal-textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+  font-family: inherit;
+  min-height: 120px;
+  margin-bottom: 16px;
+  resize: vertical;
+}
+
+.tech-modal-textarea:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.tech-modal-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.tech-modal-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .tech-tickets-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tech-dashboard-header {
+    padding: 20px;
+  }
+
+  .tech-tickets-filter {
+    padding: 0 20px;
+  }
+
+  .tech-tickets-grid {
+    padding: 0 20px;
+  }
+}

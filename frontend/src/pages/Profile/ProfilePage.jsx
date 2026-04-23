@@ -11,6 +11,7 @@ import {
   showSuccess,
 } from '../../utils/alerts'
 import './ProfilePage.css'
+import { useSidebar } from '../../contexts/SidebarContext'
 
 export default function ProfilePage() {
   const navigate = useNavigate()
@@ -24,7 +25,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [message, setMessage] = useState('')
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const { isOpen, toggle } = useSidebar()
   const [role, setRole] = useState(() => (localStorage.getItem('authRole') || localStorage.getItem('role') || 'USER'))
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
@@ -205,45 +206,22 @@ export default function ProfilePage() {
   })
 
   return (
-    <main className={`profile-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
-      <aside className="profile-sidebar" aria-hidden={!isSidebarOpen}>
-        <div className="brand-mark">SC</div>
-        <h2>Smart Campus</h2>
-
-        <p className="sidebar-user-label">Logged in as</p>
-        <p className="sidebar-user-name">{fullName}</p>
-        <p className="sidebar-user-role">{loginType}</p>
-
-        <nav className="sidebar-menu" aria-label="Dashboard Menu">
-          <button type="button" onClick={() => navigate(isAdmin ? '/admin-dashboard' : '/dashboard')}>📊 Dashboard</button>
-          <button type="button" className="active" onClick={() => navigate('/profile')}>👤 Profile</button>
-          <button type="button">🔔 Notifications</button>
-          {isAdmin && (
-            <button type="button" onClick={() => navigate('/admin/user-management')}>👥 User Management</button>
-          )}
-        </nav>
-
-        <button type="button" className="sidebar-logout" onClick={handleLogout}>
-          Logout
-        </button>
-      </aside>
-
-      <section className="profile-content">
-        <header className="profile-topbar">
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <button 
-              type="button" 
-              className="sidebar-toggle-btn" 
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              aria-label="Toggle Sidebar"
-            >
-              ☰
-            </button>
-            <div>
-              <h1>Welcome back, {firstName || username || 'User'}!</h1>
-              <p>{today}</p>
-            </div>
+    <section className="profile-content">
+      <header className="profile-topbar">
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <button 
+            type="button" 
+            className="sidebar-toggle-btn" 
+            onClick={toggle}
+            aria-label={isOpen ? 'Collapse sidebar' : 'Open sidebar'}
+          >
+            ☰
+          </button>
+          <div>
+            <h1>Welcome back, {firstName || username || 'User'}!</h1>
+            <p>{today}</p>
           </div>
+        </div>
           <div className="topbar-right">
             <div className="profile-account-menu">
               <button
@@ -396,12 +374,11 @@ export default function ProfilePage() {
 
           <article className="widget quick-links">
             <h2>Quick Links</h2>
-            <button type="button">Resources</button>
-            <button type="button">Bookings</button>
-            <button type="button">Tickets</button>
+            <button type="button" onClick={() => navigate('/resources')}>Resources</button>
+            <button type="button" onClick={() => navigate('/bookings')}>Bookings</button>
+            <button type="button" onClick={() => navigate('/tickets')}>Tickets</button>
           </article>
         </div>
       </section>
-    </main>
   )
 }

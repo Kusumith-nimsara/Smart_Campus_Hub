@@ -1,0 +1,273 @@
+// Ticket API utility functions
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
+
+const getToken = () => localStorage.getItem('authToken') || ''
+
+export const ticketAPI = {
+  // User operations
+  createTicket: async (ticketData) => {
+    const response = await fetch(`${API_BASE_URL}/tickets`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify(ticketData),
+    })
+    if (!response.ok) throw new Error('Failed to create ticket')
+    return response.json()
+  },
+
+  getUserTickets: async (page = 0, size = 10) => {
+    const response = await fetch(
+      `${API_BASE_URL}/tickets?page=${page}&size=${size}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+      }
+    )
+    if (!response.ok) throw new Error('Failed to fetch tickets')
+    return response.json()
+  },
+
+  getTicketById: async (ticketId) => {
+    const response = await fetch(`${API_BASE_URL}/tickets/${ticketId}`, {
+      headers: {
+        'Authorization': `Bearer ${getToken()}`,
+      },
+    })
+    if (!response.ok) throw new Error('Failed to fetch ticket')
+    return response.json()
+  },
+
+  uploadImage: async (ticketId, imageBase64) => {
+    const response = await fetch(`${API_BASE_URL}/tickets/${ticketId}/images`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify({ imageBase64 }),
+    })
+    if (!response.ok) throw new Error('Failed to upload image')
+    return response.json()
+  },
+
+  addComment: async (ticketId, content) => {
+    const response = await fetch(`${API_BASE_URL}/tickets/${ticketId}/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify({ content }),
+    })
+    if (!response.ok) throw new Error('Failed to add comment')
+    return response.json()
+  },
+
+  deleteComment: async (ticketId, commentId) => {
+    const response = await fetch(
+      `${API_BASE_URL}/tickets/${ticketId}/comments/${commentId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+      }
+    )
+    if (!response.ok) throw new Error('Failed to delete comment')
+    return response.json()
+  },
+
+  // Admin operations
+  getAllTickets: async (page = 0, size = 10) => {
+    const response = await fetch(
+      `${API_BASE_URL}/tickets/admin/all?page=${page}&size=${size}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+      }
+    )
+    if (!response.ok) throw new Error('Failed to fetch tickets')
+    return response.json()
+  },
+
+  assignTechnician: async (ticketId, technicianId) => {
+    const response = await fetch(
+      `${API_BASE_URL}/tickets/${ticketId}/assign?technicianId=${technicianId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+      }
+    )
+    if (!response.ok) throw new Error('Failed to assign technician')
+    return response.json()
+  },
+
+  updateStatus: async (ticketId, status, rejectionReason = '') => {
+    const params = new URLSearchParams({ status })
+    if (rejectionReason) params.append('rejectionReason', rejectionReason)
+    
+    const response = await fetch(
+      `${API_BASE_URL}/tickets/${ticketId}/status?${params}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+      }
+    )
+    if (!response.ok) throw new Error('Failed to update status')
+    return response.json()
+  },
+
+  updateResolutionNotes: async (ticketId, notes) => {
+    const response = await fetch(
+      `${API_BASE_URL}/tickets/${ticketId}/resolution-notes`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ notes }),
+      }
+    )
+    if (!response.ok) throw new Error('Failed to update resolution notes')
+    return response.json()
+  },
+
+  getTechnicianTickets: async (page = 0, size = 10) => {
+    const response = await fetch(
+      `${API_BASE_URL}/tickets/technician/assigned?page=${page}&size=${size}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+      }
+    )
+    if (!response.ok) throw new Error('Failed to fetch technician tickets')
+    return response.json()
+  },
+
+  getTicketsByStatus: async (status, page = 0, size = 10) => {
+    const response = await fetch(
+      `${API_BASE_URL}/tickets/status/${status}?page=${page}&size=${size}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+      }
+    )
+    if (!response.ok) throw new Error('Failed to fetch tickets')
+    return response.json()
+  },
+
+  // Technician operations
+  technicianCompleteTicket: async (ticketId, resolutionNotes) => {
+    const response = await fetch(
+      `${API_BASE_URL}/tickets/${ticketId}/technician/complete`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ resolutionNotes }),
+      }
+    )
+    if (!response.ok) throw new Error('Failed to complete ticket')
+    return response.json()
+  },
+
+  technicianRejectTicket: async (ticketId, rejectionReason) => {
+    const response = await fetch(
+      `${API_BASE_URL}/tickets/${ticketId}/technician/reject`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ rejectionReason }),
+      }
+    )
+    if (!response.ok) throw new Error('Failed to reject ticket')
+    return response.json()
+  },
+
+  // Admin approval operations
+  adminApproveTicket: async (ticketId) => {
+    const response = await fetch(
+      `${API_BASE_URL}/tickets/${ticketId}/admin/approve`,
+      {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+      }
+    )
+    if (!response.ok) throw new Error('Failed to approve ticket')
+    return response.json()
+  },
+
+  adminRejectCompletion: async (ticketId, rejectionReason) => {
+    const response = await fetch(
+      `${API_BASE_URL}/tickets/${ticketId}/admin/reject-completion`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ rejectionReason }),
+      }
+    )
+    if (!response.ok) throw new Error('Failed to reject completion')
+    return response.json()
+  },
+
+  getOpenTickets: async (page = 0, size = 10) => {
+    const response = await fetch(
+      `${API_BASE_URL}/tickets/admin/open?page=${page}&size=${size}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+      }
+    )
+    if (!response.ok) throw new Error('Failed to fetch open tickets')
+    return response.json()
+  },
+
+  getInProgressTickets: async (page = 0, size = 10) => {
+    const response = await fetch(
+      `${API_BASE_URL}/tickets/admin/in-progress?page=${page}&size=${size}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+      }
+    )
+    if (!response.ok) throw new Error('Failed to fetch in-progress tickets')
+    return response.json()
+  },
+
+  getResolvedTickets: async (page = 0, size = 10) => {
+    const response = await fetch(
+      `${API_BASE_URL}/tickets/admin/resolved?page=${page}&size=${size}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${getToken()}`,
+        },
+      }
+    )
+    if (!response.ok) throw new Error('Failed to fetch resolved tickets')
+    return response.json()
+  },
+}

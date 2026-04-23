@@ -96,20 +96,21 @@
 .nav-login-btn {
   padding: 8px 22px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  color: #475569;
+  border: none;
+  background: #4f46e5;
+  color: #ffffff;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
 }
 
 .nav-login-btn:hover {
-  background: #f8fafc;
-  color: #0f172a;
-  border-color: #cbd5e1;
+  background: #4338ca;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.45);
+  transform: translateY(-1px);
 }
 
 /* ── Hero Section ── */

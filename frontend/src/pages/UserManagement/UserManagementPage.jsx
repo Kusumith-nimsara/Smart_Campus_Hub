@@ -2,7 +2,9 @@ import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { clearAuthState } from '../../utils/api'
 import { confirmAction, showError, showLogoutAlert, showSuccess } from '../../utils/alerts'
+
 import './UserManagementPage.css'
+import { useSidebar } from '../../contexts/SidebarContext'
 
 const TABS = [
   { key: 'all', label: 'All Users' },
@@ -36,7 +38,7 @@ export default function UserManagementPage() {
   const [editRole, setEditRole] = useState('')
   const [processingId, setProcessingId] = useState(null)
   const [actionMessage, setActionMessage] = useState('')
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const { isOpen, toggle } = useSidebar()
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const googleAvatarCandidate =
@@ -305,55 +307,22 @@ export default function UserManagementPage() {
   }
 
   return (
-    <main className={`um-page ${!isSidebarOpen ? 'sidebar-collapsed' : ''}`}>
-      <aside className="um-sidebar" aria-hidden={!isSidebarOpen}>
-        <div className="um-brand">
-          <div className="um-logo">SC</div>
-          <h2>Smart Campus</h2>
-        </div>
-
-        <div className="um-identity">
-          <p className="um-label">Logged in as</p>
-          <p className="um-name">{adminName}</p>
-          <p className="um-role">ADMIN</p>
-        </div>
-
-        <nav className="um-nav" aria-label="Admin Navigation">
-          <button type="button" onClick={() => navigate('/admin-dashboard')}>
-            <span className="nav-icon">📊</span> Dashboard
+    <section className="um-content">
+      <header className="um-topbar">
+        <div className="topbar-left">
+          <button 
+            type="button" 
+            className="sidebar-toggle-btn" 
+            onClick={toggle}
+            aria-label={isOpen ? 'Collapse sidebar' : 'Open sidebar'}
+          >
+            ☰
           </button>
-          <button type="button" className="active" onClick={() => navigate('/admin/user-management')}>
-            <span className="nav-icon">👥</span> User Management
-          </button>
-          <button type="button" onClick={() => navigate('/profile')}>
-            <span className="nav-icon">👤</span> Profile
-          </button>
-          <button type="button">
-            <span className="nav-icon">🔔</span> Notifications
-          </button>
-        </nav>
-
-        <button type="button" className="um-logout" onClick={handleLogout}>
-          Logout
-        </button>
-      </aside>
-
-      <section className="um-content">
-        <header className="um-topbar">
-          <div className="topbar-left">
-            <button 
-              type="button" 
-              className="sidebar-toggle-btn" 
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              aria-label="Toggle Sidebar"
-            >
-              ☰
-            </button>
-            <div>
-              <h1 className="um-topbar-name">{adminName}</h1>
-              <p className="um-topbar-date">{today}</p>
-            </div>
+          <div>
+            <h1 className="um-topbar-name">{adminName}</h1>
+            <p className="um-topbar-date">{today}</p>
           </div>
+        </div>
           <div className="um-account-menu">
             <button
               type="button"
@@ -576,6 +545,5 @@ export default function UserManagementPage() {
           </div>
         </section>
       </section>
-    </main>
   )
 }

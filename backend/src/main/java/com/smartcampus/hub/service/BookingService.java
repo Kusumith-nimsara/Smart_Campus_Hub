@@ -463,7 +463,7 @@ public class BookingService {
         // Enrich with resource details if available (facility integration)
         if (resource != null) {
             dto.setResourceName(resource.getName());
-            dto.setResourceType(resource.getType());
+            dto.setResourceType(resource.getType() != null ? resource.getType().name() : null);
             dto.setResourceLocation(resource.getLocation());
             dto.setResourceCapacity(resource.getCapacity());
         }

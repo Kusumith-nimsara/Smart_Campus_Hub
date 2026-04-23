@@ -33,6 +33,10 @@ export default function LoginPage() {
 
   const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? ''
+  // Debug: print runtime Vite env value for Google client id
+  // Remove this in production — it's for local debugging only.
+  // eslint-disable-next-line no-console
+  console.log('VITE_GOOGLE_CLIENT_ID (runtime):', import.meta.env.VITE_GOOGLE_CLIENT_ID)
 
   async function loginWithGoogle(idToken) {
     setLoading(true)
@@ -365,7 +369,13 @@ export default function LoginPage() {
               />
             </div>
           ) : (
-            <p className="warning">Add VITE_GOOGLE_CLIENT_ID to .env so Google button can render.</p>
+            <p className="warning">
+              Add VITE_GOOGLE_CLIENT_ID to .env so Google button can render.
+              <br />
+              <small>
+                Runtime value: <strong>{String(import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '(empty)')}</strong>
+              </small>
+            </p>
           )}
 
           <p className="status">{message}</p>

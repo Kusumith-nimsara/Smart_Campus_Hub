@@ -45,8 +45,9 @@ export function isTokenExpired() {
  * Automatically handles 401/403 by logging out and redirecting.
  */
 export async function apiFetch(path, options = {}) {
-  // Check token expiry before making the request
-  if (isTokenExpired()) {
+  // Only redirect for expired sessions when a token exists and is expired.
+  const token = localStorage.getItem('token') || localStorage.getItem('authToken')
+  if (token && isTokenExpired()) {
     clearAuthState()
     window.location.href = '/login?expired=true'
     throw new Error('Session expired. Please log in again.')
@@ -73,3 +74,13 @@ export async function apiFetch(path, options = {}) {
 
 export { API_BASE_URL, getAuthHeaders, clearAuthState }
 export default apiFetch
+
+// ── Resource API ──────────────────────────────────────────────
+export const resourceAPI = {
+  getAll: (params) => apiFetch('/resources' + (params ? '?' + new URLSearchParams(params).toString() : '')),
+  getById: (id) => apiFetch(`/resources/${id}`),
+  create: (data) => apiFetch('/resources', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id, data) => apiFetch(`/resources/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  patchStatus: (id, status) => apiFetch(`/resources/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+  delete: (id) => apiFetch(`/resources/${id}`, { method: 'DELETE' }),
+}
