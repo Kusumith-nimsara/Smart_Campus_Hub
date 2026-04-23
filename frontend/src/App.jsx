@@ -19,6 +19,8 @@ import CataloguePage from './pages/Catalogue/CataloguePage'
 import TicketsPage from './pages/Tickets/TicketsPage'
 import TicketDetailPage from './pages/TicketDetail/TicketDetailPage'
 import BookingsPage from './pages/Bookings/BookingsPage'
+import CreateBookingPage from './pages/Bookings/CreateBookingPage'
+import AdminBookingReviewPage from './pages/Bookings/AdminBookingReviewPage'
 import NotificationsPage from './pages/Notifications/NotificationsPage'
 import ResourcesPage from './pages/Resources/ResourcesPage'
 
@@ -149,6 +151,26 @@ function App() {
                 <BookingsPage />
               </MainLayout>
             </PrivateRoute>
+          }
+        />
+        <Route
+          path="/bookings/create"
+          element={
+            <PrivateRoute fallback={<Navigate to="/login" replace />}>
+              <MainLayout pageClass="create-booking-layout">
+                <CreateBookingPage />
+              </MainLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/bookings/admin/review"
+          element={
+            <ProtectedRoute requiredRole="ADMIN">
+              <MainLayout pageClass="admin-review-layout">
+                <AdminBookingReviewPage />
+              </MainLayout>
+            </ProtectedRoute>
           }
         />
         <Route

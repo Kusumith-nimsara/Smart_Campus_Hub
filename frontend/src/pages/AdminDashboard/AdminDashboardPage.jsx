@@ -7,7 +7,7 @@ import { useSidebar } from '../../contexts/SidebarContext'
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate()
-  const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
+  const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8082/api'
   const token = localStorage.getItem('authToken') || localStorage.getItem('token') || ''
   const adminName = localStorage.getItem('username') || 'Admin User'
   const isGoogleLogin = localStorage.getItem('authLoginType') === 'google'
@@ -326,8 +326,8 @@ export default function AdminDashboardPage() {
             <h2>🚀 Quick Actions</h2>
               <div className="action-grid">
               <button type="button" onClick={() => navigate('/profile')}>Manage Profile</button>
-              <button type="button" onClick={() => navigate('/resources')}>View Resources</button>
-              <button type="button" onClick={() => navigate('/bookings')}>Create Booking</button>
+              <button type="button" onClick={() => navigate('/catalogue')}>View Resources</button>
+              <button type="button" onClick={() => navigate('/bookings/admin/review')}>Review Bookings</button>
               <button type="button" onClick={() => navigate('/tickets')}>Open Tickets</button>
             </div>
           </article>

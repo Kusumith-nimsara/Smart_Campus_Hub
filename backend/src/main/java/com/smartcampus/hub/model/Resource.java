@@ -140,4 +140,8 @@ public class Resource {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public boolean isAvailable() {
+        return this.status == ResourceStatus.ACTIVE;
+    }
 }
