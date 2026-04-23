@@ -12,7 +12,7 @@
 }
 
 .bookings-page.sidebar-collapsed {
-  grid-template-columns: 0px 1fr;
+  grid-template-columns: 0 1fr;
 }
 
 /* ══════════ SIDEBAR ══════════ */

@@ -177,13 +177,13 @@
   margin: 0;
 }
 
-.approval-btn-cancel {
+.approval-modal-footer .approval-btn-cancel {
   background: #f1f5f9;
   color: #475569;
-  border: 1px solid #e2e8f0 !important;
+  border: 1px solid #e2e8f0;
 }
 
-.approval-btn-cancel:hover {
+.approval-modal-footer .approval-btn-cancel:hover {
   background: #e2e8f0;
 }
 

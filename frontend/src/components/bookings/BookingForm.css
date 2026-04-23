@@ -49,9 +49,11 @@
   min-height: 80px;
 }
 
-.booking-form-group .input-error {
-  border-color: #ef4444 !important;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+.booking-form-group input.input-error,
+.booking-form-group select.input-error,
+.booking-form-group textarea.input-error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
 /* ── Row layout ── */

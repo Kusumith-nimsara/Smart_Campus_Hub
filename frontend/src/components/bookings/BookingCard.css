@@ -323,11 +323,8 @@
   }
 }
 
-/* ── Responsive ── */
+/* ── Extra small screens ── */
 @media (max-width: 600px) {
-  .booking-card { padding: 18px; }
-  .booking-card-details { grid-template-columns: 1fr; }
-  .booking-card-title-row { flex-direction: column; }
   .booking-card-footer { flex-direction: column; gap: 12px; align-items: stretch; }
   .booking-card-actions { justify-content: flex-end; }
 }
