@@ -1,0 +1,313 @@
+/* ═══════════════════════════════════════════════════════
+   ADMIN BOOKING REVIEW PAGE
+   ═══════════════════════════════════════════════════════ */
+
+.admin-review-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: #f8fafc;
+  transition: grid-template-columns 0.3s ease;
+}
+
+.admin-review-page.sidebar-collapsed {
+  grid-template-columns: 0px 1fr;
+}
+
+/* ══════════ SIDEBAR ══════════ */
+.admin-review-sidebar {
+  background: #0f172a;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 10;
+  overflow: hidden;
+  transition: padding 0.3s ease, opacity 0.3s ease;
+}
+
+.admin-review-page.sidebar-collapsed .admin-review-sidebar {
+  padding: 24px 0;
+  opacity: 0;
+}
+
+.admin-review-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.admin-review-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  font-weight: 800;
+  font-size: 14px;
+  color: #ffffff;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+}
+
+.admin-review-brand h2 {
+  margin: 0;
+  font-size: 19px;
+  color: #f8fafc;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.admin-review-identity {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  margin-bottom: 24px;
+  white-space: nowrap;
+}
+
+.admin-review-identity .label {
+  margin: 0;
+  font-size: 11px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.admin-review-identity .name {
+  margin: 6px 0 2px;
+  color: #f8fafc;
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.admin-review-identity .role {
+  margin: 0;
+  font-size: 12px;
+  color: #818cf8;
+  font-weight: 700;
+}
+
+.admin-review-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.admin-review-nav button {
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #cbd5e1;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+}
+
+.admin-review-nav button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+}
+
+.admin-review-logout {
+  margin-top: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #94a3b8;
+  background: transparent;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.admin-review-logout:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* ══════════ CONTENT ══════════ */
+.admin-review-content {
+  padding: 32px;
+  overflow-y: auto;
+}
+
+.admin-review-topbar {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  margin-bottom: 24px;
+}
+
+.admin-review-topbar h1 {
+  margin: 0;
+  font-size: clamp(22px, 3vw, 28px);
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.admin-review-topbar p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.admin-review-back-btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0;
+}
+
+.admin-review-back-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* ── Status Tabs ── */
+.admin-review-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.review-tab {
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  transition: all 0.2s ease;
+  text-transform: capitalize;
+  margin: 0;
+}
+
+.review-tab:hover:not(.active) {
+  background: #f1f5f9;
+}
+
+.review-tab.active {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+}
+
+/* ── Grid ── */
+.admin-review-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+/* ── Loading ── */
+.admin-review-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+}
+
+.admin-review-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #4f46e5;
+  border-radius: 50%;
+  animation: admin-review-spin 0.7s linear infinite;
+}
+
+@keyframes admin-review-spin {
+  to { transform: rotate(360deg); }
+}
+
+.admin-review-loading p {
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* ── Empty State ── */
+.admin-review-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.admin-review-empty-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+
+.admin-review-empty h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.admin-review-empty p {
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+/* ══════════ RESPONSIVE ══════════ */
+@media (max-width: 900px) {
+  .admin-review-page { grid-template-columns: 1fr; }
+  .admin-review-sidebar {
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 16px;
+  }
+  .admin-review-brand { margin-bottom: 20px; }
+  .admin-review-identity { display: none; }
+  .admin-review-nav { flex-direction: row; flex-wrap: wrap; }
+  .admin-review-logout { margin-top: 16px; }
+  .admin-review-content { padding: 16px; }
+}
+
+@media (max-width: 600px) {
+  .admin-review-topbar { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px; }
+  .admin-review-grid { grid-template-columns: 1fr; }
+  .admin-review-tabs { gap: 6px; }
+  .review-tab { padding: 6px 14px; font-size: 12px; }
+}
