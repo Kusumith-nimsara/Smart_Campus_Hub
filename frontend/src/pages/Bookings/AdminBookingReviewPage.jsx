@@ -93,6 +93,7 @@ export default function AdminBookingReviewPage() {
         </header>
 
         {/* Status Filter Tabs */}
+        {/* 
         <div className="admin-review-tabs">
           {['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED', ''].map((status) => (
             <button
@@ -105,6 +106,7 @@ export default function AdminBookingReviewPage() {
             </button>
           ))}
         </div>
+        */}
 
         {/* Bookings List */}
         {loading ? (
