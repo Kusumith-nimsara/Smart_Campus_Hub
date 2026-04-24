@@ -231,9 +231,21 @@ public class NotificationService {
      */
     public void sendBookingApprovedNotification(Booking booking) {
         Objects.requireNonNull(booking, "Booking cannot be null");
-        String message = String.format("Your booking for resource #%d has been approved", 
-            booking.getResourceId());
-        createNotification(String.valueOf(booking.getUserId()), message, "BOOKING_APPROVED");
+        String message = String.format(
+            "Your booking for resource '%s' on %s has been approved.%s",
+            booking.getResourceId(),
+            booking.getStartTime(),
+            booking.getApprovalReason() != null && !booking.getApprovalReason().isBlank()
+                ? " Reason: " + booking.getApprovalReason()
+                : "");
+        createNotification(
+            String.valueOf(booking.getUserId()),
+            "Booking Approved",
+            message,
+            "BOOKING_APPROVED",
+            String.valueOf(booking.getId()),
+            "BOOKING"
+        );
     }
 
     /**
