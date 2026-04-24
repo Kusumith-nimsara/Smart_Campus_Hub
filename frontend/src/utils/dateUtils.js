@@ -138,8 +138,17 @@ export function isPastDate(date) {
  */
 export function getDurationHours(start, end) {
   if (!start || !end) return 0
-  const s = typeof start === 'string' ? parseColomboDateTimeToUtcMs(start) : NaN
-  const e = typeof end === 'string' ? parseColomboDateTimeToUtcMs(end) : NaN
+  let s, e;
+  if (typeof start === 'string' && start.length <= 16 && !start.includes('Z')) {
+    s = parseColomboDateTimeToUtcMs(start)
+  } else {
+    s = new Date(start).getTime()
+  }
+  if (typeof end === 'string' && end.length <= 16 && !end.includes('Z')) {
+    e = parseColomboDateTimeToUtcMs(end)
+  } else {
+    e = new Date(end).getTime()
+  }
   if (Number.isNaN(s) || Number.isNaN(e)) return 0
   const diffMs = e - s
   return Math.round((diffMs / (1000 * 60 * 60)) * 10) / 10
@@ -154,8 +163,17 @@ export function getDurationHours(start, end) {
  */
 export function getDurationMinutes(start, end) {
   if (!start || !end) return 0
-  const s = typeof start === 'string' ? parseColomboDateTimeToUtcMs(start) : NaN
-  const e = typeof end === 'string' ? parseColomboDateTimeToUtcMs(end) : NaN
+  let s, e;
+  if (typeof start === 'string' && start.length <= 16 && !start.includes('Z')) {
+    s = parseColomboDateTimeToUtcMs(start)
+  } else {
+    s = new Date(start).getTime()
+  }
+  if (typeof end === 'string' && end.length <= 16 && !end.includes('Z')) {
+    e = parseColomboDateTimeToUtcMs(end)
+  } else {
+    e = new Date(end).getTime()
+  }
   if (Number.isNaN(s) || Number.isNaN(e)) return 0
   return Math.round((e - s) / (1000 * 60))
 }

@@ -196,15 +196,7 @@ export default function BookingsPage() {
                 + New Booking
               </button>
             )}
-            {isAdmin && (
-              <button
-                type="button"
-                className="bookings-review-btn"
-                onClick={() => navigate('/bookings/admin/review')}
-              >
-                ⏳ Review Pending
-              </button>
-            )}
+
             <div className="bookings-account-menu" ref={accountMenuRef}>
               <button
                 type="button"
@@ -290,7 +282,7 @@ export default function BookingsPage() {
                 className="bookings-empty-cta"
                 onClick={() => navigate('/bookings/create')}
               >
-                + Create Your First Booking
+                + Add your booking
               </button>
             )}
           </div>

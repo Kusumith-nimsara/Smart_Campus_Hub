@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { validateBookingForm, hasErrors } from '../../utils/validationUtils'
-import { getDefaultStartTime, getDefaultEndTime } from '../../utils/dateUtils'
+import { getDefaultStartTime, getDefaultEndTime, parseColomboDateTimeToUtcMs } from '../../utils/dateUtils'
 import ConflictChecker from './ConflictChecker'
 import { resourceAPI } from '../../utils/api'
 import './BookingForm.css'
@@ -93,6 +93,8 @@ export default function BookingForm({ onSubmit, isSubmitting, resources = [] }) 
     const { name, value, type } = e.target
     const newValue = type === 'number' ? (value === '' ? '' : Number(value)) : value
 
+    let nextFormData = null;
+
     setFormData(prev => {
       const updated = { ...prev, [name]: newValue }
 
@@ -106,35 +108,42 @@ export default function BookingForm({ onSubmit, isSubmitting, resources = [] }) 
 
       // Auto-adjust end time when start time changes
       if (name === 'startTime' && value) {
-        const startDate = new Date(value)
-        const endDate = new Date(updated.endTime)
-        if (isNaN(endDate.getTime()) || endDate <= startDate) {
+        const startDateMs = parseColomboDateTimeToUtcMs(value)
+        const endDateMs = parseColomboDateTimeToUtcMs(updated.endTime)
+        if (Number.isNaN(endDateMs) || endDateMs <= startDateMs) {
           updated.endTime = getDefaultEndTime(value)
         }
       }
 
-      // Re-validate time fields immediately whenever either time changes.
-      if (name === 'startTime' || name === 'endTime') {
-        const nextErrors = validateForm(updated)
-        setTouched((prevTouched) => ({ ...prevTouched, startTime: true, endTime: true }))
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          ...(nextErrors.startTime ? { startTime: nextErrors.startTime } : { startTime: undefined }),
-          ...(nextErrors.endTime ? { endTime: nextErrors.endTime } : { endTime: undefined }),
-        }))
-      }
-
+      nextFormData = updated;
       return updated
     })
 
-    // Clear field error on change
-    if (errors[name]) {
-      setErrors(prev => {
-        const updated = { ...prev }
-        delete updated[name]
-        return updated
-      })
-    }
+    // After state update is queued, update errors and touched
+    setTimeout(() => {
+      if (name === 'startTime' || name === 'endTime') {
+        const nextErrors = validateForm(nextFormData)
+        setTouched((prevTouched) => ({ ...prevTouched, startTime: true, endTime: true }))
+        setErrors((prevErrors) => {
+          const updatedErrors = { ...prevErrors }
+          if (nextErrors.startTime) updatedErrors.startTime = nextErrors.startTime;
+          else delete updatedErrors.startTime;
+          
+          if (nextErrors.endTime) updatedErrors.endTime = nextErrors.endTime;
+          else delete updatedErrors.endTime;
+          
+          return updatedErrors
+        })
+      } else {
+        // Clear field error on change for other fields
+        setErrors(prev => {
+          if (!prev[name]) return prev;
+          const updated = { ...prev }
+          delete updated[name]
+          return updated
+        })
+      }
+    }, 0);
   }
 
   function handleBlur(e) {
