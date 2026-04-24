@@ -180,6 +180,10 @@
 .notif-card.type-TICKET_RESOLVED::before { background: #059669; }
 .notif-card.type-TICKET_COMMENT::before { background: #6366f1; }
 .notif-card.type-TICKET_REJECTED::before { background: #dc2626; }
+.notif-card.type-BOOKING_CREATED::before { background: #0891b2; }
+.notif-card.type-BOOKING_APPROVED::before { background: #059669; }
+.notif-card.type-BOOKING_REJECTED::before { background: #dc2626; }
+.notif-card.type-BOOKING_CANCELLED::before { background: #9ca3af; }
 .notif-card.type-MAINTENANCE_SCHEDULED::before { background: #8b5cf6; }
 .notif-card.type-INCIDENT_REPORTED::before { background: #ef4444; }
 .notif-card.type-INCIDENT_UPDATED::before { background: #f97316; }
@@ -221,6 +225,10 @@
 .notif-icon-wrapper.ticket-updated { background: #eff6ff; }
 .notif-icon-wrapper.ticket-assigned { background: #fffbeb; }
 .notif-icon-wrapper.ticket-resolved { background: #ecfdf5; }
+.notif-icon-wrapper.booking-created { background: #e0f2fe; }
+.notif-icon-wrapper.booking-approved { background: #d1fae5; }
+.notif-icon-wrapper.booking-rejected { background: #fee2e2; }
+.notif-icon-wrapper.booking-cancelled { background: #f1f5f9; }
 .notif-icon-wrapper.maintenance { background: #f5f3ff; }
 .notif-icon-wrapper.incident { background: #fef2f2; }
 .notif-icon-wrapper.incident-update { background: #fff7ed; }
@@ -275,6 +283,7 @@
 }
 
 .notif-type-badge.ticket { background: #eef2ff; color: #4338ca; }
+.notif-type-badge.booking { background: #e0f2fe; color: #0369a1; }
 .notif-type-badge.maintenance { background: #f5f3ff; color: #7c3aed; }
 .notif-type-badge.incident { background: #fef2f2; color: #dc2626; }
 .notif-type-badge.system { background: #f0f9ff; color: #0284c7; }
@@ -390,7 +399,7 @@
 /* ══════════ STATS BAR ══════════ */
 .notif-stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -432,6 +441,7 @@
 
 .notif-stat-card.accent-blue { border-top: 3px solid #4f46e5; }
 .notif-stat-card.accent-green { border-top: 3px solid #10b981; }
+.notif-stat-card.accent-teal { border-top: 3px solid #0891b2; }
 .notif-stat-card.accent-amber { border-top: 3px solid #f59e0b; }
 .notif-stat-card.accent-red { border-top: 3px solid #ef4444; }
 
@@ -455,7 +465,11 @@
 }
 
 /* ══════════ RESPONSIVE ══════════ */
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
+  .notif-stats { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 900px) {
   .notif-stats { grid-template-columns: repeat(2, 1fr); }
 }
 

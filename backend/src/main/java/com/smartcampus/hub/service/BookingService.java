@@ -42,7 +42,7 @@ public class BookingService {
     @Autowired
     private ResourceRepository resourceRepository;
 
-    @Autowired(required = false)
+    @Autowired
     private NotificationService notificationService;
 
     // ==============================
