@@ -61,6 +61,9 @@
 }
 
 /* ── Responsive ── */
+@media (max-width: 600px) {
+  .create-booking-page { padding: 12px; }
+}
 
 /* Tablets (768px - 1024px) */
 @media (max-width: 1024px) {

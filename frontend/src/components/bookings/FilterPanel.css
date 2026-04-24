@@ -92,7 +92,6 @@
 }
 
 /* ── Responsive ── */
-
 @media (max-width: 1024px) {
   .filter-panel {
     padding: 16px 20px;
