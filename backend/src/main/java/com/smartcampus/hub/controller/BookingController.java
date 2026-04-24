@@ -68,7 +68,7 @@ public class BookingController {
      * @return created booking with 201 status
      */
     @PostMapping
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','MANAGER','TECHNICIAN')")
     public ResponseEntity<BookingResponseDTO> createBooking(
             @RequestBody BookingRequestDTO request,
             Authentication authentication) {
@@ -92,7 +92,7 @@ public class BookingController {
      * @return the booking with 200 status
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','MANAGER','TECHNICIAN')")
     public ResponseEntity<BookingResponseDTO> getBooking(@PathVariable String id) {
         BookingResponseDTO booking = bookingService.getBooking(id);
         return ResponseEntity.ok(booking);
@@ -120,7 +120,7 @@ public class BookingController {
      * @return paginated list of user's bookings
      */
     @GetMapping("/user/me")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','MANAGER','TECHNICIAN')")
     public ResponseEntity<Page<BookingResponseDTO>> getUserBookings(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Integer page,
@@ -170,7 +170,7 @@ public class BookingController {
      * @return paginated list of all bookings
      */
     @GetMapping("/admin/all")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public ResponseEntity<Page<BookingResponseDTO>> getAllBookings(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String resourceId,
@@ -218,7 +218,7 @@ public class BookingController {
      * @return the approved booking with 200 status
      */
     @PutMapping("/{id}/approve")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public ResponseEntity<BookingResponseDTO> approveBooking(
             @PathVariable String id,
             @RequestParam(required = false) String reason,
@@ -248,7 +248,7 @@ public class BookingController {
      * @return the rejected booking with 200 status
      */
     @PutMapping("/{id}/reject")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public ResponseEntity<BookingResponseDTO> rejectBooking(
             @PathVariable String id,
             @RequestParam(required = false) String reason,
@@ -276,7 +276,7 @@ public class BookingController {
      * @return the cancelled booking with 200 status
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','MANAGER','TECHNICIAN')")
     public ResponseEntity<BookingResponseDTO> cancelBooking(
             @PathVariable String id,
             Authentication authentication) {
@@ -316,7 +316,7 @@ public class BookingController {
      * @return conflict check response
      */
     @GetMapping("/conflicts/check")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN','MANAGER','TECHNICIAN')")
     public ResponseEntity<Map<String, Object>> checkConflicts(
             @RequestParam String resourceId,
             @RequestParam String startTime,
