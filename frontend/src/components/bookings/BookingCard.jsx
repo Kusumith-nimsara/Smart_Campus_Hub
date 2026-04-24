@@ -55,6 +55,12 @@ export default function BookingCard({ booking, isAdmin, onCancel, onApprove, onR
               <span className="detail-value">{booking.resourceName}</span>
             </div>
           )}
+          {(booking.resourceLocation || booking.location) && (
+            <div className="booking-detail-item">
+              <span className="detail-label">📍 Location</span>
+              <span className="detail-value">{booking.resourceLocation || booking.location}</span>
+            </div>
+          )}
           {!booking.resourceName && booking.resourceId && (
             <div className="booking-detail-item">
               <span className="detail-label">🆔 Resource ID</span>

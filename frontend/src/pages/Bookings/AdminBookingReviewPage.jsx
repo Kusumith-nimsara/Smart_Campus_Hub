@@ -89,15 +89,7 @@ export default function AdminBookingReviewPage() {
               </p>
             </div>
           </div>
-          <div className="topbar-right">
-            <button
-              type="button"
-              className="admin-review-back-btn"
-              onClick={() => navigate('/bookings')}
-            >
-              ← All Bookings
-            </button>
-          </div>
+
         </header>
 
         {/* Status Filter Tabs */}

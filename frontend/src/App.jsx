@@ -147,9 +147,13 @@ function App() {
           path="/bookings"
           element={
             <PrivateRoute fallback={<Navigate to="/login" replace />}>
-              <MainLayout pageClass="bookings-layout">
-                <BookingsPage />
-              </MainLayout>
+              {(() => {
+                const role = (localStorage.getItem('authRole') || localStorage.getItem('role') || '').toUpperCase()
+                if (role === 'ADMIN') {
+                  return <MainLayout pageClass="admin-review-layout"><AdminBookingReviewPage /></MainLayout>
+                }
+                return <MainLayout pageClass="bookings-layout"><BookingsPage /></MainLayout>
+              })()}
             </PrivateRoute>
           }
         />
@@ -161,16 +165,6 @@ function App() {
                 <CreateBookingPage />
               </MainLayout>
             </PrivateRoute>
-          }
-        />
-        <Route
-          path="/bookings/admin/review"
-          element={
-            <ProtectedRoute requiredRole="ADMIN">
-              <MainLayout pageClass="admin-review-layout">
-                <AdminBookingReviewPage />
-              </MainLayout>
-            </ProtectedRoute>
           }
         />
         <Route

@@ -327,7 +327,7 @@ export default function AdminDashboardPage() {
               <div className="action-grid">
               <button type="button" onClick={() => navigate('/profile')}>Manage Profile</button>
               <button type="button" onClick={() => navigate('/catalogue')}>View Resources</button>
-              <button type="button" onClick={() => navigate('/bookings/admin/review')}>Review Bookings</button>
+              <button type="button" onClick={() => navigate('/bookings')}>Review Bookings</button>
               <button type="button" onClick={() => navigate('/tickets')}>Open Tickets</button>
             </div>
           </article>
