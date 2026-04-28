@@ -1,0 +1,194 @@
+/* ═══════════════════════════════════════════════════════
+   BOOKING FORM COMPONENT
+   ═══════════════════════════════════════════════════════ */
+
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.booking-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.booking-form-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.booking-form-group input,
+.booking-form-group select,
+.booking-form-group textarea {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 14px;
+  color: #1e293b;
+  background: #f8fafc;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+}
+
+.booking-form-group input:focus,
+.booking-form-group select:focus,
+.booking-form-group textarea:focus {
+  outline: none;
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+  background: #ffffff;
+}
+
+.booking-form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.booking-form-group input.input-error,
+.booking-form-group select.input-error,
+.booking-form-group textarea.input-error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* ── Row layout ── */
+.booking-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.booking-form-row-single-center {
+  grid-template-columns: minmax(280px, 1fr);
+  justify-content: center;
+  max-width: 50%;
+}
+
+/* ── Error messages ── */
+.booking-field-error {
+  margin: 0;
+  font-size: 12px;
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* ── Meta line (char count + error) ── */
+.booking-form-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.booking-char-count {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-left: auto;
+}
+
+/* ── Submit ── */
+.booking-form-submit {
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.booking-form-submit:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+  transform: translateY(-1px);
+}
+
+.booking-form-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .booking-form {
+    gap: 18px;
+  }
+
+  .booking-form-group label {
+    font-size: 12px;
+  }
+
+  .booking-form-group input,
+  .booking-form-group select,
+  .booking-form-group textarea {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  .booking-form {
+    gap: 16px;
+  }
+
+  .booking-form-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .booking-form-row-single-center {
+    max-width: 100%;
+  }
+
+  .booking-form-group label {
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .booking-form-group input,
+  .booking-form-group select,
+  .booking-form-group textarea {
+    padding: 12px 14px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    border-radius: 8px;
+  }
+
+  .booking-form-group textarea {
+    min-height: 100px;
+  }
+
+  .booking-form-submit {
+    padding: 12px 20px;
+    font-size: 14px;
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .booking-form {
+    gap: 14px;
+  }
+
+  .booking-form-group label {
+    font-size: 11px;
+  }
+
+  .booking-form-group input,
+  .booking-form-group select,
+  .booking-form-group textarea {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .booking-form-submit {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+}

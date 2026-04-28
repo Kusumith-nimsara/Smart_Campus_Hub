@@ -3,9 +3,8 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // Read .env from the repository root so that shared variables like
-  // VITE_GOOGLE_CLIENT_ID and VITE_API_BASE_URL are available at runtime.
-  envDir: '..',
+  // Use the frontend-local .env file so VITE_* values are loaded correctly
+  // for this app at runtime.
   plugins: [react()],
   // Fix the dev server port so the JavaScript origin stays stable
   // during development. If you prefer a different port, update

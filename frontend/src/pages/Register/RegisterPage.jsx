@@ -19,7 +19,7 @@ export default function RegisterPage() {
   const [message, setMessage] = useState('Fill details and create a new account.')
   const [result, setResult] = useState(null)
 
-  const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
+  const backendBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8082/api'
 
   async function handleRegister(event) {
     event.preventDefault()

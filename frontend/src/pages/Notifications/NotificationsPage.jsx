@@ -4,11 +4,19 @@ import { clearAuthState } from '../../utils/api'
 import { showLogoutAlert, showSuccess, confirmAction } from '../../utils/alerts'
 import './NotificationsPage.css'
 
-const FILTER_OPTIONS = [
+const FILTER_OPTIONS_ADMIN = [
   { key: 'ALL', label: 'All', icon: '📋' },
   { key: 'TICKET', label: 'Tickets', icon: '🎫' },
+  { key: 'BOOKING', label: 'Bookings', icon: '📅' },
   { key: 'MAINTENANCE', label: 'Maintenance', icon: '🔧' },
   { key: 'INCIDENT', label: 'Incidents', icon: '⚠️' },
+  { key: 'UNREAD', label: 'Unread', icon: '🔵' },
+]
+
+const FILTER_OPTIONS_USER = [
+  { key: 'ALL', label: 'All', icon: '📋' },
+  { key: 'BOOKING', label: 'Bookings', icon: '📅' },
+  { key: 'TICKET', label: 'Tickets', icon: '🎫' },
   { key: 'UNREAD', label: 'Unread', icon: '🔵' },
 ]
 
@@ -20,6 +28,10 @@ function getTypeIcon(type) {
     case 'TICKET_RESOLVED': return '✅'
     case 'TICKET_COMMENT': return '💬'
     case 'TICKET_REJECTED': return '❌'
+    case 'BOOKING_CREATED': return '📅'
+    case 'BOOKING_APPROVED': return '✅'
+    case 'BOOKING_REJECTED': return '🚫'
+    case 'BOOKING_CANCELLED': return '🗑️'
     case 'MAINTENANCE_SCHEDULED': return '🔧'
     case 'INCIDENT_REPORTED': return '🚨'
     case 'INCIDENT_UPDATED': return '📝'
@@ -35,6 +47,10 @@ function getIconClass(type) {
     case 'TICKET_RESOLVED': return 'ticket-resolved'
     case 'TICKET_COMMENT': return 'ticket-updated'
     case 'TICKET_REJECTED': return 'incident'
+    case 'BOOKING_CREATED': return 'booking-created'
+    case 'BOOKING_APPROVED': return 'booking-approved'
+    case 'BOOKING_REJECTED': return 'booking-rejected'
+    case 'BOOKING_CANCELLED': return 'booking-cancelled'
     case 'MAINTENANCE_SCHEDULED': return 'maintenance'
     case 'INCIDENT_REPORTED': return 'incident'
     case 'INCIDENT_UPDATED': return 'incident-update'
@@ -45,6 +61,7 @@ function getIconClass(type) {
 function getBadgeClass(referenceType) {
   switch (referenceType) {
     case 'TICKET': return 'ticket'
+    case 'BOOKING': return 'booking'
     case 'MAINTENANCE': return 'maintenance'
     case 'INCIDENT': return 'incident'
     default: return 'system'
@@ -240,6 +257,7 @@ export default function NotificationsPage() {
   // Stats
   const totalCount = notifications.length
   const ticketCount = notifications.filter((n) => n.referenceType === 'TICKET').length
+  const bookingCount = notifications.filter((n) => n.referenceType === 'BOOKING').length
   const maintenanceCount = notifications.filter((n) => n.referenceType === 'MAINTENANCE').length
   const incidentCount = notifications.filter((n) => n.referenceType === 'INCIDENT').length
 
@@ -251,7 +269,7 @@ export default function NotificationsPage() {
         <header className="notif-topbar">
           <div>
             <h1>🔔 Notifications</h1>
-            <p>Stay updated with your tickets, maintenance, and incidents</p>
+            <p>Stay updated with your bookings, tickets, maintenance, and incidents</p>
           </div>
         </header>
 
@@ -267,6 +285,11 @@ export default function NotificationsPage() {
             <p className="notif-stat-value">{ticketCount}</p>
             <p className="notif-stat-label">Tickets</p>
           </article>
+          <article className="notif-stat-card accent-teal">
+            <div className="notif-stat-icon">📅</div>
+            <p className="notif-stat-value">{bookingCount}</p>
+            <p className="notif-stat-label">Bookings</p>
+          </article>
           <article className="notif-stat-card accent-amber">
             <div className="notif-stat-icon">🔧</div>
             <p className="notif-stat-value">{maintenanceCount}</p>
@@ -281,23 +304,21 @@ export default function NotificationsPage() {
 
         {/* Controls */}
         <div className="notif-controls">
-          {isAdmin && (
-            <div className="notif-filters">
-              {FILTER_OPTIONS.map((f) => (
-                <button
-                  key={f.key}
-                  type="button"
-                  className={`notif-filter-btn ${activeFilter === f.key ? 'active' : ''}`}
-                  onClick={() => setActiveFilter(f.key)}
-                >
-                  {f.icon} {f.label}
-                  {f.key === 'UNREAD' && unreadCount > 0 && (
-                    <span className="notif-filter-badge">{unreadCount}</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
+          <div className="notif-filters">
+            {(isAdmin ? FILTER_OPTIONS_ADMIN : FILTER_OPTIONS_USER).map((f) => (
+              <button
+                key={f.key}
+                type="button"
+                className={`notif-filter-btn ${activeFilter === f.key ? 'active' : ''}`}
+                onClick={() => setActiveFilter(f.key)}
+              >
+                {f.icon} {f.label}
+                {f.key === 'UNREAD' && unreadCount > 0 && (
+                  <span className="notif-filter-badge">{unreadCount}</span>
+                )}
+              </button>
+            ))}
+          </div>
           <div className="notif-actions">
             {unreadCount > 0 && (
               <button type="button" className="notif-action-btn primary" onClick={handleMarkAllAsRead}>
@@ -338,11 +359,13 @@ export default function NotificationsPage() {
               return (
                 <article
                   key={notif.id}
-                  className={`notif-card ${isUnread ? 'unread' : ''} type-${notif.type || ''} ${notif.referenceType === 'TICKET' && notif.referenceId ? 'clickable' : ''}`}
+                  className={`notif-card ${isUnread ? 'unread' : ''} type-${notif.type || ''} ${(notif.referenceType === 'TICKET' || notif.referenceType === 'BOOKING') && notif.referenceId ? 'clickable' : ''}`}
                   onClick={() => {
                     if (isUnread) handleMarkAsRead(notif.id)
                     if (notif.referenceType === 'TICKET' && notif.referenceId) {
                       navigate(`/ticket-detail/${notif.referenceId}`)
+                    } else if (notif.referenceType === 'BOOKING') {
+                      navigate('/bookings')
                     }
                   }}
                   role="button"
@@ -352,6 +375,8 @@ export default function NotificationsPage() {
                       if (isUnread) handleMarkAsRead(notif.id)
                       if (notif.referenceType === 'TICKET' && notif.referenceId) {
                         navigate(`/ticket-detail/${notif.referenceId}`)
+                      } else if (notif.referenceType === 'BOOKING') {
+                        navigate('/bookings')
                       }
                     }
                   }}
@@ -373,6 +398,11 @@ export default function NotificationsPage() {
                       {notif.referenceId && notif.referenceType === 'TICKET' && (
                         <span className="notif-ref-badge clickable-link">
                           🔗 View Ticket
+                        </span>
+                      )}
+                      {notif.referenceType === 'BOOKING' && (
+                        <span className="notif-ref-badge clickable-link">
+                          📅 View Bookings
                         </span>
                       )}
                     </div>

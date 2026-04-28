@@ -7,6 +7,7 @@ import com.smartcampus.hub.model.User;
 import com.smartcampus.hub.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,10 +20,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    @Autowired
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     public UserResponse getCurrentUser(String username) {
@@ -198,6 +202,17 @@ public class UserService {
             .orElseThrow(() -> new IllegalArgumentException("User not found")));
         user.setSuspended(true);
         userRepository.save(user);
+        // Send suspension email
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+            String subject = "Account Suspended";
+            String text = "Dear " + (user.getFirstName() != null ? user.getFirstName() : user.getUsername()) + ",\n\n"
+                + "We regret to inform you that your account has been suspended by an administrator due to a violation of our platform’s policies or terms of service. This action was taken to ensure the safety and integrity of our community.\n\n"
+                + "If you believe this suspension was made in error or if you require further clarification regarding the reason for this action, please do not hesitate to contact our support team. We are committed to addressing your concerns and will review your case promptly.\n\n"
+                + "To reach our support team, please reply to this email or use the contact information provided on our website. We appreciate your understanding and cooperation as we work to resolve this matter.\n\n"
+                + "Thank you,\n"
+                + "The Support Team";
+            emailService.sendEmail(user.getEmail(), subject, text);
+        }
         return toUserResponse(user);
     }
 

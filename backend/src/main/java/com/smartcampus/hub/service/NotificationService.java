@@ -3,20 +3,49 @@ package com.smartcampus.hub.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.smartcampus.hub.model.Booking;
 import com.smartcampus.hub.model.Notification;
+import com.smartcampus.hub.model.Booking;
+import com.smartcampus.hub.model.Role;
+import com.smartcampus.hub.model.User;
 import com.smartcampus.hub.repository.NotificationRepository;
+import com.smartcampus.hub.repository.UserRepository;
 
 @Service
 public class NotificationService {
 
-    private final NotificationRepository notificationRepository;
+    private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
 
-    public NotificationService(NotificationRepository notificationRepository) {
+    private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
+
+    public NotificationService(NotificationRepository notificationRepository, UserRepository userRepository) {
         this.notificationRepository = notificationRepository;
+        this.userRepository = userRepository;
+    }
+
+    /**
+     * Resolve a username (or email) to the MongoDB ObjectId.
+     * Booking userId is stored as the authentication principal name (username/email),
+     * but notifications must use the MongoDB ObjectId so the frontend can match them.
+     * Falls back to the original value if no user is found.
+     */
+    private String resolveUserId(String usernameOrId) {
+        if (usernameOrId == null) return null;
+        // Try by username first
+        Optional<User> byUsername = userRepository.findByUsername(usernameOrId);
+        if (byUsername.isPresent()) return byUsername.get().getId();
+        // Try by email
+        Optional<User> byEmail = userRepository.findByEmail(usernameOrId);
+        if (byEmail.isPresent()) return byEmail.get().getId();
+        // Already an ObjectId or unknown — return as-is
+        return usernameOrId;
     }
 
     /**
@@ -252,6 +281,126 @@ public class NotificationService {
             throw new IllegalArgumentException("Notification not found");
         }
         notificationRepository.deleteById(safeId);
+    }
+
+    /**
+     * Send notification when a booking is created.
+     * Admin receives notification about new booking.
+     * User receives confirmation that their booking was submitted.
+     *
+     * IMPORTANT: booking.getUserId() is the authentication username, not the MongoDB ObjectId.
+     * We must resolve it to the ObjectId so the frontend notification query works.
+     *
+     * @param booking the created booking
+     */
+    public void sendBookingCreatedNotification(Booking booking) {
+        Objects.requireNonNull(booking, "Booking cannot be null");
+        // Resolve username -> MongoDB ObjectId
+        String userObjectId = resolveUserId(booking.getUserId());
+        log.info("Booking created notification: username='{}' resolved to userId='{}'", booking.getUserId(), userObjectId);
+
+        String message = String.format("New booking request for resource '%s' on %s by user '%s'.",
+            booking.getResourceId(), booking.getStartTime(), booking.getUserId());
+        // Notify all admins about new booking
+        List<User> admins = userRepository.findByRole(Role.ADMIN);
+        for (User admin : admins) {
+            createNotification(
+                admin.getId(),
+                "New Booking Request",
+                message,
+                "BOOKING_CREATED",
+                String.valueOf(booking.getId()),
+                "BOOKING"
+            );
+        }
+        // Notify the user that their booking was submitted
+        createNotification(
+            userObjectId,
+            "Booking Submitted",
+            String.format("Your booking for resource '%s' on %s has been submitted and is pending review.",
+                booking.getResourceId(), booking.getStartTime()),
+            "BOOKING_CREATED",
+            String.valueOf(booking.getId()),
+            "BOOKING"
+        );
+    }
+
+    /**
+     * Send notification when a booking is approved.
+     * User receives notification about booking approval.
+     *
+     * @param booking the approved booking
+     */
+    public void sendBookingApprovedNotification(Booking booking) {
+        Objects.requireNonNull(booking, "Booking cannot be null");
+        String userObjectId = resolveUserId(booking.getUserId());
+        log.info("Booking approved notification: username='{}' resolved to userId='{}'", booking.getUserId(), userObjectId);
+        String message = String.format(
+            "Your booking for resource '%s' on %s has been approved.%s",
+            booking.getResourceId(),
+            booking.getStartTime(),
+            booking.getApprovalReason() != null && !booking.getApprovalReason().isBlank()
+                ? " Reason: " + booking.getApprovalReason()
+                : "");
+        createNotification(
+            userObjectId,
+            "Booking Approved",
+            message,
+            "BOOKING_APPROVED",
+            String.valueOf(booking.getId()),
+            "BOOKING"
+        );
+    }
+
+    /**
+     * Send notification when a booking is rejected.
+     * User receives notification about booking rejection.
+     *
+     * @param booking the rejected booking
+     */
+    public void sendBookingRejectedNotification(Booking booking) {
+        Objects.requireNonNull(booking, "Booking cannot be null");
+        String userObjectId = resolveUserId(booking.getUserId());
+        log.info("Booking rejected notification: username='{}' resolved to userId='{}'", booking.getUserId(), userObjectId);
+        String reason = booking.getRejectionReason() != null && !booking.getRejectionReason().isBlank()
+            ? booking.getRejectionReason() : "Not specified";
+        String message = String.format(
+            "Your booking for resource '%s' on %s has been rejected. Reason: %s",
+            booking.getResourceId(),
+            booking.getStartTime(),
+            reason);
+        createNotification(
+            userObjectId,
+            "Booking Rejected",
+            message,
+            "BOOKING_REJECTED",
+            String.valueOf(booking.getId()),
+            "BOOKING"
+        );
+    }
+
+    /**
+     * Send notification when a booking is cancelled.
+     * User receives confirmation of booking cancellation.
+     *
+     * @param booking the cancelled booking
+     */
+    public void sendBookingCancelledNotification(Booking booking) {
+        Objects.requireNonNull(booking, "Booking cannot be null");
+        String userObjectId = resolveUserId(booking.getUserId());
+        log.info("Booking cancelled notification: username='{}' resolved to userId='{}'", booking.getUserId(), userObjectId);
+        String message = String.format(
+            "Your booking for resource '%s' on %s has been cancelled.",
+            booking.getResourceId(),
+            booking.getStartTime());
+        createNotification(
+            userObjectId,
+            "Booking Cancelled",
+            message,
+            "BOOKING_CANCELLED",
+            String.valueOf(booking.getId()),
+            "BOOKING"
+        );
     }
 
     public void deleteAllNotifications(String userId) {
