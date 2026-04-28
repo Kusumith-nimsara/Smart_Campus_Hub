@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
+import com.smartcampus.hub.model.Booking;
 import com.smartcampus.hub.model.Notification;
 import com.smartcampus.hub.repository.NotificationRepository;
 
@@ -156,6 +157,50 @@ public class NotificationService {
                 "TICKET_REJECTED",
                 ticketId,
                 "TICKET"
+        );
+    }
+
+    public Notification sendBookingCreatedNotification(Booking booking) {
+        return createNotification(
+                booking.getUserId(),
+                "Booking Submitted",
+                "Your booking request has been submitted for review.",
+                "BOOKING_CREATED",
+                booking.getId(),
+                "BOOKING"
+        );
+    }
+
+    public Notification sendBookingApprovedNotification(Booking booking) {
+        return createNotification(
+                booking.getUserId(),
+                "Booking Approved",
+                "Your booking request has been approved.",
+                "BOOKING_APPROVED",
+                booking.getId(),
+                "BOOKING"
+        );
+    }
+
+    public Notification sendBookingRejectedNotification(Booking booking) {
+        return createNotification(
+                booking.getUserId(),
+                "Booking Rejected",
+                "Your booking request has been rejected.",
+                "BOOKING_REJECTED",
+                booking.getId(),
+                "BOOKING"
+        );
+    }
+
+    public Notification sendBookingCancelledNotification(Booking booking) {
+        return createNotification(
+                booking.getUserId(),
+                "Booking Cancelled",
+                "Your booking has been cancelled.",
+                "BOOKING_CANCELLED",
+                booking.getId(),
+                "BOOKING"
         );
     }
 
