@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.smartcampus.hub.model.Booking;
 import com.smartcampus.hub.model.Notification;
 import com.smartcampus.hub.model.Booking;
 import com.smartcampus.hub.model.Role;

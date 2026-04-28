@@ -10,6 +10,7 @@ import com.smartcampus.hub.exception.ResourceNotFoundException;
 import com.smartcampus.hub.model.Booking;
 import com.smartcampus.hub.model.BookingStatus;
 import com.smartcampus.hub.model.Resource;
+import com.smartcampus.hub.model.ResourceStatus;
 import com.smartcampus.hub.repository.BookingRepository;
 import com.smartcampus.hub.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +80,7 @@ public class BookingService {
                         "Resource not found with id: " + request.getResourceId()));
 
         // Step 3: Check resource is ACTIVE
-        if (!resource.isAvailable()) {
+        if (resource.getStatus() != ResourceStatus.ACTIVE) {
             throw new InvalidBookingException(
                     "Resource '" + resource.getName() + "' is not available for booking. Status: " + resource.getStatus(),
                     "resourceId"
