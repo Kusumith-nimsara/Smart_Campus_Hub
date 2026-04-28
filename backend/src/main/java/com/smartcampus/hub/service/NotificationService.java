@@ -189,50 +189,6 @@ public class NotificationService {
         );
     }
 
-    public Notification sendBookingCreatedNotification(Booking booking) {
-        return createNotification(
-                booking.getUserId(),
-                "Booking Submitted",
-                "Your booking request has been submitted for review.",
-                "BOOKING_CREATED",
-                booking.getId(),
-                "BOOKING"
-        );
-    }
-
-    public Notification sendBookingApprovedNotification(Booking booking) {
-        return createNotification(
-                booking.getUserId(),
-                "Booking Approved",
-                "Your booking request has been approved.",
-                "BOOKING_APPROVED",
-                booking.getId(),
-                "BOOKING"
-        );
-    }
-
-    public Notification sendBookingRejectedNotification(Booking booking) {
-        return createNotification(
-                booking.getUserId(),
-                "Booking Rejected",
-                "Your booking request has been rejected.",
-                "BOOKING_REJECTED",
-                booking.getId(),
-                "BOOKING"
-        );
-    }
-
-    public Notification sendBookingCancelledNotification(Booking booking) {
-        return createNotification(
-                booking.getUserId(),
-                "Booking Cancelled",
-                "Your booking has been cancelled.",
-                "BOOKING_CANCELLED",
-                booking.getId(),
-                "BOOKING"
-        );
-    }
-
     public List<Notification> getNotificationsForUser(String userId) {
         String safeUserId = Objects.requireNonNull(userId, "User id cannot be null");
         return notificationRepository.findByUserIdOrderByCreatedAtDesc(safeUserId);
