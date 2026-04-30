@@ -4,7 +4,6 @@ import { getUserBookings, getAllBookings, cancelBooking, approveBooking, rejectB
 import { clearAuthState } from '../../utils/api'
 import { showSuccess, showError, showLogoutAlert, confirmAction } from '../../utils/alerts'
 import BookingCard from '../../components/bookings/BookingCard'
-import FilterPanel from '../../components/bookings/FilterPanel'
 import ApprovalModal from '../../components/bookings/ApprovalModal'
 import { useSidebar } from '../../contexts/SidebarContext'
 import './BookingsPage.css'
@@ -39,7 +38,7 @@ export default function BookingsPage() {
   // Approval modal state
   const [selectedBooking, setSelectedBooking] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const userStatusFilters = [
+  const statusFilters = [
     { label: 'All', value: '' },
     { label: 'Pending', value: 'PENDING' },
     { label: 'Approved', value: 'APPROVED' },
@@ -92,18 +91,8 @@ export default function BookingsPage() {
     }
   }, [isAccountMenuOpen])
 
-  function handleFilter(newFilters) {
-    setFilters(newFilters)
-    setCurrentPage(0)
-  }
-
   function handleUserStatusFilter(statusValue) {
     setFilters(statusValue ? { status: statusValue } : {})
-    setCurrentPage(0)
-  }
-
-  function handleClearFilters() {
-    setFilters({})
     setCurrentPage(0)
   }
 
@@ -239,25 +228,21 @@ export default function BookingsPage() {
         </header>
 
         {/* Filters */}
-        {isAdmin ? (
-          <FilterPanel onFilter={handleFilter} isAdmin={isAdmin} onClear={handleClearFilters} />
-        ) : (
-          <div className="bookings-status-tabs" role="tablist" aria-label="Booking status filters">
-            {userStatusFilters.map((tab) => {
-              const isActive = (filters.status || '') === tab.value
-              return (
-                <button
-                  key={tab.label}
-                  type="button"
-                  className={`bookings-status-tab ${isActive ? 'active' : ''}`}
-                  onClick={() => handleUserStatusFilter(tab.value)}
-                >
-                  {tab.label}
-                </button>
-              )
-            })}
-          </div>
-        )}
+        <div className="bookings-status-tabs" role="tablist" aria-label="Booking status filters">
+          {statusFilters.map((tab) => {
+            const isActive = (filters.status || '') === tab.value
+            return (
+              <button
+                key={tab.label}
+                type="button"
+                className={`bookings-status-tab ${isActive ? 'active' : ''}`}
+                onClick={() => handleUserStatusFilter(tab.value)}
+              >
+                {tab.label}
+              </button>
+            )
+          })}
+        </div>
 
         {/* Bookings List */}
         {loading ? (

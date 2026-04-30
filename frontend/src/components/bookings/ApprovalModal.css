@@ -177,13 +177,13 @@
   margin: 0;
 }
 
-.approval-modal-footer .approval-btn-cancel {
+.approval-btn-cancel {
   background: #f1f5f9;
   color: #475569;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #e2e8f0 !important;
 }
 
-.approval-modal-footer .approval-btn-cancel:hover {
+.approval-btn-cancel:hover {
   background: #e2e8f0;
 }
 
@@ -213,6 +213,11 @@
 }
 
 /* ── Responsive ── */
+@media (max-width: 500px) {
+  .approval-modal-body { padding: 18px 20px; }
+  .approval-modal-header { padding: 20px 20px 0; }
+  .approval-modal-footer { padding: 14px 20px 20px; flex-direction: column; }
+}
 
 @media (max-width: 768px) {
   .approval-modal-overlay {

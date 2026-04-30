@@ -225,7 +225,10 @@ public class BookingService {
         }
 
         return bookings.map(b -> {
-            Resource resource = resourceRepository.findById(b.getResourceId()).orElse(null);
+            Resource resource = null;
+            if (b.getResourceId() != null) {
+                resource = resourceRepository.findById(b.getResourceId()).orElse(null);
+            }
             return convertToResponseDTO(b, resource);
         });
     }
@@ -261,7 +264,10 @@ public class BookingService {
         }
 
         return bookings.map(b -> {
-            Resource resource = resourceRepository.findById(b.getResourceId()).orElse(null);
+            Resource resource = null;
+            if (b.getResourceId() != null) {
+                resource = resourceRepository.findById(b.getResourceId()).orElse(null);
+            }
             return convertToResponseDTO(b, resource);
         });
     }

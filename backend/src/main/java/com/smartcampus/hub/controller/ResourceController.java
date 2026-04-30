@@ -17,7 +17,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/resources")
-@CrossOrigin(origins = "*")
 public class ResourceController {
 
     private final ResourceService resourceService;

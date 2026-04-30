@@ -12,7 +12,7 @@
 }
 
 .admin-review-page.sidebar-collapsed {
-  grid-template-columns: 0 1fr;
+  grid-template-columns: 0px 1fr;
 }
 
 /* ══════════ SIDEBAR ══════════ */
@@ -291,6 +291,16 @@
 }
 
 /* ══════════ RESPONSIVE ══════════ */
+@media (max-width: 900px) {
+  .admin-review-page { grid-template-columns: 1fr; }
+  .admin-review-sidebar {
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 16px;
+  }
+  .admin-review-brand { margin-bottom: 20px; }
+  .admin-review-identity { display: none; }
+}
 
 /* Large Tablets (1024px - 1200px) */
 @media (max-width: 1200px) {
